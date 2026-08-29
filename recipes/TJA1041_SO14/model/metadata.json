@@ -1,0 +1,8 @@
+{
+    "model_type": "patchcore",
+    "backbone": "wide_resnet50_2",
+    "memory_bank_shape": [
+        5427,
+        1536
+    ]
+}

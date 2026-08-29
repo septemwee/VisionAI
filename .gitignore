@@ -1,0 +1,43 @@
+# Python bytecode
+__pycache__/
+*.py[c]
+*$py.class
+
+# PyInstaller
+runtime_roi.jpg
+debug_topmark_roi.jpg
+
+# Project-specific outputs
+prediction_output/
+results/
+
+# Archived experiments and duplicate models
+archive/
+
+# Environment and virtualenv
+.env
+.venv
+venv/
+env/
+
+# IDE files
+.idea/
+.vscode/
+
+# Distribution
+dist/
+build/
+
+# Distribution by PyInstaller
+*.manifest
+*.spec
+
+# Local datasets (not backed up)
+datasets/
+train/
+test/
+valid/
+
+# Temporary files
+tmp/
+temp/

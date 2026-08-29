@@ -1,0 +1,162 @@
+# VisionAI System Diagrams
+
+# paste the mermaid diagrams from the response above
+
+# Technical Architecture Diagram:
+flowchart LR
+    subgraph UI["User Interface Layer"]
+        direction TB
+        UI[ui/inspection/overlay.py<br/>Transparent Overlay Window]
+        SW[ui/inspection/status_widget.py<br/>Floating Status Panel]
+        TW[ui/trainer/trainer_window.py<br/>Trainer Application]
+        RP[ui/trainer/pages/recipe_page.py<br/>Recipe Manager]
+        DP[ui/trainer/pages/dataset_page.py<br/>Dataset Import>
+        TP[ui/trainer/pages/training_page.py<br/>Training Control>
+        RV[ui/trainer/pages/review_page.py<br/>Model Review>
+        EP[ui/trainer/pages/export_page.py<br/>Export Placeholder>
+    end
+
+    subgraph SV["Service Layer"]
+        direction TB
+        PS[services/patchcore_service.py<br/>Train/Load/Predict PatchCore>
+        IS[services/inference_service.py<br/>Inference for Review>
+        RS[services/recipe_service.py<br/>CRUD Recipes>
+        SS[services/state_manager.py<br/>Runtime State>
+        TM[services/top_mark_service.py<br/>Orientation Detection>
+        RI[services/roi_service.py<br/>YOLO ROI Detection>
+        DA[services/dataset_service.py<br/>Dataset Validation>
+        DPR[services/dataset_preparer.py<br/>ROI Cropping>
+    end
+
+    subgraph ML["Machine Learning Layer"]
+        direction TB
+        PT[models/detection/best.pt<br/>YOLOv8 OBB Detector>
+        PB[models/backbone/wide_resnet50_2/model.safetensors<br/>Backbone Weights>
+        PC[recipes/TJA1041_SO14/model/patchcore.pt<br/>PatchCore Weights>
+        PD[recipes/TJA1041_SO14/model/memory_bank.pt<br/>Memory Bank>
+        PD2[recipes/TJA1041_SO14/model/metadata.json<br/>Model Descriptor>
+    end
+
+    subgraph UT["Utilities"]
+        direction TB
+        RPATH[utils/resource_path.py<br/>PyInstaller-aware Paths>
+        IU[utils/image_utils.py<br/>Letterbox/Crop Helpers>
+        PP[utils/paths.py<br/>Project Root Paths>
+    end
+
+    UI -->|recipe_changed| RS
+    SW -->|on_recipe_changed| PS
+    SW -->|detect_boxes| RI
+    RI -->|YOLO OBB| PT
+    PT -->|points| RI
+    RI -->|crop| PS
+    PS -->|normalize| PS
+    PS -->|predict| IS
+    IS -->|score| SW
+    SW -->|update_status| SW
+    RP -->|load/save| RS
+    DP -->|select_dataset| PS
+    TP -->|start_training| PS
+    PS -->|train| PS
+    TP -->|wait| PS
+    TP -->|on_training_finished| RV
+    RV -->|load_image| IS
+    IS -->|predict| RV
+    RV -->|visualize| RV
+    PS -->|loads/saves| PC
+    PS -->|loads| PD
+    PS -->|writes metadata| PD2
+    SW -->|RECIPES_DIR| PP
+    PS -->|uses| PP
+    RS -->|uses| PP
+    RS -->|reads/writes| RPATH
+
+classDef ui fill:#E3F2FD,stroke:#1976D2,stroke-width:2px;
+classDef service fill:#FFF3E0,rgba(255,82,82,0.2);
+classDef ml fill:#E8F5E9,rgba(76,175,80,0.2);
+classDef util fill:#F3E5F5,rgba(156,39,176,0.2);
+
+# User Workflow Diagram:
+flowchart TB
+    direction LR
+    
+    START["Launch Application"]:::user
+    CHOOSE_RECIPE["Select Recipe/Package"]:::user
+    LIVE_INSPECT["Live Inspection Mode"]:::user
+    CAPTURE_TEMPLATE["Capture Top-Mark Template"]:::user
+    TRAINING["Training Mode"]:::user
+    REVIEW["Model Review Mode"]:::user
+    EXIT["Close Application"]:::user
+    
+    TECH_START["Initialize Qt + Load YOLO Model"]
+    TECH_RECIPE["Load Recipe + PatchCore Model"]
+    TECH_DETECT["YOLO OBB Detection"]
+    TECH_ORIENT["Template Matching (0/90/180/270)"]
+    TECH_SCORE["PatchCore Anomaly Score"]
+    TECH_RESULT["Determine PASS/FAIL/NOT FOUND"]
+    
+    LIVE_INSPECT -->|runs internally| TECH_START
+    TECH_START --> TECH_RECIPE
+    TECH_RECIPE --> TECH_DETECT
+    TECH_DETECT --> TECH_ORIENT
+    TECH_ORIENT --> TECH_SCORE
+    TECH_SCORE --> TECH_RESULT
+    TECH_RESULT -->|displays to user| LIVE_INSPECT
+    
+    TRAINING -->|runs internally| TECH_START
+    TECH_RECIPE --> TECH_DETECT
+    TECH_DETECT --> TECH_ORIENT
+    TECH_ORIENT --> TECH_SCORE
+    TECH_SCORE -->|model trained| TRAINING
+    
+    REVIEW -->|runs internally| TECH_START
+    TECH_RECIPE --> TECH_DETECT
+    TECH_DETECT --> TECH_ORIENT
+    TECH_ORIENT --> TECH_SCORE
+    TECH_SCORE -->|displays score/result| REVIEW
+    
+    classDef user fill:#E8F5E9,stroke:#388E3C,stroke-width:2px;
+    classDef tech fill:#BBDEFB,rgba(33,150,243,0.2);
+
+# Production Approval Gates:
+graph TD
+    direction TB
+    G1[Git + Baseline]:::gate
+    G2[Dependency Lock]:::gate
+    G3[Production Requirements]:::gate
+    G4[Evaluation Dataset]:::gate
+    G5[Automated Evaluation]:::gate
+    G6[Threshold Calibration]:::gate
+    G7[Orientation + Multi-Object Safety]:::gate
+    G8[Async Inference]:::gate
+    G9[Model Versioning]:::gate
+    G10[Recipe Validation]:::gate
+    G11[Logging + Audit]:::gate
+    G12[Automated Tests]:::gate
+    G13[Offline Packaging]:::gate
+    G14[Hardware Stress Test]:::gate
+    G15[Pilot]:::gate
+    G16[Production Approval]:::gate
+    
+    G1 --> G2 --> G3 --> G4 --> G5 --> G6 --> G7 --> G8 --> G9 --> G10 --> G11 --> G12 --> G13 --> G14 --> G15 --> G16
+    
+    class G1 pending
+    class G2 pending
+    class G3 pending
+    class G4 pending
+    class G5 pending
+    class G6 pending
+    class G7 pending
+    class G8 pending
+    class G9 pending
+    class G10 pending
+    class G11 pending
+    class G12 pending
+    class G13 pending
+    class G15 pending
+    class G16 blocked
+
+# Key for Diagrams:
+- User-Facing Elements (visible to operators): UI components, user choices, application states, exit/close actions
+- Technical Elements (for engineers/architects): Service layer classes, model artifacts, utility functions, data flow, approval gate progression
+- Gate Status: pending = not yet completed, blocked = production approval not reached, passed = completed and verified

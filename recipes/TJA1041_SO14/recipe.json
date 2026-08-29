@@ -1,0 +1,61 @@
+{
+    "recipe_name": "TJA1041_SO14",
+    "package_type": "SO14",
+    "package_family": "SO",
+    "package_size": "3.9x8.65x1.35",
+    "type_name": "SOT108-2",
+    "package_version": "SOT108HD64-Cu(TJA1041)",
+    "pin_count": 20,
+    "target_count": 1,
+    "dataset_path": "Z:/09_Jobs/REL/05 Life test/2026/01-Lifetest Engineering/01-Staff/12-Kanyawe/Image Processing Project/dataset/SO14",
+    "roi_path": "",
+    "thumbnail_path": "",
+    "anomaly_model": "",
+    "confidence_threshold": 0.85,
+    "anomaly_threshold": 60,
+    "created_date": "",
+    "last_trained": "",
+    "version": "1.0",
+    "notes": "",
+    "golden_image": "",
+    "model_type": "patchcore",
+    "backbone": "wide_resnet50_2",
+    "dataset_prepared": true,
+    "model_path": "",
+    "memory_bank_path": "",
+    "roi_default": {
+        "width_scale": 1.0,
+        "height_scale": 1.0,
+        "padding": 30,
+        "angle_offset": 0.0
+    },
+
+    "prepared_dataset_path": "recipes\\TJA1041_SO14\\patchcore_dataset",
+    "model": {
+        "trained": true,
+        "type": "patchcore",
+        "backbone": "wide_resnet50_2",
+        "path": "recipes\\TJA1041_SO14\\model"
+    },
+
+    "top_mark_template": "recipes\\TJA1041_SO14\\top_mark_template.jpg",
+    "top_mark_roi": {
+        "x": 737,
+        "y": 399,
+        "w": 401,
+        "h": 287
+    },
+    
+    "roi_statistics": {
+        "avg_width": 1098,
+        "avg_height": 740,
+        "min_width": 823.5,
+        "max_width": 1372.5,
+        "min_height": 555.0,
+        "max_height": 925.0,
+        "avg_area": 812520,
+        "avg_ratio": 1.4837837837837837,
+        "saved_count": 50,
+        "rejected_count": 16
+    }
+}
