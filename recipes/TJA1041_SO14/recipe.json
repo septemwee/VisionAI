@@ -5,17 +5,17 @@
     "package_size": "3.9x8.65x1.35",
     "type_name": "SOT108-2",
     "package_version": "SOT108HD64-Cu(TJA1041)",
-    "pin_count": 20,
+    "pin_count": 14,
     "target_count": 1,
     "dataset_path": "Z:/09_Jobs/REL/05 Life test/2026/01-Lifetest Engineering/01-Staff/12-Kanyawe/Image Processing Project/dataset/SO14",
     "roi_path": "",
     "thumbnail_path": "",
     "anomaly_model": "",
     "confidence_threshold": 0.85,
-    "anomaly_threshold": 60,
+    "anomaly_threshold": 0.46176941833496066,
     "created_date": "",
-    "last_trained": "",
-    "version": "1.0",
+    "last_trained": "2026-09-07T06:42:32+00:00",
+    "version": "1.4",
     "notes": "",
     "golden_image": "",
     "model_type": "patchcore",
@@ -27,9 +27,8 @@
         "width_scale": 1.0,
         "height_scale": 1.0,
         "padding": 30,
-        "angle_offset": 0.0
+        "angle_offset": 1.0
     },
-
     "prepared_dataset_path": "recipes\\TJA1041_SO14\\patchcore_dataset",
     "model": {
         "trained": true,
@@ -37,25 +36,97 @@
         "backbone": "wide_resnet50_2",
         "path": "recipes\\TJA1041_SO14\\model"
     },
-
     "top_mark_template": "recipes\\TJA1041_SO14\\top_mark_template.jpg",
     "top_mark_roi": {
-        "x": 737,
-        "y": 399,
-        "w": 401,
-        "h": 287
+        "x": 532,
+        "y": 296,
+        "w": 752,
+        "h": 491
     },
-    
+    "laser_mark_template": "recipes\\TJA1041_SO14\\laser_mark_template.jpg",
+    "laser_mark_roi": {
+        "x": 0.7832446808510638,
+        "y": 0.3054989816700611,
+        "w": 0.1356382978723404,
+        "h": 0.39918533604887985
+    },
+    "laser_mark_threshold": 0.8,
     "roi_statistics": {
-        "avg_width": 1098,
-        "avg_height": 740,
-        "min_width": 823.5,
-        "max_width": 1372.5,
-        "min_height": 555.0,
-        "max_height": 925.0,
-        "avg_area": 812520,
-        "avg_ratio": 1.4837837837837837,
-        "saved_count": 50,
-        "rejected_count": 16
-    }
+        "avg_width": 1332,
+        "avg_height": 905,
+        "min_width": 999.0,
+        "max_width": 1665.0,
+        "min_height": 678.75,
+        "max_height": 1131.25,
+        "avg_area": 1205460,
+        "avg_ratio": 1.4718232044198896,
+        "target_width": 1154,
+        "target_height": 792,
+        "saved_count": 147,
+        "rejected_count": 45
+    },
+    "assistant_state": {
+        "steps": {
+            "S6": {
+                "status": "ok",
+                "updated_at": "2026-09-07T06:42:22+00:00"
+            },
+            "S7": {
+                "status": "ok",
+                "updated_at": "2026-09-07T06:42:32+00:00"
+            }
+        },
+        "chosen_path": "train_new",
+        "chosen_recipe": null
+    },
+    "dataset_analysis": {
+        "geometry": {
+            "detection_count": 201,
+            "dominant_class": "ic",
+            "images_analyzed": 192,
+            "images_with_detection": 192,
+            "median_aspect_ratio": 1.494737246364707,
+            "registry_match": {
+                "match_score": 1.0,
+                "package_family": "SOIC",
+                "package_type": "SO14",
+                "pin_count": 14
+            },
+            "size_stats": {
+                "max_height": 1255.802001953125,
+                "max_width": 1962.5115966796875,
+                "median_height": 731.4009399414062,
+                "median_width": 1093.93603515625,
+                "min_height": 43.358394622802734,
+                "min_width": 194.44883728027344
+            }
+        },
+        "flagged_count": 0,
+        "analyzed_at": "2026-09-07T05:07:32+00:00"
+    },
+    "calibration": {
+        "p99": 0.44176941833496064,
+        "margin": 1.0,
+        "proposed": 0.46176941833496066,
+        "expected_false_alarms": 0,
+        "warning": false,
+        "good_summary": {
+            "min": 0.2740650177001953,
+            "median": 0.28681154251098634,
+            "p95": 0.3626584587097168,
+            "p99": 0.44176941833496064,
+            "max": 0.45786792755126954,
+            "count": 147
+        },
+        "evaluated_at": "2026-09-07T06:42:22+00:00"
+    },
+    "validated": true,
+    "pixel_gate": {
+        "enabled": true,
+        "threshold_ratio": 0.65,
+        "min_area_px": 12,
+        "max_area_px": 600
+    },
+    "laser_mark_coordinate_space": "top_mark_normalized",
+    "laser_mark_position_tolerance": 0.03
 }

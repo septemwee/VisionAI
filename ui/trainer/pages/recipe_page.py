@@ -1,19 +1,28 @@
 """Recipe creation and management page of the trainer."""
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
+    QFormLayout,
     QHBoxLayout,
-    QLabel,
     QLineEdit,
     QListWidget,
     QMessageBox,
-    QPushButton,
     QTextEdit,
     QVBoxLayout,
     QWidget,
 )
 
 from services.recipe_service import RecipeService
+from ui.theme import (
+    SPACE_L,
+    SPACE_M,
+    SPACE_S,
+    card_frame,
+    make_button,
+    section_label,
+    title_label,
+)
 
 PACKAGE_FAMILIES = ["SO", "QFN", "QFP", "BGA", "DIP"]
 
@@ -32,82 +41,41 @@ class RecipePage(QWidget):
         self.load_recipe_list()
 
     def setup_ui(self):
-        self.setWindowTitle("VisionAI Trainer")
-        self.resize(1400, 850)
-
-        self.setStyleSheet(
-            """
-            QWidget{
-                background:#FFFFFF;
-                font-family:'Poppins';
-            }
-
-            QLabel{
-                color:#374151;
-                font-size:12px;
-            }
-
-            QLineEdit,QComboBox,QTextEdit{
-                border:1px solid #E5E7EB;
-                border-radius:8px;
-                padding:8px;
-                background:#F9FAFB;
-            }
-
-            QListWidget{
-                border:1px solid #E5E7EB;
-                border-radius:10px;
-                background:#F9FAFB;
-            }
-
-            QPushButton{
-                background:#2563EB;
-                color:white;
-                border:none;
-                border-radius:8px;
-                padding:10px;
-                font-weight:600;
-            }
-
-            QPushButton:hover{
-                background:#1D4ED8;
-            }
-            """
-        )
-
         root_layout = QHBoxLayout()
+        root_layout.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
+        root_layout.setSpacing(SPACE_L)
 
         # ----- Left panel: recipe list -----
-        left_layout = QVBoxLayout()
+        list_card = card_frame()
+        list_layout = QVBoxLayout(list_card)
+        list_layout.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
+        list_layout.setSpacing(SPACE_M)
 
-        recipe_title = QLabel("Recipes")
-        recipe_title.setStyleSheet("font-size:28px;font-weight:700;color:#000000;")
+        list_layout.addWidget(section_label("Recipes"))
 
         self.recipe_list = QListWidget()
         self.recipe_list.itemClicked.connect(self.load_selected_recipe)
+        list_layout.addWidget(self.recipe_list, 1)
 
-        self.btn_add_recipe = QPushButton("+ Add Recipe")
-        self.btn_delete_recipe = QPushButton("Delete Recipe")
+        self.btn_add_recipe = make_button("+  Add Recipe")
         self.btn_add_recipe.clicked.connect(self.new_recipe)
-        self.btn_delete_recipe.clicked.connect(self.delete_recipe)
+        list_layout.addWidget(self.btn_add_recipe)
 
-        left_layout.addWidget(recipe_title)
-        left_layout.addWidget(self.recipe_list)
-        left_layout.addWidget(self.btn_add_recipe)
-        left_layout.addWidget(self.btn_delete_recipe)
+        self.btn_delete_recipe = make_button("Delete Recipe", "danger")
+        self.btn_delete_recipe.clicked.connect(self.delete_recipe)
+        list_layout.addWidget(self.btn_delete_recipe)
 
         # ----- Right panel: recipe form -----
-        right_layout = QVBoxLayout()
+        form_card = card_frame()
+        form_layout = QVBoxLayout(form_card)
+        form_layout.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
+        form_layout.setSpacing(SPACE_M)
 
-        header = QLabel("Recipe Configuration")
-        header.setStyleSheet("font-size:28px;font-weight:700;color:#111827;")
-        right_layout.addWidget(header)
+        form_layout.addWidget(title_label("Recipe Configuration"))
 
         self.recipe_name = QLineEdit()
-
         self.package_family = QComboBox()
         self.package_family.addItems(PACKAGE_FAMILIES)
-
         self.package_type = QLineEdit()
         self.package_size = QLineEdit()
         self.package_version = QLineEdit()
@@ -115,29 +83,29 @@ class RecipePage(QWidget):
         self.pin_count = QLineEdit()
         self.notes = QTextEdit()
 
-        form_fields = [
-            ("Recipe Name", self.recipe_name),
-            ("Package Family", self.package_family),
-            ("Package Type", self.package_type),
-            ("Package Size", self.package_size),
-            ("Package Version", self.package_version),
-            ("Type Name", self.type_name),
-            ("Pin Count", self.pin_count),
-        ]
+        fields = QFormLayout()
+        fields.setLabelAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        fields.setHorizontalSpacing(SPACE_M)
+        fields.setVerticalSpacing(SPACE_S)
+        fields.addRow("Recipe Name", self.recipe_name)
+        fields.addRow("Package Family", self.package_family)
+        fields.addRow("Package Type", self.package_type)
+        fields.addRow("Package Size", self.package_size)
+        fields.addRow("Package Version", self.package_version)
+        fields.addRow("Type Name", self.type_name)
+        fields.addRow("Pin Count", self.pin_count)
+        form_layout.addLayout(fields)
 
-        for label_text, widget in form_fields:
-            right_layout.addWidget(QLabel(label_text))
-            right_layout.addWidget(widget)
+        notes_label = section_label("Notes")
+        form_layout.addWidget(notes_label)
+        form_layout.addWidget(self.notes, 1)
 
-        right_layout.addWidget(QLabel("Notes"))
-        right_layout.addWidget(self.notes)
-
-        self.btn_save_recipe = QPushButton("Save Recipe")
+        self.btn_save_recipe = make_button("Save Recipe")
         self.btn_save_recipe.clicked.connect(self.save_recipe)
-        right_layout.addWidget(self.btn_save_recipe)
+        form_layout.addWidget(self.btn_save_recipe)
 
-        root_layout.addLayout(left_layout, 1)
-        root_layout.addLayout(right_layout, 3)
+        root_layout.addWidget(list_card, 1)
+        root_layout.addWidget(form_card, 3)
 
         self.setLayout(root_layout)
 
@@ -197,23 +165,52 @@ class RecipePage(QWidget):
             QMessageBox.warning(self, "Warning", "Recipe Name is required.")
             return
 
-        recipe = self.recipe_service.get_recipe_template()
-        recipe["recipe_name"] = recipe_name
-        recipe["package_family"] = self.package_family.currentText()
-        recipe["package_type"] = self.package_type.text()
-        recipe["package_size"] = self.package_size.text()
-        recipe["package_version"] = self.package_version.text()
-        recipe["type_name"] = self.type_name.text()
-        recipe["pin_count"] = int(self.pin_count.text() or 0)
-        recipe["notes"] = self.notes.toPlainText()
+        try:
+            pin_count = int(self.pin_count.text() or 0)
+        except ValueError:
+            QMessageBox.warning(self, "Warning", "Pin Count must be a whole number.")
+            return
 
-        if self.recipe_service.recipe_exists(recipe_name):
-            self.recipe_service.save_recipe(recipe_name, recipe)
-        else:
-            self.recipe_service.create_recipe(recipe_name, recipe)
+        try:
+            if self.recipe_service.recipe_exists(recipe_name):
+                try:
+                    recipe = self.recipe_service.load_recipe(recipe_name)
+                except ValueError as error:
+                    QMessageBox.critical(
+                        self, "Error", f"Existing recipe file is corrupted: {error}"
+                    )
+                    return
+                if recipe is None:
+                    recipe = self.recipe_service.get_recipe_template()
+            else:
+                recipe = self.recipe_service.get_recipe_template()
+
+            recipe["recipe_name"] = recipe_name
+            recipe["package_family"] = self.package_family.currentText()
+            recipe["package_type"] = self.package_type.text()
+            recipe["package_size"] = self.package_size.text()
+            recipe["package_version"] = self.package_version.text()
+            recipe["type_name"] = self.type_name.text()
+            recipe["pin_count"] = pin_count
+            recipe["notes"] = self.notes.toPlainText()
+
+            if self.recipe_service.recipe_exists(recipe_name):
+                self.recipe_service.save_recipe(recipe_name, recipe)
+            else:
+                self.recipe_service.create_recipe(recipe_name, recipe)
+        except ValueError as error:
+            QMessageBox.warning(
+                self, "Warning", f"Recipe name is not valid: {error}"
+            )
+            return
 
         self.load_recipe_list()
         self.selected_recipe = recipe_name
+
+        if self.parent_window:
+            self.parent_window.update_context(recipe)
+            if hasattr(self.parent_window, "refresh_step_bar"):
+                self.parent_window.refresh_step_bar()
 
         QMessageBox.information(self, "Success", "Recipe saved successfully.")
 
@@ -222,10 +219,19 @@ class RecipePage(QWidget):
             QMessageBox.warning(self, "Warning", "Please select a recipe.")
             return
 
-        self.recipe_service.delete_recipe(self.selected_recipe)
+        try:
+            self.recipe_service.delete_recipe(self.selected_recipe)
+        except ValueError as error:
+            QMessageBox.warning(
+                self, "Warning", f"Recipe name is not valid: {error}"
+            )
+            return
 
         self.selected_recipe = None
         self.new_recipe()
         self.load_recipe_list()
+
+        if self.parent_window and hasattr(self.parent_window, "clear_context"):
+            self.parent_window.clear_context()
 
         QMessageBox.information(self, "Success", "Recipe deleted.")

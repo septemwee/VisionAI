@@ -1,17 +1,10 @@
 """Standalone PatchCore inference used by the trainer's review page."""
 
-from pathlib import Path
-
-import torch
 from anomalib.data import PredictDataset
 from anomalib.engine import Engine
-from anomalib.models import Patchcore
-from safetensors.torch import load_file
 
-from utils.paths import BACKBONE_WEIGHTS_PATH
-
-IMAGE_SIZE = (256, 256)
-BACKBONE = "wide_resnet50_2"
+from services.patchcore_service import IMAGE_SIZE, PatchCoreService, SCORE_SCALE
+from services.verdict_service import evaluate_verdict
 
 
 class InferenceService:
@@ -22,28 +15,23 @@ class InferenceService:
         self.model = None
 
     def load_model(self, recipe):
-        """Load the PatchCore model referenced by a recipe."""
-        model = Patchcore(
-            backbone=BACKBONE,
-            pre_trained=False,
-            post_processor=False,
-            pre_processor=Patchcore.configure_pre_processor(image_size=IMAGE_SIZE),
-            visualizer=False,
-        )
+        """Load the PatchCore model referenced by a recipe.
 
-        state_dict = load_file(str(BACKBONE_WEIGHTS_PATH))
-        backbone = model.model.feature_extractor.feature_extractor
-        backbone.load_state_dict(state_dict, strict=False)
+        Delegates to ``PatchCoreService.load_model`` so the review path
+        applies the same metadata shape/hash validation as live inspection;
+        keeping one loader prevents the two paths from diverging.
+        """
+        service = PatchCoreService()
+        service.load_model(recipe["model"]["path"])
+        self.model = service.model
 
-        memory_bank = torch.load(
-            Path(recipe["model"]["path"]) / "memory_bank.pt", map_location="cpu"
-        )
-        model.model.memory_bank = memory_bank
+    def predict(self, image_path, anomaly_threshold=0.60, recipe=None):
+        """Score one image and return the verdict as a dict.
 
-        self.model = model
-
-    def predict(self, image_path, anomaly_threshold=0.60):
-        """Score one image and return the verdict as a dict."""
+        The verdict comes from the shared ``evaluate_verdict`` helper, so
+        the review page applies the same rules — image threshold AND the
+        localized-anomaly pixel gate — as live inspection.
+        """
         predict_dataset = PredictDataset(path=image_path, image_size=IMAGE_SIZE)
 
         results = self.engine.predict(
@@ -53,13 +41,22 @@ class InferenceService:
         )
 
         prediction = results[0]
-        raw_score = float(prediction.pred_score[0])
-        is_defect = raw_score > anomaly_threshold
+        raw_score = float(prediction.pred_score[0]) / SCORE_SCALE
+
+        anomaly_map = getattr(prediction, "anomaly_map", None)
+        if anomaly_map is not None:
+            anomaly_map = anomaly_map.cpu().numpy()
+
+        is_defect, reason, gate_region_px = evaluate_verdict(
+            raw_score, anomaly_map, anomaly_threshold, recipe or {}
+        )
 
         return {
             "raw_score": raw_score,
             "anomaly_threshold": anomaly_threshold,
             "is_defect": is_defect,
+            "reason": reason,
+            "gate_region_px": gate_region_px,
             "result": "FAIL" if is_defect else "PASS",
             "prediction": prediction,
         }

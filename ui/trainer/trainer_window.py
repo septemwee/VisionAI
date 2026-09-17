@@ -1,14 +1,24 @@
 """Main wizard window for the trainer application."""
 
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
-    QPushButton,
+    QMessageBox,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
 )
 
+from services.training_assistant import compute_step_status
+from ui.theme import (
+    SPACE_L,
+    SPACE_M,
+    SPACE_XL,
+    TRAINER_STYLESHEET,
+    make_button,
+    title_label,
+)
 from ui.trainer.pages.dataset_page import DatasetPage
 from ui.trainer.pages.export_page import ExportPage
 from ui.trainer.pages.recommendation_page import RecommendationPage
@@ -16,19 +26,25 @@ from ui.trainer.pages.recipe_page import RecipePage
 from ui.trainer.pages.review_page import ReviewPage
 from ui.trainer.pages.roi_page import ROIPage
 from ui.trainer.pages.training_page import TrainingPage
+from ui.trainer.scroll_page import scrollable_page
+from ui.trainer.step_status_bar import StepStatusBar
 
+# Page order matches the guided flow (S1-S7): the model recommendation is
+# placed AFTER the ROI crop step so it always runs on real crops.
 STEP_TITLES = [
-    "Recipe Manager",
-    "Dataset Import",
-    "Model Recommendation",
-    "ROI Verification",
-    "Training",
-    "Model Review",
-    "Export",
+    "Recipe Manager",       # 0  S1
+    "Dataset Import",       # 1  S2
+    "ROI Verification",     # 2  S3
+    "Model Recommendation", # 3  S4
+    "Training",             # 4  S5 + S6 (calibration)
+    # "Model Review",         # 5  (visual check, not a gated step)
+    "Export",               # 6  S7
 ]
 
 # Index of the ROI Verification step, which needs the dataset loaded first.
-ROI_STEP_INDEX = 3
+ROI_STEP_INDEX = 2
+RECOMMENDATION_STEP_INDEX = 3
+EXPORT_STEP_INDEX = 6
 
 
 class TrainerWindow(QWidget):
@@ -44,58 +60,40 @@ class TrainerWindow(QWidget):
 
     def setup_ui(self):
         self.setWindowTitle("VisionAI Trainer")
-        self.resize(1400, 850)
-
-        self.setStyleSheet(
-            """
-            QWidget{
-                background:#FFFFFF;
-                font-family:'Poppins';
-            }
-
-            QLabel{
-                color:#374151;
-            }
-
-            QPushButton{
-                background:#2563EB;
-                color:white;
-                border:none;
-                border-radius:8px;
-                padding:10px;
-                font-weight:600;
-            }
-
-            QPushButton:hover{
-                background:#1D4ED8;
-            }
-            """
-        )
+        # Preferred size, clamped to the available screen so the window
+        # never opens larger than the desktop (e.g. 1366x768 laptops).
+        self.setMinimumSize(960, 600)
+        preferred_width, preferred_height = 1400, 850
+        screen = QGuiApplication.primaryScreen()
+        if screen is not None:
+            available = screen.availableGeometry()
+            preferred_width = min(preferred_width, int(available.width() * 0.9))
+            preferred_height = min(preferred_height, int(available.height() * 0.9))
+        self.resize(preferred_width, preferred_height)
+        self.setStyleSheet(TRAINER_STYLESHEET)
 
         root_layout = QVBoxLayout()
+        root_layout.setContentsMargins(SPACE_XL, SPACE_L, SPACE_XL, SPACE_L)
+        root_layout.setSpacing(SPACE_M)
 
-        # ----- Header -----
-        title = QLabel("VisionAI Trainer")
-        title.setStyleSheet("font-size:30px;font-weight:700;color:#111827;")
-        root_layout.addWidget(title)
+        # ----- Header: title + recipe context chip -----
+        header_row = QHBoxLayout()
+        header_row.setSpacing(SPACE_M)
+
+        header_row.addWidget(title_label("VisionAI Trainer"))
+        header_row.addStretch()
 
         self.context_label = QLabel("Package : - | Recipe : -")
-        self.context_label.setStyleSheet(
-            """
-            background:#EFF6FF;
-            color:#1D4ED8;
-            padding:10px;
-            border-radius:8px;
-            font-size:14px;
-            font-weight:600;
-            """
-        )
-        root_layout.addWidget(self.context_label)
+        self.context_label.setObjectName("contextChip")
+        header_row.addWidget(self.context_label)
 
-        # ----- Step indicator -----
-        self.step_label = QLabel()
-        self.step_label.setStyleSheet("color:#2563EB;font-size:14px;font-weight:700;")
-        root_layout.addWidget(self.step_label)
+        root_layout.addLayout(header_row)
+
+        # ----- Step status bar (S1-S7 badges + next-step shortcut) -----
+        self.step_status_bar = StepStatusBar()
+        self.step_status_bar.step_clicked.connect(self.go_to_step)
+        self.step_status_bar.next_step_requested.connect(self.go_to_step)
+        root_layout.addWidget(self.step_status_bar)
 
         # ----- Wizard pages -----
         self.pages = QStackedWidget()
@@ -106,10 +104,11 @@ class TrainerWindow(QWidget):
         self.dataset_page = DatasetPage()
         self.dataset_page.parent_window = self
 
-        self.recommendation_page = RecommendationPage()
-
         self.roi_page = ROIPage()
         self.roi_page.parent_window = self
+
+        self.recommendation_page = RecommendationPage()
+        self.recommendation_page.parent_window = self
 
         self.training_page = TrainingPage()
         self.training_page.parent_window = self
@@ -118,35 +117,51 @@ class TrainerWindow(QWidget):
         self.review_page.parent_window = self
 
         self.export_page = ExportPage()
+        self.export_page.parent_window = self
 
         for page in (
             self.recipe_page,
             self.dataset_page,
-            self.recommendation_page,
             self.roi_page,
+            self.recommendation_page,
             self.training_page,
             self.review_page,
             self.export_page,
         ):
-            self.pages.addWidget(page)
+            # Scrollable wrapper: pages scroll instead of overlapping
+            # when the window is smaller than the page content.
+            self.pages.addWidget(scrollable_page(page))
+
+        self.pages.currentChanged.connect(self._on_page_changed)
 
         root_layout.addWidget(self.pages)
 
-        # ----- Navigation -----
+        # ----- Navigation: previous | step indicator | next -----
         nav_layout = QHBoxLayout()
+        nav_layout.setSpacing(SPACE_M)
 
-        self.btn_previous = QPushButton("◀ Previous")
-        self.btn_next = QPushButton("Next ▶")
+        self.btn_previous = make_button("◀  Previous", "secondary")
         self.btn_previous.clicked.connect(self.previous_page)
+
+        self.btn_next = make_button("Next  ▶")
+        self.btn_next.setMinimumWidth(120)
         self.btn_next.clicked.connect(self.next_page)
 
+        self.step_label = QLabel()
+        self.step_label.setStyleSheet(
+            "font-size:12px;font-weight:700;color:#2563EB;background:transparent;"
+        )
+
         nav_layout.addWidget(self.btn_previous)
+        nav_layout.addStretch()
+        nav_layout.addWidget(self.step_label)
         nav_layout.addStretch()
         nav_layout.addWidget(self.btn_next)
         root_layout.addLayout(nav_layout)
 
         self.setLayout(root_layout)
         self.update_step_label()
+        self.refresh_step_bar()
 
     # ------------------------------------------------------------------
     # Navigation
@@ -175,11 +190,41 @@ class TrainerWindow(QWidget):
         self.pages.setCurrentIndex(self.current_step)
         self.update_step_label()
 
+    def go_to_step(self, step_id):
+        """Jump to the page owning a step (from the step status bar)."""
+        statuses = compute_step_status(self.current_recipe_data)
+        entry = statuses.get(str(step_id))
+        if not entry:
+            return
+
+        self.current_step = entry["page_index"]
+        self.pages.setCurrentIndex(self.current_step)
+        self.update_step_label()
+
+    def _on_page_changed(self, index):
+        """Refresh step-specific content whenever a page becomes current."""
+        if index == RECOMMENDATION_STEP_INDEX:
+            self.recommendation_page.refresh_recommendations()
+        elif index == EXPORT_STEP_INDEX:
+            self.export_page.refresh_summary()
+        self.refresh_step_bar()
+
     def update_step_label(self):
         self.step_label.setText(
             f"Step {self.current_step + 1}/{len(STEP_TITLES)}"
             f"  •  {STEP_TITLES[self.current_step]}"
         )
+
+    def refresh_step_bar(self):
+        """Recompute S1-S7 statuses and sync the calibration panel."""
+        self.step_status_bar.update_statuses(
+            compute_step_status(self.current_recipe_data)
+        )
+        self.training_page.refresh_calibration_panel()
+
+    # ------------------------------------------------------------------
+    # Recipe context
+    # ------------------------------------------------------------------
 
     def update_context(self, recipe_data):
         """Update the header line after a recipe is selected or created."""
@@ -188,3 +233,44 @@ class TrainerWindow(QWidget):
             f"Package : {recipe_data.get('package_family', '-')}"
             f" | Recipe : {recipe_data.get('recipe_name', '-')}"
         )
+        self.refresh_step_bar()
+
+    def clear_context(self):
+        """Reset the header after the current recipe is deleted."""
+        self.current_recipe_data = None
+        self.context_label.setText("Package : - | Recipe : -")
+        self.refresh_step_bar()
+
+    # ------------------------------------------------------------------
+    # Shutdown
+    # ------------------------------------------------------------------
+
+    def _busy_activities(self):
+        """Names of background workers still running, if any."""
+        busy = []
+        if self.training_page.is_training_running():
+            busy.append("Training")
+        if self.training_page.is_calibration_running():
+            busy.append("Threshold calibration")
+        if self.dataset_page.is_analysis_running():
+            busy.append("Dataset analysis")
+        if self.roi_page.is_autotune_running():
+            busy.append("ROI auto-tune")
+        if self.recommendation_page.is_augment_running():
+            busy.append("Add-to-memory")
+        return busy
+
+    def closeEvent(self, event):
+        busy = self._busy_activities()
+        if busy:
+            QMessageBox.warning(
+                self,
+                "Background Work In Progress",
+                "Still running: " + ", ".join(busy) + ".\n"
+                "Please wait for it to finish before closing the trainer.",
+            )
+            event.ignore()
+            return
+
+        self.training_page.restore_output()
+        event.accept()

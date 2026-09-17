@@ -1,24 +1,51 @@
-"""Dataset import page of the trainer."""
+"""Dataset import page of the trainer: stats, analysis and quality screening."""
 
+import shutil
 from pathlib import Path
 
 from PySide6.QtWidgets import (
     QFileDialog,
-    QFrame,
+    QFormLayout,
+    QHBoxLayout,
     QLabel,
-    QPushButton,
+    QMessageBox,
+    QProgressBar,
     QVBoxLayout,
     QWidget,
 )
 
-from services.dataset_service import DatasetService
+from services.dataset_service import IMAGE_EXTENSIONS, DatasetService
 from services.recipe_service import RecipeService
+from services.training_assistant import utc_now_iso
+from ui.theme import (
+    SPACE_L,
+    SPACE_M,
+    SPACE_S,
+    SPACE_XS,
+    caption_label,
+    card_frame,
+    make_button,
+    section_label,
+    title_label,
+)
+from ui.workers.screening_worker import ScreeningWorker
+from ui.workers.stats_worker import StatsWorker
 
-IMAGE_EXTENSIONS = ["*.png", "*.jpg", "*.jpeg", "*.bmp"]
+FLAG_LABELS = {
+    "corrupt": "unreadable",
+    "blurry": "blurry",
+    "brightness": "brightness outlier",
+    "size": "size outlier",
+}
 
 
 class DatasetPage(QWidget):
-    """Lets the user pick a dataset folder and shows basic statistics."""
+    """Dataset folder selection, computed analysis and quality screening.
+
+    Dataset size never gates anything — every displayed number is
+    informational. Quality flags move files to ``quarantine/`` only after
+    explicit user confirmation; nothing is ever deleted.
+    """
 
     def __init__(self):
         super().__init__()
@@ -30,151 +57,147 @@ class DatasetPage(QWidget):
         self.dataset_path = ""
         self.first_image_path = None
         self.parent_window = None
+        self.worker = None
+        self.stats_worker = None
+        self.stats_generation = 0
+        self.retired_workers = []
+
+        # Tracks which flow currently owns the shared progress bar so a
+        # finishing worker never hides a bar another flow is using.
+        self.progress_owner = None
+        self.analysis_generation = 0
 
         self.setup_ui()
 
     def setup_ui(self):
-        self.setStyleSheet(
-            """
-            QWidget{
-                background:#FFFFFF;
-                font-family:'Poppins';
-            }
+        root = QVBoxLayout()
+        root.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
+        root.setSpacing(SPACE_M)
 
-            QLabel{
-                color:#374151;
-            }
-
-            QFrame{
-                background:white;
-                border:1px solid #E5E7EB;
-                border-radius:12px;
-            }
-
-            QPushButton{
-                background:#2563EB;
-                color:white;
-                border:none;
-                border-radius:8px;
-                padding:10px;
-                font-weight:600;
-            }
-
-            QPushButton:hover{
-                background:#1D4ED8;
-            }
-
-            QPushButton:pressed{
-                background:#1E40AF;
-            }
-            """
+        root.addWidget(title_label("Dataset Import"))
+        root.addWidget(
+            caption_label(
+                "Point the trainer at a folder of good package images. "
+                "Any dataset size is accepted — the numbers below are "
+                "informational."
+            )
         )
-
-        layout = QVBoxLayout()
-
-        # ----- Title -----
-        title = QLabel("Dataset Import")
-        title.setStyleSheet(
-            "font-size:24px;font-weight:700;color:#111827;Border: None;"
-        )
-        layout.addWidget(title)
 
         # ----- Dataset folder card -----
-        dataset_card = QFrame()
-        dataset_layout = QVBoxLayout()
+        folder_card = card_frame()
+        folder_layout = QVBoxLayout(folder_card)
+        folder_layout.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
+        folder_layout.setSpacing(SPACE_S)
 
-        dataset_title = QLabel("Dataset Folder")
-        dataset_title.setStyleSheet("font-weight:600;Border: None;")
+        folder_layout.addWidget(section_label("Dataset Folder"))
 
         self.dataset_path_label = QLabel("No Dataset Selected")
-        self.dataset_path_label.setStyleSheet("Border: None;")
+        self.dataset_path_label.setWordWrap(True)
+        folder_layout.addWidget(self.dataset_path_label)
 
-        self.btn_browse = QPushButton("Browse Dataset")
+        actions_row = QHBoxLayout()
+        actions_row.setSpacing(SPACE_S)
+
+        self.btn_browse = make_button("Browse Dataset")
         self.btn_browse.clicked.connect(self.select_dataset)
+        actions_row.addWidget(self.btn_browse)
 
-        dataset_layout.addWidget(dataset_title)
-        dataset_layout.addWidget(self.dataset_path_label)
-        dataset_layout.addWidget(self.btn_browse)
-        dataset_card.setLayout(dataset_layout)
-        layout.addWidget(dataset_card)
+        self.btn_analyze = make_button("Analyze Dataset", "secondary")
+        self.btn_analyze.clicked.connect(self.start_analysis)
+        self.btn_analyze.setEnabled(False)
+        actions_row.addWidget(self.btn_analyze)
+        actions_row.addStretch()
+
+        folder_layout.addLayout(actions_row)
+        root.addWidget(folder_card)
 
         # ----- Summary card -----
-        summary_card = QFrame()
-        summary_layout = QVBoxLayout()
+        summary_card = card_frame()
+        summary_layout = QVBoxLayout(summary_card)
+        summary_layout.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
+        summary_layout.setSpacing(SPACE_S)
 
-        summary_title = QLabel("Dataset Summary")
-        summary_title.setStyleSheet("border: None;font-weight:600;")
+        summary_layout.addWidget(section_label("Dataset Summary"))
 
         self.image_count_label = QLabel("Images : 0")
         self.resolution_label = QLabel("Resolution : -")
         self.corrupted_label = QLabel("Corrupted : 0")
-        self.status_label = QLabel("Status : -")
+        self.coverage_label = QLabel("Coverage : not analyzed yet")
 
-        for label in (
-            self.image_count_label,
-            self.resolution_label,
-            self.corrupted_label,
-            self.status_label,
-        ):
-            label.setStyleSheet("Border: None;")
+        summary_fields = QFormLayout()
+        summary_fields.setHorizontalSpacing(SPACE_M)
+        summary_fields.setVerticalSpacing(SPACE_XS)
+        summary_fields.addRow("Images", self.image_count_label)
+        summary_fields.addRow("Resolution", self.resolution_label)
+        summary_fields.addRow("Corrupted", self.corrupted_label)
+        summary_fields.addRow("Detection coverage", self.coverage_label)
+        summary_layout.addLayout(summary_fields)
 
-        summary_layout.addWidget(summary_title)
-        summary_layout.addWidget(self.image_count_label)
-        summary_layout.addWidget(self.resolution_label)
-        summary_layout.addWidget(self.corrupted_label)
-        summary_layout.addWidget(self.status_label)
-        summary_card.setLayout(summary_layout)
-        layout.addWidget(summary_card)
+        root.addWidget(summary_card)
 
-        # ----- Status card -----
-        status_card = QFrame()
-        status_layout = QVBoxLayout()
+        # ----- Analysis card -----
+        analysis_card = card_frame()
+        analysis_layout = QVBoxLayout(analysis_card)
+        analysis_layout.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
+        analysis_layout.setSpacing(SPACE_S)
 
-        status_title = QLabel("Dataset Status")
-        status_title.setStyleSheet("Border: None;font-weight:600;")
+        analysis_layout.addWidget(section_label("Physical Analysis"))
+        analysis_layout.addWidget(
+            caption_label(
+                "Computed by the YOLO detection model over the dataset; "
+                "package identity is matched against the model registry."
+            )
+        )
 
-        self.ready_label = QLabel("Waiting for Dataset...")
-        self.ready_label.setStyleSheet("Border: None;")
+        self.family_label = QLabel("-")
+        self.type_label = QLabel("-")
+        self.pin_label = QLabel("-")
+        self.size_label = QLabel("-")
+        self.aspect_label = QLabel("-")
+        self.quality_label = QLabel("-")
 
-        status_layout.addWidget(status_title)
-        status_layout.addWidget(self.ready_label)
-        status_card.setLayout(status_layout)
-        layout.addWidget(status_card)
+        analysis_fields = QFormLayout()
+        analysis_fields.setHorizontalSpacing(SPACE_M)
+        analysis_fields.setVerticalSpacing(SPACE_XS)
+        analysis_fields.addRow("Package Family", self.family_label)
+        analysis_fields.addRow("Package Type", self.type_label)
+        analysis_fields.addRow("Pin Count", self.pin_label)
+        analysis_fields.addRow("Median Package Size", self.size_label)
+        analysis_fields.addRow("Aspect Ratio", self.aspect_label)
+        analysis_fields.addRow("Quality Flags", self.quality_label)
+        analysis_layout.addLayout(analysis_fields)
 
-        # ----- Physical analysis card -----
-        analysis_card = QFrame()
-        analysis_layout = QVBoxLayout()
+        root.addWidget(analysis_card)
 
-        analysis_title = QLabel("Physical Analysis")
-        analysis_title.setStyleSheet("border:none;font-weight:600;")
+        # ----- Progress + hint -----
+        self.progress = QProgressBar()
+        self.progress.setValue(0)
+        self.progress.hide()
+        root.addWidget(self.progress)
 
-        self.family_label = QLabel("Package Family : -")
-        self.shape_label = QLabel("Shape : -")
-        self.pin_label = QLabel("Pin Count : -")
-        self.aspect_label = QLabel("Aspect Ratio : -")
+        root.addStretch()
 
-        for label in (
-            self.family_label,
-            self.shape_label,
-            self.pin_label,
-            self.aspect_label,
-        ):
-            label.setStyleSheet("border:none;")
+        root.addWidget(
+            caption_label(
+                "Tip: 300+ good images are recommended for best calibration."
+            )
+        )
 
-        analysis_layout.addWidget(analysis_title)
-        analysis_layout.addWidget(self.family_label)
-        analysis_layout.addWidget(self.shape_label)
-        analysis_layout.addWidget(self.pin_label)
-        analysis_layout.addWidget(self.aspect_label)
-        analysis_card.setLayout(analysis_layout)
-        layout.addWidget(analysis_card)
-
-        layout.addStretch()
-        self.setLayout(layout)
+        self.setLayout(root)
 
     # ------------------------------------------------------------------
     # Dataset selection
     # ------------------------------------------------------------------
+
+    def image_paths(self, folder):
+        """Return the sorted image file paths inside ``folder``."""
+        paths = []
+        if folder:
+            root = Path(folder)
+            if root.exists():
+                for extension in IMAGE_EXTENSIONS:
+                    paths.extend(root.glob(extension))
+        return sorted(paths)
 
     def select_dataset(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Dataset")
@@ -193,32 +216,284 @@ class DatasetPage(QWidget):
         self.update_statistics(folder)
 
     def update_statistics(self, folder):
-        result = self.dataset_service.analyze_dataset(folder)
+        """Start the dataset statistics pass in a background worker.
+
+        Scanning opens every image once, which is slow for large
+        datasets, so it must never run on the GUI thread. The summary
+        card shows ellipses and the progress bar fills while loading.
+        """
+        self._retire_stats_worker()
+
+        self.stats_generation += 1
+        generation = self.stats_generation
+
+        # Reset the display for the newly selected folder.
+        self.analysis_result = None
+        self.image_count_label.setText("Images : …")
+        self.resolution_label.setText("Resolution : …")
+        self.corrupted_label.setText("Corrupted : …")
+        self.coverage_label.setText("Coverage : not analyzed yet")
+        self._display_geometry({})
+        self.quality_label.setText("-")
+        self.btn_analyze.setEnabled(False)
+
+        self.progress_owner = "stats"
+        self.progress.setValue(0)
+        self.progress.setFormat("Loading dataset… %p%")
+        self.progress.show()
+
+        self.stats_worker = StatsWorker(folder)
+        self.stats_worker.progress.connect(self.progress.setValue)
+        self.stats_worker.finished_signal.connect(
+            lambda result, gen=generation: self.on_stats_finished(result, gen)
+        )
+        self.stats_worker.error_signal.connect(
+            lambda message, gen=generation: self.on_stats_error(message, gen)
+        )
+        self.stats_worker.start()
+
+    def _retire_stats_worker(self):
+        """Detach a still-running stats scan so a new selection can start.
+
+        The old worker keeps running detached: its signals are
+        disconnected from the page so late results cannot touch the UI,
+        and the reference is kept (with deleteLater on finish) so Qt
+        never destroys a running thread.
+        """
+        worker = self.stats_worker
+        if worker is None:
+            return
+        try:
+            worker.disconnect(self)
+        except TypeError:
+            pass  # No connections to this page.
+        worker.finished.connect(self._on_retired_worker_finished)
+        self.retired_workers.append(worker)
+        self.stats_worker = None
+
+    def _on_retired_worker_finished(self):
+        worker = self.sender()
+        if worker in self.retired_workers:
+            self.retired_workers.remove(worker)
+        worker.deleteLater()
+
+    def on_stats_finished(self, result, generation):
+        if generation != self.stats_generation:
+            return  # A newer folder selection superseded this scan.
+
+        if self.progress_owner == "stats":
+            self.progress.hide()
+            self.progress.setValue(0)
+            self.progress.setFormat("%p%")
+            self.progress_owner = None
         self.analysis_result = result
 
         self.image_count_label.setText(f"Images : {result['image_count']}")
         self.resolution_label.setText(f"Resolution : {result['resolution']}")
         self.corrupted_label.setText(f"Corrupted : {result['corrupted']}")
-        self.status_label.setText(f"Status : {result['status']}")
 
-        if result["image_count"] >= 300:
-            self.ready_label.setText("✅ Ready for Physical Analysis")
-        elif result["image_count"] >= 100:
-            self.ready_label.setText("⚠ Dataset Usable")
-        else:
-            self.ready_label.setText("❌ Dataset Too Small")
-
-        # The physical analysis below is a placeholder until the real
-        # analysis service is implemented.
-        self.family_label.setText("Package Family : SO")
-        self.shape_label.setText("Shape : Rectangle")
-        self.pin_label.setText("Pin Count : 14")
-        self.aspect_label.setText("Aspect Ratio : 2.21")
-
-        image_files = []
-        for extension in IMAGE_EXTENSIONS:
-            image_files.extend(Path(folder).glob(extension))
+        image_files = self.image_paths(self.dataset_path)
+        self.first_image_path = str(image_files[0]) if image_files else None
+        self.btn_analyze.setEnabled(bool(image_files))
 
         if image_files:
-            self.first_image_path = str(image_files[0])
             print(f"First image: {self.first_image_path}")
+
+    def on_stats_error(self, error_message, generation):
+        if generation != self.stats_generation:
+            return  # A newer folder selection superseded this scan.
+
+        if self.progress_owner == "stats":
+            self.progress.hide()
+            self.progress.setValue(0)
+            self.progress.setFormat("%p%")
+            self.progress_owner = None
+        QMessageBox.critical(self, "Dataset Error", error_message)
+
+    # ------------------------------------------------------------------
+    # Dataset analysis (quality screening + YOLO geometry)
+    # ------------------------------------------------------------------
+
+    def start_analysis(self):
+        paths = self.image_paths(self.dataset_path)
+        if not paths:
+            QMessageBox.warning(self, "Warning", "Select a dataset folder first.")
+            return
+
+        if self.is_analysis_running():
+            return
+
+        self.btn_analyze.setEnabled(False)
+        self.btn_browse.setEnabled(False)
+
+        self.analysis_generation += 1
+        generation = self.analysis_generation
+
+        self.progress_owner = "analysis"
+        self.progress.setValue(0)
+        self.progress.setFormat("%p%")
+        self.progress.show()
+
+        self.worker = ScreeningWorker(paths)
+        self.worker.progress.connect(self.progress.setValue)
+        self.worker.finished_signal.connect(
+            lambda payload, gen=generation: self.on_analysis_finished(payload, gen)
+        )
+        self.worker.error_signal.connect(
+            lambda message, gen=generation: self.on_analysis_error(message, gen)
+        )
+        self.worker.start()
+
+    def on_analysis_finished(self, payload, generation):
+        if generation != self.analysis_generation:
+            return  # The user moved on; results no longer apply.
+
+        self.btn_analyze.setEnabled(True)
+        self.btn_browse.setEnabled(True)
+        if self.progress_owner == "analysis":
+            self.progress.hide()
+            self.progress.setValue(0)
+            self.progress_owner = None
+        self.analysis_result = payload
+
+        geometry = payload.get("geometry") or {}
+        quality = payload.get("quality") or {}
+
+        self._display_geometry(geometry)
+        self._display_quality(quality, geometry)
+
+        recipe = self.parent_window.current_recipe_data if self.parent_window else None
+        if recipe:
+            flagged = [
+                entry
+                for entry in quality.get("results", [])
+                if entry.get("flags")
+            ]
+            recipe["dataset_analysis"] = {
+                "geometry": geometry,
+                "flagged_count": len(flagged),
+                "analyzed_at": utc_now_iso(),
+            }
+            self.recipe_service.save_recipe(recipe["recipe_name"], recipe)
+
+            if hasattr(self.parent_window, "refresh_step_bar"):
+                self.parent_window.refresh_step_bar()
+
+        self._propose_quarantine(quality)
+
+    def on_analysis_error(self, error_message, generation):
+        if generation != self.analysis_generation:
+            return  # The user moved on; results no longer apply.
+
+        self.btn_analyze.setEnabled(True)
+        self.btn_browse.setEnabled(True)
+        if self.progress_owner == "analysis":
+            self.progress.hide()
+            self.progress.setValue(0)
+            self.progress_owner = None
+        QMessageBox.critical(self, "Analysis Error", error_message)
+
+    def is_analysis_running(self):
+        """Return True while the screening worker thread is active."""
+        return self.worker is not None and self.worker.isRunning()
+
+    # ------------------------------------------------------------------
+    # Analysis display
+    # ------------------------------------------------------------------
+
+    def _display_geometry(self, geometry):
+        """Fill the Physical Analysis card from computed results."""
+        match = geometry.get("registry_match") or {}
+        dominant = geometry.get("dominant_class")
+
+        family = match.get("package_family") or dominant or "-"
+        package_type = match.get("package_type") or "-"
+        pin_count = match.get("pin_count")
+        pin_text = str(pin_count) if pin_count else "-"
+
+        size_stats = geometry.get("size_stats") or {}
+        if size_stats:
+            size_text = (
+                f"{size_stats['median_width']:.0f} x "
+                f"{size_stats['median_height']:.0f} px"
+            )
+        else:
+            size_text = "-"
+
+        aspect = geometry.get("median_aspect_ratio")
+        aspect_text = f"{aspect:.2f}" if aspect else "-"
+
+        self.family_label.setText(f"Package Family : {family}")
+        self.type_label.setText(f"Package Type : {package_type}")
+        self.pin_label.setText(f"Pin Count : {pin_text}")
+        self.size_label.setText(f"Median Package Size : {size_text}")
+        self.aspect_label.setText(f"Aspect Ratio : {aspect_text}")
+
+    def _display_quality(self, quality, geometry):
+        """Show detection coverage and quality-flag counts."""
+        analyzed = geometry.get("images_analyzed", 0)
+        with_detection = geometry.get("images_with_detection", 0)
+        self.coverage_label.setText(
+            f"Coverage : {with_detection}/{analyzed} images with detected package"
+        )
+
+        flagged = [
+            entry for entry in quality.get("results", []) if entry.get("flags")
+        ]
+        if flagged:
+            self.quality_label.setText(
+                f"{len(flagged)} image(s) flagged for review"
+            )
+        else:
+            self.quality_label.setText("None")
+
+    def _propose_quarantine(self, quality):
+        """Offer to move flagged images to quarantine (never deletes)."""
+        flagged = [
+            entry for entry in quality.get("results", []) if entry.get("flags")
+        ]
+        if not flagged:
+            return
+
+        lines = []
+        for entry in flagged[:15]:
+            labels = ", ".join(
+                FLAG_LABELS.get(flag, flag) for flag in entry["flags"]
+            )
+            lines.append(f"{entry['name']} — {labels}")
+        if len(flagged) > 15:
+            lines.append(f"... and {len(flagged) - 15} more")
+
+        answer = QMessageBox.question(
+            self,
+            "Flagged Images",
+            "The following images were flagged:\n\n"
+            + "\n".join(lines)
+            + "\n\nMove them to the dataset's quarantine folder?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if answer != QMessageBox.Yes:
+            return
+
+        quarantine_dir = Path(self.dataset_path) / "quarantine"
+        quarantine_dir.mkdir(parents=True, exist_ok=True)
+
+        moved = 0
+        for entry in flagged:
+            source = Path(entry["path"])
+            if not source.exists():
+                continue
+            destination = quarantine_dir / source.name
+            try:
+                shutil.move(str(source), str(destination))
+                moved += 1
+            except OSError as error:
+                print(f"[QUARANTINE] failed to move {source.name}: {error}")
+
+        print(f"[QUARANTINE] moved {moved} image(s) to {quarantine_dir}")
+        QMessageBox.information(
+            self,
+            "Quarantine",
+            f"Moved {moved} image(s) to {quarantine_dir}.",
+        )

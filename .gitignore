@@ -32,12 +32,28 @@ build/
 *.manifest
 *.spec
 
-# Local datasets (not backed up)
+# Local datasets (not backed up; anchored to the repo root so recipe
+# datasets such as recipes/*/patchcore_dataset/train stay visible)
 datasets/
-train/
-test/
-valid/
+/train/
+/test/
+/valid/
 
 # Temporary files
 tmp/
 temp/
+
+# Runtime pilot data (session logs, audit DB)
+runtime/
+
+# Local tooling, backups, and offline dependency bundles
+.kilo/
+copy/
+offline_packages/
+
+# Local screenshots and generated inspection reports
+Screenshot *.png
+inspection_cleaned_files.txt
+
+# Locally generated training dataset
+recipes/*/patchcore_dataset/
