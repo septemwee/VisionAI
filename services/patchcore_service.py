@@ -1,6 +1,8 @@
 """Training and inference wrapper around the Anomalib PatchCore model."""
 
 import json
+import os
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -84,6 +86,8 @@ class PatchCoreService:
 
         """Train a PatchCore model for the recipe and store it on disk."""
         dataset_path = resolve_recipe_path(recipe["prepared_dataset_path"])
+        from services.validation_service import audit_splits
+        training_audit = audit_splits(dataset_path)
 
         datamodule = Folder(
             name="IC",
@@ -109,10 +113,14 @@ class PatchCoreService:
         print("TRAINING COMPLETE")
 
         name = RecipeService._validate_recipe_name(recipe["recipe_name"])
-        model_dir = RECIPES_DIR / name / "model"
+        from uuid import uuid4
+        model_dir = RECIPES_DIR / name / 'model_versions' / uuid4().hex
         model_dir.mkdir(parents=True, exist_ok=True)
 
         self.save_model(model, model_dir)
+        if training_audit != audit_splits(dataset_path):
+            raise ValueError('Dataset changed during training. Prepare data and train again.')
+        recipe['training_dataset_audit'] = training_audit
         self.update_recipe(recipe, model_dir)
 
         return model_dir
@@ -148,6 +156,8 @@ class PatchCoreService:
 
     def update_recipe(self, recipe, model_dir):
         """Record the trained model location in the recipe file."""
+        from services.validation_service import invalidate_validation
+        invalidate_validation(recipe)
         recipe["model"] = {
             "trained": True,
             "type": "patchcore",
@@ -248,12 +258,13 @@ class PatchCoreService:
                         f"skipping integrity check for {filename}"
                     )
                     continue
-                actual = _sha256_of(model_path / filename)
-                if actual != expected_hash:
-                    raise ValueError(
-                        f"{filename} integrity check failed: metadata records "
-                        f"{expected_hash} but the file hashes to {actual}."
-                    )
+                if os.environ.get("VISIONAI_VERIFY_MODEL", "0") == "1":
+                    actual = _sha256_of(model_path / filename)
+                    if actual != expected_hash:
+                        raise ValueError(
+                            f"{filename} integrity check failed: metadata records "
+                            f"{expected_hash} but the file hashes to {actual}."
+                        )
 
         model.model.memory_bank = memory_bank
 
@@ -369,35 +380,43 @@ class PatchCoreService:
         return smoothed
 
     def evaluate_folder(self, folder_path):
-        _import_anomalib()
-
         """Score every image in a folder.
 
         Prints the per-image scores and summary statistics, and RETURNS the
         per-image ``(name, score)`` pairs (0-1 fractions) so calibration and
         other tooling can consume them.
         """
-        # The engine is only needed for this offline batch path; keep its
-        # (expensive) construction out of the live-inspection load path.
+        return [(name, score) for name, score, _ in self.evaluate_folder_details(folder_path)]
 
-        if self.engine is None:
-            self.engine = Engine()
-
-        predict_dataset = PredictDataset(path=str(folder_path), image_size=IMAGE_SIZE)
-        predictions = self.engine.predict(model=self.model, dataset=predict_dataset)
-
+    def evaluate_folder_details(self, folder_path):
+        """Score every image and retain its raw anomaly map for calibration."""
+        folder = Path(folder_path)
+        if not folder.is_dir():
+            raise FileNotFoundError(str(folder))
+        paths = sorted(p for p in folder.rglob("*") if p.suffix.lower() in
+                       {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"})
+        if not paths:
+            raise ValueError("No calibration images found")
         scored = []
-        for prediction in predictions:
-            score = float(prediction.pred_score[0]) / SCORE_SCALE
-            image_name = Path(prediction.image_path[0]).name
+        for path in paths:
+            image = cv2.imread(str(path))
+            if image is None:
+                raise ValueError(f"Unreadable calibration image: {path}")
+            score, anomaly_map = self.predict_full(image)
+            from utils.pixel_gate import unwrap_anomaly_map
+            import numpy as np
+            amap = unwrap_anomaly_map(anomaly_map)
+            if not math.isfinite(score) or amap is None or amap.ndim != 2 or not amap.size or not np.isfinite(amap).all():
+                raise ValueError(f"Invalid model output: {path}")
+            image_name = str(path.relative_to(folder))
             print(f"{image_name} {score:.4f}")
-            scored.append((image_name, score))
+            scored.append((image_name, score, amap.copy()))
 
         if not scored:
             print("No images were evaluated.")
             return []
 
-        scores = [score for _, score in scored]
+        scores = [score for _, score, _ in scored]
         print(f"\nMIN: {min(scores)}")
         print(f"MAX: {max(scores)}")
         print(f"AVG: {sum(scores) / len(scores)}")

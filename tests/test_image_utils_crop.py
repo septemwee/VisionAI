@@ -8,11 +8,22 @@ import pytest
 from utils.image_utils import (
     box_aligned_heatmap,
     crop_rotated_roi,
+    crop_yolo_obb,
     heatmap_overlay,
     letterbox,
     letterbox_placement,
     rotated_crop_bounds,
+    prepare_inspection_crop,
 )
+
+
+def test_canonical_patchcore_crop_matches_live_inspection_geometry():
+    image = np.zeros((100, 120, 3), dtype=np.uint8)
+    image[30:70, 40:80] = (20, 120, 240)
+    points = np.array([[40, 30], [80, 30], [80, 70], [40, 70]], dtype=np.float32)
+    expected = letterbox(crop_yolo_obb(image, points), 64, 64)
+    actual = prepare_inspection_crop(image, points, 64, 64)
+    assert np.array_equal(actual, expected)
 
 
 def test_crop_contains_bright_block():

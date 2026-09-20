@@ -23,11 +23,11 @@ def save_regions(recipe_path, frame, regions, dirty):
             raise ValueError("ROI is outside the image")
         if name == "laser_mark" and (x < tx or y < ty or x+w > tx+tw or y+h > ty+th):
             raise ValueError("Laser-mark must be inside Top-mark")
-    if "top_mark" in dirty and data.get("laser_mark_template") and "laser_mark" not in regions:
-        raise ValueError("Redraw the existing Laser-mark before replacing Top-mark")
+    remove_laser = "laser_mark" in dirty and "laser_mark" not in regions
+    old_laser_path = resolve_recipe_path(data.get("laser_mark_template")) if remove_laser and data.get("laser_mark_template") else None
     updates = {}
     # If Top-mark changes, its child's coordinates and image change together.
-    names = set(dirty)
+    names = {name for name in dirty if name in regions}
     if "top_mark" in dirty and "laser_mark" in regions:
         names.add("laser_mark")
     for name in names:
@@ -61,6 +61,10 @@ def save_regions(recipe_path, frame, regions, dirty):
         data["laser_mark_coordinate_space"] = "top_mark_normalized"
         data.setdefault("laser_mark_threshold", 0.8)
         data.setdefault("laser_mark_position_tolerance", 0.03)
+    if remove_laser:
+        for key in ("laser_mark_template", "laser_mark_roi", "laser_mark_coordinate_space",
+                    "laser_mark_threshold", "laser_mark_position_tolerance"):
+            data.pop(key, None)
     originals = {target: target.read_bytes() if target.exists() else None for target in updates}
     staged = []
     try:
@@ -70,6 +74,8 @@ def save_regions(recipe_path, frame, regions, dirty):
             temporary.write_bytes(content)
             os.replace(temporary, target)
         RecipeService.write_json_file(path, data)
+        if remove_laser and old_laser_path and old_laser_path.exists():
+            old_laser_path.unlink()
     except Exception:
         for target, content in originals.items():
             if content is None:

@@ -1,8 +1,8 @@
 """Background worker that appends new crops to an existing recipe's memory.
 
 This is the add-to-memory v1 path (see the training assistant plan): the new
-good images are routed through the TARGET recipe's own ROI / crop / letterbox
-pipeline so the crops match its training distribution, then appended to its
+good images use the same YOLO OBB perspective crop and letterbox path as live
+Inspection, then are appended to the target recipe's
 ``train/good`` folder. The follow-up retrain + recalibration happen through
 the normal training and calibration flows.
 """
@@ -13,12 +13,12 @@ import cv2
 from PySide6.QtCore import QThread, Signal
 
 from services.roi_service import ROIService
-from utils.image_utils import crop_rotated_roi, letterbox
+from utils.image_utils import prepare_inspection_crop
 from utils.paths import RECIPES_DIR, resolve_recipe_path
 
 
 class AugmentWorker(QThread):
-    """Crops source images with the target recipe's config and appends them."""
+    """Append inspection-compatible crops to the target recipe's train split."""
 
     finished_signal = Signal(int)  # number of appended crops
     error_signal = Signal(str)
@@ -56,9 +56,6 @@ class AugmentWorker(QThread):
         target_width = int(stats.get("target_width") or 256)
         target_height = int(stats.get("target_height") or 256)
 
-        default_config = dict(target.get("roi_default") or {})
-        overrides = dict(target.get("roi_overrides") or {})
-
         try:
             confidence_floor = float(target.get("confidence_threshold") or 0.85)
         except (TypeError, ValueError):
@@ -87,14 +84,12 @@ class AugmentWorker(QThread):
             if image is None:
                 continue
 
-            config = dict(default_config)
-            config.update(overrides.get(path.name, {}))
-
-            crop = crop_rotated_roi(image, roi, config)
-            if crop.size == 0:
+            points = roi.get("points")
+            if points is None:
                 continue
-
-            letterboxed = letterbox(crop, target_width, target_height)
+            letterboxed = prepare_inspection_crop(
+                image, points, target_width, target_height,
+            )
             cv2.imwrite(str(good_dir / path.name), letterboxed)
             appended += 1
 

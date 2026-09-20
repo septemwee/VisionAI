@@ -9,6 +9,7 @@ GUI thread never blocks on model inference, window capture or file IO.
 """
 
 import math
+import os
 import sys
 import time
 
@@ -37,8 +38,10 @@ from utils.pilot_log import start_session_log
 from utils.resource_path import resource_path
 from utils.window_capture import grab_window_content
 
-TARGET_WINDOW_TITLE = "PowerPoint"
+TARGET_WINDOW_TITLE = os.environ.get("VISIONAI_SOURCE_TITLE", "PowerPoint")
 DETECTION_CONFIDENCE = 0.95
+DETECTION_IMAGE_SIZE = 640
+DETECTION_MAX_OBJECTS = 32
 KEEP_DETECTION_SECONDS = 1.5
 OBB_SMOOTHING_ALPHA = 0.8
 PROCESS_INTERVAL_MS = 300
@@ -74,6 +77,7 @@ class InspectionWorker(QThread):
         self.marking_service = MarkingService()
 
         self.pending_recipe = _NO_PENDING_RECIPE
+        self.active_recipe_request_id = 0
         self.current_recipe = None
         self.target_width = FALLBACK_TARGET_WIDTH
         self.target_height = FALLBACK_TARGET_HEIGHT
@@ -82,19 +86,22 @@ class InspectionWorker(QThread):
         self.last_points = None
         self.orientation_state = None
         self.orientation_tick = 0
+        self.orientation_states = {}
+        self.orientation_ticks = {}
         self.orientation_dirty = False
 
         self.sct = None
         self.last_capture_from_screen = False
         self.capture_only = False
+        self._source_window = None
 
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
 
-    def apply_recipe(self, recipe_data):
+    def apply_recipe(self, recipe_data, request_id=0):
         """Queue a recipe switch; the model is loaded on this thread."""
-        self.pending_recipe = recipe_data
+        self.pending_recipe = (recipe_data, int(request_id))
 
     def set_capture_only(self, enabled):
         self.capture_only = bool(enabled)
@@ -115,6 +122,8 @@ class InspectionWorker(QThread):
         self.last_points = None
         self.orientation_state = None
         self.orientation_tick = 0
+        self.orientation_states.clear()
+        self.orientation_ticks.clear()
         self.orientation_dirty = False
 
     def run(self):
@@ -166,11 +175,16 @@ class InspectionWorker(QThread):
         if self.pending_recipe is _NO_PENDING_RECIPE:
             return
 
-        recipe_data, self.pending_recipe = self.pending_recipe, _NO_PENDING_RECIPE
-        self.current_recipe = recipe_data
+        pending, self.pending_recipe = self.pending_recipe, _NO_PENDING_RECIPE
+        if isinstance(pending, tuple) and len(pending) == 2:
+            recipe_data, request_id = pending
+        else:
+            recipe_data, request_id = pending, self.active_recipe_request_id + 1
+        self.active_recipe_request_id = request_id
         self.orientation_state = None
 
         if recipe_data is None:
+            self.current_recipe = None
             print("[RECIPE] Cleared - no recipe selected")
             self.patchcore_service.model = None
             self.target_width = FALLBACK_TARGET_WIDTH
@@ -193,22 +207,59 @@ class InspectionWorker(QThread):
             "count": 0,
             "fps": 0,
             "fail_reason": "Loading recipe model...",
+            "model_loading": True,
+            "recipe_request_id": request_id,
         })
 
         model_path = recipe_data.get("model", {}).get("path")
         if not model_path:
             print("[PATCHCORE] Recipe has no trained model")
+            self.current_recipe = recipe_data
             self.patchcore_service.model = None
+            self.status_update.emit({
+                "system_state": self.state_manager.get_state(),
+                "inspection_result": "SELECT PACKAGE",
+                "count": 0,
+                "fps": 0,
+                "model_loading": False,
+                "fail_reason": "Recipe model is not configured",
+                "recipe_request_id": request_id,
+            })
             return
 
         try:
             self.patchcore_service.load_model(model_path)
+            if self.pending_recipe is not _NO_PENDING_RECIPE:
+                # A newer selection arrived while this model was loading.
+                # Discard this result and let the next tick load only the
+                # latest request.
+                self.patchcore_service.model = None
+                return
+            self.current_recipe = recipe_data
+            self.status_update.emit({
+                "system_state": self.state_manager.get_state(),
+                "inspection_result": "READY",
+                "count": 0,
+                "fps": 0,
+                "model_loading": False,
+                "recipe_request_id": request_id,
+            })
         except Exception as error:
             # Fail closed: never keep scoring with the PREVIOUS recipe's
             # model under the new recipe's name.
             self.patchcore_service.model = None
+            self.current_recipe = None
             self.state_manager.set_state(ProgramState.ERROR, str(error))
             print(f"Model load error: {error}")
+            self.status_update.emit({
+                "system_state": self.state_manager.get_state(),
+                "inspection_result": "NO SOURCE",
+                "count": 0,
+                "fps": 0,
+                "model_loading": False,
+                "error_message": f"Recipe model load failed: {error}",
+                "recipe_request_id": request_id,
+            })
 
     # ------------------------------------------------------------------
     # Window capture
@@ -216,9 +267,20 @@ class InspectionWorker(QThread):
 
     def find_window(self):
         """Return the source window, or ``None`` when it is not open."""
+        source_title = TARGET_WINDOW_TITLE
+        cached = self._source_window
+        if cached is not None:
+            try:
+                if cached.title and source_title.lower() in cached.title.lower():
+                    if not getattr(cached, "isMinimized", False):
+                        return cached
+            except Exception:
+                pass
+            self._source_window = None
         try:
             for window in gw.getAllWindows():
-                if window.title and TARGET_WINDOW_TITLE.lower() in window.title.lower():
+                if window.title and source_title.lower() in window.title.lower():
+                    self._source_window = window
                     return window
         except Exception as error:
             self.state_manager.set_state(ProgramState.ERROR, str(error))
@@ -266,7 +328,11 @@ class InspectionWorker(QThread):
 
         start_time = time.time()
         results = self.detection_model.predict(
-            frame, conf=DETECTION_CONFIDENCE, verbose=False
+            frame,
+            conf=DETECTION_CONFIDENCE,
+            imgsz=DETECTION_IMAGE_SIZE,
+            max_det=DETECTION_MAX_OBJECTS,
+            verbose=False,
         )
         elapsed = max(time.time() - start_time, 0.001)
 
@@ -335,6 +401,8 @@ class InspectionWorker(QThread):
 
     def tick(self):
         """Run one capture-detect-inspect cycle on the worker thread."""
+        if self.capture_only:
+            return
         self._load_pending_recipe()
 
         window = self.find_window()
@@ -343,6 +411,7 @@ class InspectionWorker(QThread):
         # missing source so the overlay and verdicts reset instead of
         # drawing stale boxes over other windows.
         if window is None or getattr(window, "isMinimized", False):
+            self._source_window = None
             self.state_manager.set_state(ProgramState.WAITING_SOURCE)
             self.overlay_update.emit(None, None, [], None)
             self.reset_scene_memory()
@@ -432,6 +501,8 @@ class InspectionWorker(QThread):
             # The part is gone; a new part placed later must be checked fresh.
             self.last_points = None
             self.orientation_state = None
+            self.orientation_states.clear()
+            self.orientation_ticks.clear()
             self.orientation_tick = 0
 
         elif holding:
@@ -458,14 +529,25 @@ class InspectionWorker(QThread):
                 self.orientation_tick = 0
                 self.orientation_dirty = False
 
-            for box in sorted(boxes, key=lambda item: item["conf"], reverse=True)[:MAX_INSPECTIONS_PER_FRAME]:
+            for object_index, box in enumerate(
+                sorted(boxes, key=lambda item: item["conf"], reverse=True)[:MAX_INSPECTIONS_PER_FRAME]
+            ):
                 self._last_roi_shape = None
                 self._last_anomaly_map = None
                 self._last_marking = {"status": "NOT CHECKED", "score": None}
                 try:
-                    result, item_score, item_reason, upside_down, item_heatmap = self.inspect(
-                        frame, box["points"]
-                    )
+                    try:
+                        result, item_score, item_reason, upside_down, item_heatmap = self.inspect(
+                            frame, box["points"], object_index
+                        )
+                    except TypeError as error:
+                        # Preserve compatibility with injected two-argument
+                        # inspectors used by integrations and tests.
+                        if "positional" not in str(error):
+                            raise
+                        result, item_score, item_reason, upside_down, item_heatmap = self.inspect(
+                            frame, box["points"]
+                        )
                 except Exception as error:
                     self.state_manager.set_state(ProgramState.ERROR, str(error))
                     print(f"Inspection error: {error}")
@@ -524,6 +606,7 @@ class InspectionWorker(QThread):
                 "heatmap": heatmap,
                 "marking": marking,
                 "error_message": self.state_manager.get_message(),
+                "recipe_request_id": self.active_recipe_request_id,
             }
         )
 
@@ -572,14 +655,16 @@ class InspectionWorker(QThread):
             segments.append(mapped.reshape(-1, 2).tolist())
         return segments
 
-    def cached_orientation(self, roi, points):
+    def cached_orientation(self, roi, points, object_key=None):
         """Reuse the last orientation result while the package is stationary.
 
         The template check reruns when the smoothed box moves beyond a small
         tolerance, every few ticks as a fallback, or after the template path
         changes, so a changed scene is still caught quickly.
         """
-        self.orientation_tick += 1
+        if object_key is None:
+            object_key = 0
+        tick = self.orientation_ticks.get(object_key, 0) + 1
 
         template_path = (
             self.current_recipe.get("top_mark_template")
@@ -587,12 +672,13 @@ class InspectionWorker(QThread):
             else None
         )
 
-        if self.orientation_state is not None:
-            cached_points, is_upside_down, angle, cached_path = self.orientation_state
+        cached_state = self.orientation_states.get(object_key)
+        if cached_state is not None:
+            cached_points, is_upside_down, angle, cached_path = cached_state
             moved = not np.allclose(
                 points, cached_points, atol=ORIENTATION_POSITION_TOLERANCE
             )
-            due = self.orientation_tick >= ORIENTATION_RECHECK_TICKS
+            due = tick >= ORIENTATION_RECHECK_TICKS
             if cached_path == template_path and not moved and not due:
                 return is_upside_down, angle, ""
 
@@ -600,7 +686,9 @@ class InspectionWorker(QThread):
         if orientation_error:
             return is_upside_down, angle, orientation_error
 
-        self.orientation_state = (points.copy(), is_upside_down, angle, template_path)
+        self.orientation_states[object_key] = (points.copy(), is_upside_down, angle, template_path)
+        self.orientation_ticks[object_key] = 0
+        self.orientation_state = self.orientation_states[object_key]
         self.orientation_tick = 0
         return is_upside_down, angle, ""
 
@@ -608,11 +696,8 @@ class InspectionWorker(QThread):
     def _package_roi(points):
         """Convert smoothed OBB corner points into a rotated-ROI dict.
 
-        The dict matches the ``crop_rotated_roi`` input convention used by
-        the trainer's crop pipeline (``cx``, ``cy``, ``width``, ``height``,
-        ``angle`` in radians, width >= height, angle folded into
-        ``(-45, 45]``), so live inspection crops the package the same way the
-        training/calibration crops were produced.
+        Trainer data preparation follows the YOLO OBB geometry used by live
+        Inspection. This helper only derives display-oriented package data.
         """
         (center, size, theta) = cv2.minAreaRect(points.astype(np.float32))
         width, height = float(size[0]), float(size[1])
@@ -631,7 +716,7 @@ class InspectionWorker(QThread):
             "angle": math.radians(theta),
         }
 
-    def inspect(self, frame, points):
+    def inspect(self, frame, points, object_key=None):
         """Inspect one detected package.
 
         Returns ``(inspection_result, score, fail_reason, is_upside_down,
@@ -665,7 +750,9 @@ class InspectionWorker(QThread):
         if roi.size == 0:
             return "NOT FOUND", 0.0, "", False, None
 
-        is_upside_down, angle, orientation_error = self.cached_orientation(roi, points)
+        is_upside_down, angle, orientation_error = self.cached_orientation(
+            roi, points, object_key
+        )
 
         if orientation_error:
             return "FAIL", 0.0, orientation_error, False, None
@@ -763,7 +850,7 @@ class InspectionApp(QObject):
         self.worker = InspectionWorker(detection_model, detection_model_path)
         self.worker.overlay_update.connect(self._apply_overlay)
         self.worker.status_update.connect(self._apply_status)
-        self.status_widget.recipe_changed.connect(self.worker.apply_recipe)
+        self.status_widget.recipe_request_changed.connect(self.worker.apply_recipe)
         self.status_widget.capture_mode_changed.connect(self.worker.set_capture_only)
 
         geometry = app.primaryScreen().availableGeometry()
@@ -775,6 +862,7 @@ class InspectionApp(QObject):
         app.aboutToQuit.connect(self._shutdown)
 
         self.overlay.show()
+        # Capture must remain accessible even without an inspection source.
         self.status_widget.show()
 
         self.worker.start()
@@ -787,30 +875,51 @@ class InspectionApp(QObject):
         re-inserted directly above it on every update, so windows the user
         opens over the source cover the overlay as well.
         """
-        if self.overlay.roi_mode:
+        if self.status_widget.capture_mode or self.overlay.roi_mode:
             return
         if frame is None or rect is None:
+            self.status_widget.set_capture_frame(None)
+            self.overlay.capture_view_rect = None
             self.overlay.hide()
             return
 
         left, top, width, height = rect
         self.overlay.setGeometry(int(left), int(top), int(width), int(height))
-        if self.status_widget.capture_mode:
-            # The full-frame copy is only needed by the independent Capture
-            # tab. Avoid copying every camera frame during normal inspection.
-            self.status_widget.set_capture_frame(frame)
-            self.overlay.set_capture_frame(frame)
-            self.overlay.update_boxes([])
-            self.overlay.show()
-            self.overlay.sync_above_window(hwnd)
-            return
+        self._place_status_widget(left, top, width, height)
+        if not self.status_widget.isVisible():
+            self.status_widget.show()
         self.overlay.set_frame(frame)
+        self.overlay.capture_view_rect = None
         self.overlay.update_boxes(boxes)
         self.overlay.show()
         self.overlay.sync_above_window(hwnd)
 
+    def _place_status_widget(self, left, top, width, height):
+        if QApplication.activePopupWidget() is not None:
+            return
+        if not self.status_widget.is_pinned or self.status_widget.is_minimized:
+            return
+        screen = self.status_widget.screen()
+        if screen is None:
+            return
+        area = screen.availableGeometry()
+        gap = 14
+        right_x = int(left + width + gap)
+        left_x = int(left - self.status_widget.width() - gap)
+        if right_x + self.status_widget.width() <= area.right():
+            x = right_x
+        elif left_x >= area.left():
+            x = left_x
+        else:
+            x = max(area.left(), min(right_x, area.right() - self.status_widget.width()))
+        y = max(area.top(), min(int(top), area.bottom() - self.status_widget.height()))
+        if self.status_widget.x() != x or self.status_widget.y() != y:
+            self.status_widget.move(x, y)
+
     @Slot(dict)
     def _apply_status(self, payload):
+        if self.status_widget.capture_mode:
+            return
         self.status_widget.update_status(**payload)
 
     def _shutdown(self):
@@ -833,11 +942,21 @@ def main():
         )
         sys.exit(1)
 
-    # Construct the UI immediately. The detector is loaded on the worker
-    # after the window is visible, so startup no longer looks frozen.
-    app.inspection_controller = InspectionApp(
-        app, detection_model_path=model_path
-    )
+    print("Loading detection model...")
+    try:
+        detection_model = YOLO(str(model_path))
+    except Exception as error:
+        print(f"Failed to load detection model: {error}")
+        QMessageBox.critical(
+            None,
+            "VisionAI",
+            f"Failed to load the detection model:\n{error}",
+        )
+        sys.exit(1)
+    print("Detection model loaded")
+
+    # Open the inspection UI only after YOLO is ready.
+    app.inspection_controller = InspectionApp(app, detection_model)
 
     sys.exit(app.exec())
 

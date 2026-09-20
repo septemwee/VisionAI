@@ -99,7 +99,7 @@ def test_verdict_nonfinite_map_fails_closed():
     amap[20, 20] = np.inf
     is_defect, reason, _ = evaluate_verdict(0.10, amap, 0.5, {})
     assert is_defect
-    assert "Pixel gate error" in reason
+    assert "invalid anomaly map" in reason
 
 
 def test_verdict_pixel_gate_triggers():
@@ -107,7 +107,10 @@ def test_verdict_pixel_gate_triggers():
     # threshold 0.65*0.6*100 = 39.
     amap = np.zeros((32, 32), dtype=np.float32)
     amap[10:14, 14:18] = 80.0
-    is_defect, reason, region = evaluate_verdict(0.10, amap, 0.6, {})
+    recipe = {"verdict_policy": "image_and_pixel_v1"}
+    gate = normalize_pixel_gate(recipe)
+    recipe["calibration"] = {"proposed": 0.6, "pixel_gate": gate}
+    is_defect, reason, region = evaluate_verdict(0.10, amap, 0.6, recipe)
     assert is_defect
     assert "Pixel region" in reason
     assert region == 16

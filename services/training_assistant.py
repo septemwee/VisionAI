@@ -12,7 +12,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from utils.image_utils import crop_rotated_roi, letterbox
+from utils.image_utils import prepare_inspection_crop
 from utils.paths import MODEL_REGISTRY_PATH, resolve_recipe_path
 
 from services.dataset_service import IMAGE_EXTENSIONS
@@ -83,6 +83,7 @@ def recommend_threshold(scores, margin=DEFAULT_MARGIN):
     proposed = min(1.0, max(proposed, 1e-6))
 
     trace = {
+        "method": "held_out_good_margin_v1",
         "p99": p99,
         "margin": float(margin),
         "proposed": proposed,
@@ -102,7 +103,49 @@ def recommend_threshold(scores, margin=DEFAULT_MARGIN):
             "count": len(values),
         },
     }
+    if trace["warning"]:
+        trace["warning_reason"] = "Good-image scores reach the 1.0 scale ceiling."
     return proposed, trace
+
+
+def recommend_threshold_with_anomalies(good_scores, anomaly_scores):
+    """Choose an image threshold with <=1% held-out-good false alarms."""
+    good = np.asarray([float(value) for value in good_scores], dtype=float)
+    anomaly = np.asarray([float(value) for value in anomaly_scores], dtype=float)
+    if not len(good) or not len(anomaly) or not np.isfinite(good).all() or not np.isfinite(anomaly).all():
+        raise ValueError("Good and synthetic anomaly scores are required")
+    values = sorted(set(np.concatenate([good, anomaly]).tolist()))
+    candidates = [max(1e-6, values[0] - 1e-6)] + [
+        (left + right) / 2 for left, right in zip(values, values[1:])
+    ] + [values[-1] + 1e-6]
+    max_false = int(np.floor(len(good) * 0.01))
+    feasible = []
+    for threshold in candidates:
+        false_alarms = int(np.count_nonzero(good > threshold))
+        detected = int(np.count_nonzero(anomaly > threshold))
+        if false_alarms <= max_false:
+            feasible.append((detected, -false_alarms, -threshold, threshold))
+    if not feasible:
+        raise ValueError("No threshold satisfies the good-image false-alarm limit")
+    _, _, _, proposed = max(feasible)
+    detection_rate = float(np.mean(anomaly > proposed))
+    trace = {
+        "method": "held_out_good_plus_synthetic_v1",
+        "proposed": float(proposed),
+        "expected_false_alarms": int(np.count_nonzero(good > proposed)),
+        "synthetic_detected": int(np.count_nonzero(anomaly > proposed)),
+        "synthetic_total": int(len(anomaly)),
+        "synthetic_detection_rate": detection_rate,
+        "warning": bool(detection_rate < 0.8),
+        "good_summary": {"min": float(good.min()), "median": float(np.median(good)),
+                         "p95": float(np.percentile(good, 95)), "p99": float(np.percentile(good, 99)),
+                         "max": float(good.max()), "count": int(len(good))},
+    }
+    if trace["warning"]:
+        trace["warning_reason"] = (
+            "The model detects fewer than 80% of the synthetic validation defects."
+        )
+    return float(proposed), trace
 
 
 # ---------------------------------------------------------------------------
@@ -701,8 +744,9 @@ def recommend_entry(new_recipe, candidates, sample_image_path=None, detect_roi=N
                 target_w = int(stats.get("target_width") or 256)
                 target_h = int(stats.get("target_height") or 256)
                 try:
-                    crop = crop_rotated_roi(sample_image, roi, config)
-                    canvas = letterbox(crop, target_w, target_h)
+                    canvas = prepare_inspection_crop(
+                        sample_image, roi["points"], target_w, target_h
+                    )
                     visual = visual_similarity(
                         cv2.cvtColor(canvas, cv2.COLOR_BGR2GRAY), reference
                     )
@@ -760,7 +804,10 @@ def finalize_summary(recipe):
     if calibration is None:
         warnings.append("Threshold is the hand-picked default; run calibration.")
     elif calibration.get("warning"):
-        warnings.append("Calibration flagged good-image scores at the 1.0 ceiling.")
+        warnings.append(
+            calibration.get("warning_reason")
+            or "Calibration requires review before production use."
+        )
     if stats and int(stats.get("saved_count", 0) or 0) < 10:
         warnings.append("Fewer than 10 crops were saved.")
     if analysis:

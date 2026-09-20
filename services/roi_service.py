@@ -32,6 +32,7 @@ class ROIService:
         detections = []
         for index in range(len(result.obb.conf)):
             xywhr = result.obb.xywhr[index].cpu().numpy()
+            points = result.obb.xyxyxyxy[index].cpu().numpy()
             if result.obb.cls is not None:
                 class_id = int(result.obb.cls[index])
             else:
@@ -47,6 +48,7 @@ class ROIService:
                     "confidence": float(result.obb.conf[index]),
                     "class_id": class_id,
                     "class_name": str(names.get(class_id, "package")),
+                    "points": points.astype(float).tolist(),
                 }
             )
 
@@ -63,11 +65,4 @@ class ROIService:
             return None
 
         best = max(detections, key=lambda detection: detection["confidence"])
-        return {
-            "cx": best["cx"],
-            "cy": best["cy"],
-            "width": best["width"],
-            "height": best["height"],
-            "angle": best["angle"],
-            "confidence": best["confidence"],
-        }
+        return dict(best)

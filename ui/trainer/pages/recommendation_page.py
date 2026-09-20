@@ -434,6 +434,13 @@ class RecommendationPage(QWidget):
             self.augment_worker = None
 
     def _finish_augment(self, target, count):
+        if count:
+            # The good-data split changed, so a previous model or validation
+            # report is no longer evidence for this dataset.
+            from services.validation_service import invalidate_validation
+            invalidate_validation(target)
+            if target.get("model"):
+                target["model"]["trained"] = False
         set_chosen_path(target, "augment", target.get("recipe_name"))
         self.recipe_service.save_recipe(target["recipe_name"], target)
 

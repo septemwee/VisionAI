@@ -1,5 +1,6 @@
-"""Tests for the PatchCoreService evaluation contract (stubbed engine)."""
+"""Tests for the PatchCoreService folder-evaluation contract."""
 
+import cv2
 import pytest
 
 import numpy as np
@@ -29,22 +30,24 @@ def service(monkeypatch):
     return svc
 
 
-def test_evaluate_folder_returns_pairs(service):
-    service.engine = _StubEngine(
-        [
-            _StubPrediction("a.png", 54.0),
-            _StubPrediction("b.png", 55.5),
-        ]
+def test_evaluate_folder_returns_pairs(service, monkeypatch, tmp_path):
+    cv2.imwrite(str(tmp_path / "a.png"), np.zeros((8, 8, 3), np.uint8))
+    cv2.imwrite(str(tmp_path / "b.png"), np.ones((8, 8, 3), np.uint8))
+    scores = iter((0.54, 0.555))
+    monkeypatch.setattr(
+        service,
+        "predict_full",
+        lambda image: (next(scores), np.zeros((8, 8), np.float32)),
     )
 
-    scored = service.evaluate_folder("unused")
+    scored = service.evaluate_folder(tmp_path)
 
     assert scored == [("a.png", pytest.approx(0.54)), ("b.png", pytest.approx(0.555))]
 
 
-def test_evaluate_folder_empty_returns_list(service):
-    service.engine = _StubEngine([])
-    assert service.evaluate_folder("unused") == []
+def test_evaluate_folder_empty_is_rejected(service, tmp_path):
+    with pytest.raises(ValueError, match="No calibration images"):
+        service.evaluate_folder(tmp_path)
 
 
 def test_anomaly_map_smoothing_dampens_and_resets():

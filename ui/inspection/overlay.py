@@ -9,7 +9,7 @@ as well; when the source disappears, the worker emits a hide.
 import ctypes
 from ctypes import wintypes
 
-from PySide6.QtCore import Qt, QPointF, Signal
+from PySide6.QtCore import Qt, QPointF, Signal, QTimer
 from PySide6.QtGui import QColor, QFont, QPainter, QPen, QPolygonF, QImage
 from PySide6.QtWidgets import QPushButton, QWidget, QFrame, QLabel, QHBoxLayout, QVBoxLayout
 
@@ -50,6 +50,11 @@ class OverlayWindow(QWidget):
         self.boxes = []
         self.current_frame = None
         self.capture_area_mode = False
+        self.capture_view_rect = None
+        self.capture_flash = False
+        self.capture_flash_timer = QTimer(self)
+        self.capture_flash_timer.setSingleShot(True)
+        self.capture_flash_timer.timeout.connect(self._end_capture_flash)
         self.capture_rect = None
         self.capture_start = None
         self.capture_end = None
@@ -119,6 +124,10 @@ class OverlayWindow(QWidget):
         self.roi_live.setToolTip("Replace the reference using the captured live image")
         self.roi_live.clicked.connect(self.use_live_image)
         selector.addWidget(self.roi_live)
+        self.roi_clear_laser = QPushButton("Cancel Laser", self.roi_panel)
+        self.roi_clear_laser.setToolTip("Remove the optional Laser-mark selection")
+        self.roi_clear_laser.clicked.connect(self.clear_laser_roi)
+        selector.addWidget(self.roi_clear_laser)
         selector.addStretch()
         self.roi_selection_status = QLabel("Laser-mark is optional")
         selector.addWidget(self.roi_selection_status)
@@ -126,7 +135,7 @@ class OverlayWindow(QWidget):
         self.roi_hint = QLabel("Select a region type, then drag on the image.")
         self.roi_hint.setWordWrap(True)
         layout.addWidget(self.roi_hint)
-        for button in (*self.roi_buttons.values(), self.roi_save, self.roi_exit, self.roi_live):
+        for button in (*self.roi_buttons.values(), self.roi_save, self.roi_exit, self.roi_live, self.roi_clear_laser):
             button.setFocusPolicy(Qt.NoFocus)
         self.roi_panel.hide()
         self.is_drawing_roi = False
@@ -234,6 +243,14 @@ class OverlayWindow(QWidget):
         self.laser_roi_available = bool(available)
         self.roi_buttons["laser_mark"].setEnabled(bool(available))
 
+    def clear_laser_roi(self):
+        self.roi_regions.pop("laser_mark", None)
+        self.roi_dirty.add("laser_mark")
+        self.set_roi_type("top_mark")
+        self.roi_notice = "Laser-mark cancelled. You can save Top-mark only."
+        self._refresh_roi_controls()
+        self.update()
+
     def submit_rois(self):
         if not self.roi_dirty:
             self.finish_roi_mode()
@@ -270,6 +287,7 @@ class OverlayWindow(QWidget):
         self.roi_save.show()
         self.roi_exit.show()
         self.roi_live.show()
+        self.roi_clear_laser.show()
         self.roi_start = None
         self.roi_end = None
         self.roi_rect = None
@@ -307,6 +325,7 @@ class OverlayWindow(QWidget):
         self.roi_save.hide()
         self.roi_exit.hide()
         self.roi_live.hide()
+        self.roi_clear_laser.hide()
         for button in self.roi_buttons.values():
             button.hide()
         self.roi_start = None
@@ -326,12 +345,26 @@ class OverlayWindow(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        if self.capture_area_mode:
+        if self.capture_view_rect is not None:
+            painter.setPen(QPen(QColor("#38BDF8"), 2))
+            painter.drawRect(*self.capture_view_rect)
+            if self.capture_flash:
+                painter.fillRect(*self.capture_view_rect, QColor(255, 255, 255, 85))
+        elif self.capture_area_mode:
             self._paint_capture_area(painter)
         elif self.roi_mode:
             self._paint_roi_mode(painter)
         else:
             self._paint_detections(painter)
+
+    def flash_capture(self):
+        self.capture_flash = True
+        self.capture_flash_timer.start(140)
+        self.update()
+
+    def _end_capture_flash(self):
+        self.capture_flash = False
+        self.update()
 
     def _paint_capture_area(self, painter):
         if self.current_frame is not None:

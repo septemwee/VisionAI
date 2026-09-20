@@ -210,8 +210,7 @@ def box_aligned_heatmap(
 
     xs = points[:, 0]
     ys = points[:, 1]
-    pad = 0
-    # pad = max(8, int(0.1 * max(xs.max() - xs.min(), ys.max() - ys.min())))
+    pad = max(8, int(0.1 * max(xs.max() - xs.min(), ys.max() - ys.min())))
     dx1 = max(0, int(xs.min()) - pad)
     dy1 = max(0, int(ys.min()) - pad)
     dx2 = min(frame.shape[1], int(xs.max()) + pad)
@@ -315,3 +314,16 @@ def crop_yolo_obb(frame, points):
     )
 
     return crop
+
+
+def prepare_inspection_crop(frame, points, target_width, target_height):
+    """Canonical PatchCore input used by live inspection and Trainer.
+
+    ``points`` are the four corners from YOLO OBB in source-frame pixels.
+    The perspective warp deliberately matches live inspection; all Trainer
+    crops must pass through this function before PatchCore sees them.
+    """
+    crop = crop_yolo_obb(frame, np.asarray(points, dtype=np.float32))
+    if crop.size == 0 or min(crop.shape[:2]) < 2:
+        raise ValueError("YOLO OBB crop is empty")
+    return letterbox(crop, int(target_width), int(target_height))

@@ -7,6 +7,13 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def isolated_capture_settings(tmp_path, monkeypatch):
+    from PySide6.QtCore import QSettings
+    monkeypatch.setattr("ui.inspection.status_widget.QSettings",
+                        lambda *args: QSettings(str(tmp_path / "capture.ini"), QSettings.IniFormat))
+
+
 @pytest.fixture(scope="session")
 def qapp():
     from PySide6.QtWidgets import QApplication

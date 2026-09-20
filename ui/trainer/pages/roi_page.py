@@ -42,6 +42,7 @@ from utils.image_utils import (
     DEFAULT_PADDING,
     DEFAULT_WIDTH_SCALE,
     letterbox,
+    crop_yolo_obb,
 )
 from utils.paths import RECIPES_DIR, relativize_recipe_path
 
@@ -92,8 +93,8 @@ class ROIPage(QWidget):
         nav_layout = QHBoxLayout()
         nav_layout.setSpacing(SPACE_S)
 
-        self.btn_previous = make_button("◀  Previous", "secondary")
-        self.btn_next = make_button("Next  ▶", "secondary")
+        self.btn_previous = make_button("Previous image", "secondary")
+        self.btn_next = make_button("Next image", "secondary")
         self.image_index_label = QLabel("0 / 0")
         self.image_index_label.setStyleSheet(
             "border:none;background:transparent;font-weight:600;"
@@ -146,6 +147,8 @@ class ROIPage(QWidget):
             self.angle_offset_spin,
         ):
             spin.valueChanged.connect(self.refresh_preview)
+            spin.setEnabled(False)
+            spin.setToolTip("Trainer crops use the same YOLO OBB geometry as live Inspection.")
 
         fields = QFormLayout()
         fields.setLabelAlignment(Qt.AlignLeft | Qt.AlignVCenter)
@@ -191,14 +194,17 @@ class ROIPage(QWidget):
         )
         self.btn_autotune = make_button("Auto-tune Defaults", "secondary")
         self.btn_autotune.clicked.connect(self.start_auto_tune)
+        self.btn_autotune.setEnabled(False)
         actions_layout.addWidget(self.btn_autotune)
 
         self.btn_save_override = make_button("Save Override For This Image", "secondary")
         self.btn_save_override.clicked.connect(self.save_override)
+        self.btn_save_override.setEnabled(False)
         actions_layout.addWidget(self.btn_save_override)
 
         self.btn_save_default = make_button("Save As Default", "secondary")
         self.btn_save_default.clicked.connect(self.save_default)
+        self.btn_save_default.setEnabled(False)
         actions_layout.addWidget(self.btn_save_default)
 
         self.btn_generate = make_button("Generate Training Dataset")
@@ -326,23 +332,9 @@ class ROIPage(QWidget):
         if image is None:
             return
 
-        angle_deg = math.degrees(roi["angle"]) + self.angle_offset_spin.value()
-
-        rect = (
-            (float(roi["cx"]), float(roi["cy"])),
-            (
-                float(roi["width"]) * self.width_scale_spin.value()
-                + self.padding_spin.value() * 2,
-                float(roi["height"]) * self.height_scale_spin.value()
-                + self.padding_spin.value() * 2,
-            ),
-            angle_deg,
-        )
-
-        box = cv2.boxPoints(rect).astype(int)
-
-        preview = image.copy()
-        cv2.drawContours(preview, [box], 0, (0, 255, 0), 3)
+        if not roi.get("points"):
+            return
+        preview = crop_yolo_obb(image, roi["points"])
 
         preview = cv2.cvtColor(preview, cv2.COLOR_BGR2RGB)
         qimage = QImage(
@@ -590,6 +582,7 @@ class ROIPage(QWidget):
         target_width = result["target_width"]
         target_height = result["target_height"]
         bounds = result["bounds"]
+        split_counts = result.get("split_counts", {"train": saved_count})
 
         self._good_dir = Path(result["output_dir"])
         self._target_width = target_width
@@ -617,8 +610,15 @@ class ROIPage(QWidget):
             "target_height": target_height,
             "saved_count": saved_count,
             "rejected_count": len(flagged),
+            "split_counts": split_counts,
+            "split_manifest": relativize_recipe_path(result.get("split_manifest")),
         }
         recipe["dataset_prepared"] = True
+        recipe["preprocessing_version"] = "inspection_obb_v1"
+        from services.validation_service import invalidate_validation
+        invalidate_validation(recipe)
+        if recipe.get('model'):
+            recipe['model']['trained'] = False
         recipe["prepared_dataset_path"] = relativize_recipe_path(
             RECIPES_DIR / recipe["recipe_name"] / "patchcore_dataset"
         )
@@ -704,6 +704,13 @@ class ROIPage(QWidget):
                     int(stats.get("rejected_count", 0)) - kept, 0
                 )
                 recipe["roi_statistics"] = stats
+                # Manually accepted crops enter only the train split.  Any
+                # prior model/validation must not be reused with this changed
+                # dataset.
+                from services.validation_service import invalidate_validation
+                invalidate_validation(recipe)
+                if recipe.get("model"):
+                    recipe["model"]["trained"] = False
                 self.recipe_service.save_recipe(recipe["recipe_name"], recipe)
 
         self._rebuild_flagged_list()

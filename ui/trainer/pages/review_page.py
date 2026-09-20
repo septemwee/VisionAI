@@ -220,6 +220,8 @@ class ReviewPage(QWidget):
             return
 
         value = self.threshold_slider.value() / 100.0
+        from services.validation_service import invalidate_validation
+        invalidate_validation(recipe)
         recipe["anomaly_threshold"] = value
         self.recipe_service.save_recipe(recipe["recipe_name"], recipe)
 

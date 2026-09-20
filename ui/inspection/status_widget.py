@@ -2,10 +2,11 @@
 
 import json
 import os
+import pygetwindow as gw
 import numpy as np
 
 import cv2
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QTimer, QSettings
 from PySide6.QtGui import (
     QColor,
     QFont,
@@ -14,6 +15,7 @@ from PySide6.QtGui import (
     QPainter,
     QPainterPath,
     QPixmap,
+    QRegion,
 )
 from PySide6.QtWidgets import (
     QApplication,
@@ -29,6 +31,10 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QLineEdit,
     QTabWidget,
+    QSpinBox,
+    QDoubleSpinBox,
+    QScrollArea,
+    QSizePolicy,
 )
 
 from services.recipe_service import RecipeService, normalize_anomaly_threshold
@@ -43,22 +49,25 @@ STYLE_SHEET = """
 
 #Container{
     background-color:#FFFFFF;
-    border-radius:12px;
-    border:1px solid #E5E7EB;
+    border-radius:16px;
+    border:1px solid #DDE4EE;
 }
 
 QLabel{
     border: none;
+    outline: none;
+    background: transparent;
+    padding: 0;
     color: #4B5563;
-    font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
 }
 
 QPushButton{
     border: none;
-    border-radius: 6px;
+    border-radius: 7px;
     background: transparent;
     color: #9CA3AF;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
     font-size: 13px;
     font-weight: 500;
     padding: 2px;
@@ -83,19 +92,19 @@ QProgressBar::chunk {
 }
 
 QComboBox {
-    background-color: #F3F4F6;
-    border: none;
-    border-radius: 6px;
-    padding: 4px 10px;
+    background-color: #F8FAFC;
+    border: 1px solid #D9E2EC;
+    border-radius: 8px;
+    padding: 7px 10px;
     color: #374151;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
     font-size: 11px;
     font-weight: 600;
     min-width: 140px;
 }
 
 QComboBox:hover {
-    background-color: #E5E7EB;
+    background-color: #F1F5F9;
     color: #1F2937;
 }
 
@@ -113,6 +122,36 @@ QComboBox QAbstractItemView {
     selection-background-color: #F3F4F6;
     selection-color: #1F2937;
 }
+
+QLabel:focus {
+    border: none;
+    outline: none;
+}
+
+QComboBox:focus { border: 1px solid #93C5FD; background-color: #FFFFFF; }
+
+QTabWidget::pane {
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    background: #FFFFFF;
+    top: -1px;
+}
+QTabBar::tab {
+    color: #64748B;
+    background: transparent;
+    min-width: 118px;
+    padding: 8px 12px;
+    margin-right: 4px;
+    border-bottom: 2px solid transparent;
+    font-size: 11px;
+    font-weight: 700;
+}
+QTabBar::tab:hover { color: #2563EB; }
+QTabBar::tab:selected { color: #2563EB; border-bottom: 2px solid #2563EB; }
+QScrollArea { border: none; background: white; }
+QScrollBar:vertical { background: #F8FAFC; width: 6px; margin: 0; }
+QScrollBar::handle:vertical { background: #CBD5E1; border-radius: 3px; min-height: 30px; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
 """
 
 STATE_COLORS = {
@@ -124,6 +163,8 @@ STATE_COLORS = {
 }
 
 VERDICT_COLORS = {
+    "READY": ("#2563EB", "#EFF6FF"),
+    "LOADING MODEL": ("#D97706", "#FFFBEB"),
     "NO SOURCE": ("#6B7280", "#F3F4F6"),
     "PASS": ("#10B981", "#ECFDF5"),
     "UNKNOWN": ("#D97706", "#FFFBEB"),
@@ -142,10 +183,20 @@ ICONS = {
 }
 
 
+class _PanelScrollArea(QScrollArea):
+    """Keep wrapped content within the viewport, including at high DPI."""
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self.widget() is not None:
+            self.widget().setFixedWidth(self.viewport().width())
+
+
 class StatusWidget(QWidget):
     """Shows the live inspection status and lets the operator pick a recipe."""
 
     recipe_changed = Signal(object)
+    recipe_request_changed = Signal(object, int)
     capture_mode_changed = Signal(bool)
 
     def __init__(self, overlay):
@@ -164,8 +215,19 @@ class StatusWidget(QWidget):
         self._style_cache = {}
         self.capture_mode = False
         self.capture_frame = None
+        self._capture_screen = None
+        self._capture_busy = False
+        self._screen_region = None
+        self._capture_target = None
+        self._loading_capture_settings = True
+        self._capture_watch = QTimer(self)
+        self._capture_watch.setInterval(180)
+        self._capture_watch.timeout.connect(self._sync_capture_target)
         from services.capture_service import CaptureService
         self.capture_service = CaptureService()
+        self.capture_settings = QSettings("VisionAI", "VisionAI")
+        self.recipe_request_id = 0
+        self.model_loading = False
 
         families = QFontDatabase.families()
         self.icon_font_family = (
@@ -173,6 +235,7 @@ class StatusWidget(QWidget):
             if "Segoe Fluent Icons" in families
             else "Segoe MDL2 Assets"
         )
+        self._load_ui_fonts()
 
         self.overlay.roi_saved.connect(self.on_roi_saved)
         self.overlay.roi_cancelled.connect(self.on_roi_cancelled)
@@ -182,14 +245,30 @@ class StatusWidget(QWidget):
             Qt.FramelessWindowHint | Qt.Tool | Qt.WindowStaysOnTopHint
         )
 
-        self.setFixedSize(360, 610)
+        self.setFixedSize(410, 690)
         self.setObjectName("MainWidget")
         self.setStyleSheet(STYLE_SHEET)
 
         self._setup_ui()
+        QApplication.instance().aboutToQuit.connect(self._flush_capture_settings)
         self.load_recipes()
 
         self.combo_pkg.currentIndexChanged.connect(self.on_package_changed)
+
+    @staticmethod
+    def _load_ui_fonts():
+        """Load the bundled UI fonts so the panel looks identical on every PC."""
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        font_dir = os.path.join(project_root, "assets", "fonts")
+        for filename in (
+            "Poppins-Regular.ttf",
+            "Poppins-Medium.ttf",
+            "Poppins-SemiBold.ttf",
+            "Poppins-Bold.ttf",
+        ):
+            font_path = os.path.join(font_dir, filename)
+            if os.path.exists(font_path):
+                QFontDatabase.addApplicationFont(font_path)
 
     # ------------------------------------------------------------------
     # UI construction
@@ -212,7 +291,7 @@ class StatusWidget(QWidget):
 
         main_layout = QVBoxLayout(self.container)
         main_layout.setContentsMargins(20, 18, 20, 18)
-        main_layout.setSpacing(12)
+        main_layout.setSpacing(14)
 
         # ----- Header and system status -----
         self.system_status = QLabel("● WAITING SOURCE")
@@ -230,6 +309,8 @@ class StatusWidget(QWidget):
             ICONS["crop"], "Capture or edit inspection ROI"
         )
         self.btn_capture = QPushButton("Capture")
+        self.btn_capture.setParent(self)
+        self.btn_capture.hide()
         self.btn_capture.setCheckable(True)
         self.btn_capture.setStyleSheet("QPushButton{background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE;border-radius:6px;padding:4px 8px;font-weight:600;} QPushButton:checked{background:#2563EB;color:white;}")
         self.btn_capture.clicked.connect(self.toggle_capture_mode)
@@ -252,34 +333,22 @@ class StatusWidget(QWidget):
         header.addWidget(self.btn_pin)
         header.addWidget(self.btn_min)
         header.addWidget(self.btn_roi)
-        header.addWidget(self.btn_capture)
         header.addWidget(self.btn_close)
         main_layout.addLayout(header)
 
         # ----- Body -----
         self.body_container = QWidget()
         body_layout = QVBoxLayout(self.body_container)
-        body_layout.setContentsMargins(0, 0, 0, 0)
-        body_layout.setSpacing(14)
+        body_layout.setContentsMargins(12, 14, 12, 14)
+        body_layout.setSpacing(10)
+        body_layout.setAlignment(Qt.AlignTop)
 
         self._setup_package_selector(body_layout)
         self._setup_result_card(body_layout)
         self._setup_metrics_grid(body_layout)
-        marking_card = QFrame()
-        marking_card.setStyleSheet("QFrame{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;}")
-        marking_layout = QVBoxLayout(marking_card)
-        marking_layout.setContentsMargins(12, 8, 12, 8)
-        title = QLabel("MARKING")
-        title.setStyleSheet("border:none;font-weight:700;color:#334155;")
-        self.marking_status = QLabel("Laser-mark: NOT CHECKED")
-        self.marking_detail = QLabel("Similarity: —")
-        for label in (self.marking_status, self.marking_detail):
-            label.setStyleSheet("border:none;font-size:11px;")
-            label.setWordWrap(True)
-        marking_layout.addWidget(title)
-        marking_layout.addWidget(self.marking_status)
-        marking_layout.addWidget(self.marking_detail)
-        body_layout.addWidget(marking_card)
+        # Kept as a non-visible compatibility value for integrations/tests.
+        self.marking_detail = QLabel()
+        self.marking_detail.hide()
 
         line_mid = QFrame()
         line_mid.setFrameShape(QFrame.HLine)
@@ -306,17 +375,22 @@ class StatusWidget(QWidget):
         self.capture_panel.setParent(None)
         self.capture_page = QWidget()
         capture_layout = QVBoxLayout(self.capture_page)
-        capture_layout.setContentsMargins(0, 0, 0, 0)
+        capture_layout.setContentsMargins(12, 14, 12, 14)
         capture_layout.addWidget(self.capture_panel)
         capture_layout.addStretch()
         self.capture_panel.show()
         self.pages = QTabWidget()
         self.pages.setDocumentMode(True)
-        self.pages.setFixedHeight(520)
-        self.pages.addTab(self.body_container, "Inspection")
-        self.pages.addTab(self.capture_page, "Capture")
+        self.pages.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        for content, title in ((self.body_container, "Inspection"), (self.capture_page, "Capture")):
+            content.setStyleSheet("background-color: white;")
+            scroll = _PanelScrollArea()
+            scroll.setWidgetResizable(True)
+            scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            scroll.setWidget(content)
+            self.pages.addTab(scroll, title)
         self.pages.currentChanged.connect(self._on_page_changed)
-        main_layout.addWidget(self.pages)
+        main_layout.addWidget(self.pages, 1)
 
         # ----- Mini mode card (shown when minimized) -----
         self.mini = self._build_mini_card()
@@ -326,7 +400,7 @@ class StatusWidget(QWidget):
     def _make_icon_button(self, glyph, tooltip, extra_style=""):
         button = QPushButton(glyph)
         button.setFont(QFont(self.icon_font_family, 11))
-        button.setFixedSize(26, 24)
+        button.setFixedSize(28, 28)
         button.setToolTip(tooltip)
         button.setCursor(Qt.PointingHandCursor)
         button.setStyleSheet(
@@ -339,15 +413,127 @@ class StatusWidget(QWidget):
         self.capture_panel.setStyleSheet("QFrame{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;} QLabel{border:none;} QLineEdit{background:white;border:1px solid #CBD5E1;border-radius:6px;padding:6px;} QPushButton{background:#2563EB;color:white;padding:7px 10px;border-radius:6px;}")
         layout = QVBoxLayout(self.capture_panel); layout.setContentsMargins(12,12,12,12); layout.setSpacing(8)
         title = QLabel("CAPTURE MODE"); title.setStyleSheet("font-weight:700;color:#334155;")
-        hint = QLabel("Save only the selected LCmicro image viewport."); hint.setStyleSheet("color:#64748B;font-size:11px;")
+        hint = QLabel("Image size × zoom; X/Y offset from centre."); hint.setStyleSheet("color:#64748B;font-size:11px;")
+        hint.setWordWrap(True)
         row = QHBoxLayout(); self.capture_folder = QLineEdit(); self.capture_folder.setReadOnly(True); self.capture_folder.setPlaceholderText("Choose output folder")
         browse = QPushButton("Browse"); browse.clicked.connect(self.choose_capture_folder); row.addWidget(self.capture_folder); row.addWidget(browse)
         actions = QHBoxLayout(); self.capture_area_btn = QPushButton("Set image area"); self.capture_area_btn.clicked.connect(self.set_capture_area)
         self.capture_take_btn = QPushButton("Take photo"); self.capture_take_btn.clicked.connect(self.take_capture)
+        self.capture_take_btn.setEnabled(False)
+        self.capture_area_status = QLabel("Waiting for LCmicro image area")
+        self.capture_area_status.setWordWrap(True)
+        self.capture_preview = QLabel("Your latest photo will appear here")
+        self.capture_preview.setAlignment(Qt.AlignCenter)
+        self.capture_preview.setFixedHeight(180)
+        self.capture_preview.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        self.capture_preview.setStyleSheet("background:#0F172A;color:#94A3B8;border:none;border-radius:8px;")
         self.capture_count = QLabel("0 photos saved"); self.capture_count.setStyleSheet("color:#64748B;font-size:11px;")
-        actions.addWidget(self.capture_area_btn); actions.addWidget(self.capture_take_btn); actions.addWidget(self.capture_count)
-        layout.addWidget(title); layout.addWidget(hint); layout.addLayout(row); layout.addLayout(actions)
+        self.capture_count.setWordWrap(True)
+        self.capture_count.setMinimumWidth(0)
+        self.capture_count.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        self.capture_folder.setMinimumWidth(0)
+        self.capture_take_btn.setMinimumHeight(42)
+        self.capture_area_btn.setMinimumHeight(36)
+        self.capture_area_btn.setStyleSheet("QPushButton{background:white;color:#2563EB;border:1px solid #BFDBFE;padding:8px;border-radius:6px;} QPushButton:hover{background:#EFF6FF;}")
+        layout.setSpacing(6)
+        layout.addWidget(QLabel("SAVE PHOTOS TO"))
+        layout.addLayout(row)
+        self.capture_area_btn.hide()
+        self.capture_size_toggle = QPushButton("IMAGE GEOMETRY  ▾")
+        self.capture_size_toggle.setCheckable(True)
+        self.capture_size_toggle.setChecked(True)
+        self.capture_size_toggle.setStyleSheet("QPushButton{text-align:left;background:transparent;color:#334155;font-weight:700;padding:5px 0;} QPushButton:hover{color:#2563EB;}")
+        self.capture_size_toggle.clicked.connect(self._toggle_capture_geometry)
+        layout.addWidget(self.capture_size_toggle)
+        self.capture_size_panel = QWidget()
+        self.capture_size_panel.setObjectName("CaptureGeometry")
+        self.capture_size_panel.setStyleSheet("QWidget#CaptureGeometry{background:transparent;} QLabel{background:transparent;border:none;} QSpinBox,QDoubleSpinBox{background:white;border:1px solid #CBD5E1;border-radius:5px;padding:3px;color:#334155;} QPushButton:disabled{background:#CBD5E1;color:#64748B;}")
+        controls = QGridLayout(self.capture_size_panel)
+        controls.setContentsMargins(0, 0, 0, 0)
+        self.capture_width = QSpinBox()
+        self.capture_height = QSpinBox()
+        self.capture_zoom = QDoubleSpinBox()
+        self.capture_x = QSpinBox()
+        self.capture_y = QSpinBox()
+        for control, value in ((self.capture_width, 2160), (self.capture_height, 1620)):
+            control.setRange(4, 20000)
+            control.setValue(value)
+        self.capture_zoom.setRange(0.1, 400)
+        self.capture_zoom.setDecimals(1)
+        self.capture_zoom.setSuffix(" %")
+        self.capture_zoom.setValue(51.4)
+        for control in (self.capture_x, self.capture_y):
+            control.setRange(-20000, 20000)
+        for index, (name, control) in enumerate((("Width px", self.capture_width), ("Height px", self.capture_height), ("Zoom", self.capture_zoom), ("Offset X", self.capture_x), ("Offset Y", self.capture_y))):
+            controls.addWidget(QLabel(name), (index // 3) * 2, index % 3)
+            controls.addWidget(control, (index // 3) * 2 + 1, index % 3)
+            control.valueChanged.connect(self._capture_setting_changed)
+        layout.addWidget(self.capture_size_panel)
+        layout.addWidget(self.capture_area_status)
+        layout.addWidget(self.capture_take_btn)
+        layout.addWidget(self.capture_count)
+        layout.addWidget(self.capture_preview)
+        self._load_capture_settings()
         body_layout.addWidget(self.capture_panel); self.capture_panel.hide()
+
+    def _toggle_capture_geometry(self, expanded):
+        self.capture_size_toggle.setChecked(expanded)
+        self.capture_size_panel.setVisible(expanded)
+        self.capture_preview.setFixedHeight(180 if expanded else 260)
+        self.capture_size_toggle.setText("Frame settings  ▾" if expanded else "Frame settings  ▸")
+        if not self._loading_capture_settings:
+            self._save_capture_settings()
+
+    def _capture_setting_changed(self, *_):
+        self._save_capture_settings()
+        self._refresh_capture_region()
+
+    def _load_capture_settings(self):
+        values = {
+            self.capture_width: ("capture/width", 2160),
+            self.capture_height: ("capture/height", 1620),
+            self.capture_zoom: ("capture/zoom", 51.4),
+            self.capture_x: ("capture/offset_x", -107),
+            self.capture_y: ("capture/offset_y", 3),
+        }
+        for control, (key, default) in values.items():
+            control.blockSignals(True)
+            control.setValue(self.capture_settings.value(key, default, type=type(default)))
+            control.blockSignals(False)
+        folder = self.capture_settings.value("capture/folder", "", type=str)
+        if folder and os.path.isdir(folder):
+            self.capture_service.set_folder(folder)
+            self.capture_folder.setText(folder)
+        self._toggle_capture_geometry(
+            self.capture_settings.value("capture/geometry_expanded", False, type=bool)
+        )
+        self._loading_capture_settings = False
+
+    def _save_capture_settings(self):
+        if self._loading_capture_settings:
+            return
+        for control, key in ((self.capture_width, "capture/width"), (self.capture_height, "capture/height"),
+                             (self.capture_zoom, "capture/zoom"), (self.capture_x, "capture/offset_x"),
+                             (self.capture_y, "capture/offset_y")):
+            self.capture_settings.setValue(key, control.value())
+        self.capture_settings.setValue("capture/geometry_expanded", self.capture_size_toggle.isChecked())
+        if self.capture_service.folder:
+            self.capture_settings.setValue("capture/folder", str(self.capture_service.folder))
+        self.capture_settings.sync()
+
+    def closeEvent(self, event):
+        self._flush_capture_settings()
+        try:
+            QApplication.instance().aboutToQuit.disconnect(self._flush_capture_settings)
+        except RuntimeError:
+            pass
+        self._capture_watch.stop()
+        super().closeEvent(event)
+
+    def _flush_capture_settings(self):
+        for control in (self.capture_width, self.capture_height, self.capture_zoom, self.capture_x, self.capture_y):
+            control.interpretText()
+        self._save_capture_settings()
 
     def toggle_capture_mode(self):
         self.capture_mode = self.btn_capture.isChecked()
@@ -357,12 +543,33 @@ class StatusWidget(QWidget):
     def _on_page_changed(self, index):
         self.capture_mode = index == 1
         self.btn_capture.setChecked(self.capture_mode)
+        self.set_capture_frame(None)
+        self.overlay.capture_view_rect = None
+        self.overlay.update_boxes([])
         self.capture_mode_changed.emit(self.capture_mode)
+        if self.capture_mode:
+            self._capture_screen = self.screen()
+            self.system_status.setText("● CAPTURE MODE")
+            self._inspection_overlay_flags = self.overlay.windowFlags()
+            self.overlay.setWindowFlag(Qt.WindowStaysOnTopHint, False)
+            self.overlay.setGeometry(self._capture_screen.geometry())
+            self._refresh_capture_region()
+            self._capture_watch.start()
+            self._sync_capture_target()
+        else:
+            self._capture_watch.stop()
+            self.overlay.clearMask()
+            self._capture_screen = None
+            if hasattr(self, "_inspection_overlay_flags"):
+                self.overlay.setWindowFlags(self._inspection_overlay_flags)
+            self.overlay.hide()
 
     def choose_capture_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Choose capture folder")
         if folder:
             self.capture_service.set_folder(folder); self.capture_folder.setText(folder)
+            self._save_capture_settings()
+            self.capture_take_btn.setEnabled(self.capture_service.area is not None)
 
     def set_capture_area(self):
         if self.capture_frame is not None:
@@ -379,31 +586,153 @@ class StatusWidget(QWidget):
             self.capture_count.setText(str(error))
 
     def take_capture(self):
+        if self.capture_mode and self._capture_screen is not None:
+            self._sync_capture_target()
+            if self._capture_target is None or not self.overlay.isVisible():
+                return
+            if self._capture_busy or self._screen_region is None or self.capture_service.folder is None:
+                return
+            self._capture_busy = True
+            self._pending_screen = self._capture_screen
+            self._pending_region = self._screen_region
+            self._pending_target = self._capture_target
+            self.capture_take_btn.setEnabled(False)
+            self.overlay.hide()
+            self.hide()
+            QTimer.singleShot(120, self._finish_screen_capture)
+            return
         if self.capture_frame is None: return
         try:
             path = self.capture_service.save(self.capture_frame)
+            self.capture_preview.setPixmap(QPixmap(str(path)).scaled(
+                self.capture_preview.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.overlay.flash_capture()
             self.capture_count.setText(f"{self.capture_service.sequence} photos saved  ·  {path.name}")
         except Exception as error:
             self.capture_count.setText(str(error))
 
-    def set_capture_frame(self, frame):
+    def _finish_screen_capture(self):
+        saved = False
+        try:
+            active = gw.getActiveWindow()
+            if active is None or active._hWnd != self._pending_target._hWnd:
+                raise RuntimeError("Capture cancelled: source window changed")
+            pixmap = self._pending_screen.grabWindow(0)
+            if pixmap.isNull():
+                raise RuntimeError("Screen capture unavailable")
+            image = pixmap.toImage().convertToFormat(QImage.Format_RGB888)
+            rows = np.frombuffer(image.bits(), dtype=np.uint8).reshape(image.height(), image.bytesPerLine())
+            frame = cv2.cvtColor(rows[:, :image.width() * 3].reshape(image.height(), image.width(), 3), cv2.COLOR_RGB2BGR)
+            x, y, w, h = self._pending_region
+            if x < 0 or y < 0 or x + w > image.width() or y + h > image.height():
+                raise RuntimeError("Screen size changed — retry capture")
+            self.capture_service.set_area((x, y, w, h), (image.width(), image.height()))
+            path = self.capture_service.save(frame)
+            self.capture_preview.setPixmap(QPixmap(str(path)).scaled(
+                self.capture_preview.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.capture_count.setText(f"{self.capture_service.sequence} photos saved · {path.name}")
+            saved = True
+        except Exception as error:
+            self.capture_count.setText(str(error))
+        finally:
+            self._capture_busy = False
+            self.show()
+            if self.capture_mode:
+                self._refresh_capture_region()
+                self._sync_capture_target()
+                if saved:
+                    self.overlay.flash_capture()
+
+    def set_capture_frame(self, frame, region=None):
         self.capture_frame = None if frame is None else frame.copy()
+        self._refresh_capture_region()
+
+    def _refresh_capture_region(self, *_):
+        from services.capture_service import scaled_capture_rect
+        self.capture_service.area = None
+        self.overlay.capture_view_rect = None
+        self._screen_region = None
+        screen = self._capture_screen if self.capture_mode else None
+        if screen is not None or self.capture_frame is not None:
+            ratio = screen.devicePixelRatio() if screen is not None else 1.0
+            if screen is not None:
+                geometry = screen.geometry()
+                self.overlay.setGeometry(geometry)
+                width, height = round(geometry.width() * ratio), round(geometry.height() * ratio)
+            else:
+                height, width = self.capture_frame.shape[:2]
+            try:
+                region = scaled_capture_rect((width, height),
+                    (self.capture_width.value(), self.capture_height.value()),
+                    self.capture_zoom.value(), (self.capture_x.value(), self.capture_y.value()))
+                self.capture_service.set_area(region, (width, height))
+                self._screen_region = region
+                self.overlay.capture_view_rect = tuple(round(value / ratio) for value in region)
+                self.capture_area_status.setText(f"Ready · {region[2]} × {region[3]} px")
+            except ValueError as error:
+                self.capture_area_status.setText(str(error))
+        else:
+            self.capture_area_status.setText("Open Capture to position the screen frame")
+        self.overlay.update()
+        self.capture_take_btn.setEnabled(
+            not self._capture_busy and self.capture_service.area is not None and self.capture_service.folder is not None)
+
+    def _sync_capture_target(self):
+        """Keep the capture frame on the active LCmicro/PowerPoint window only."""
+        if not self.capture_mode or self._capture_busy:
+            return
+        try:
+            active = gw.getActiveWindow()
+            handle = getattr(active, "_hWnd", None)
+            own = handle in (int(self.winId()), int(self.overlay.winId()))
+            title = (getattr(active, "title", "") or "").lower()
+            if own:
+                target = self._capture_target
+            else:
+                target = active if ("lcmicro" in title or "powerpoint" in title) else None
+            if target is None or target.isMinimized:
+                self._capture_target = None
+                self.overlay.hide()
+                self.capture_take_btn.setEnabled(False)
+                self.capture_area_status.setText("Open LCmicro or PowerPoint to show the frame")
+                return
+            self._capture_target = target
+            self._refresh_capture_region()
+            geometry = self._capture_screen.geometry()
+            # pygetwindow reports native pixels; Qt overlay uses logical pixels.
+            ratio = self._capture_screen.devicePixelRatio()
+            x = round(target.left / ratio - geometry.x())
+            y = round(target.top / ratio - geometry.y())
+            width, height = round(target.width / ratio), round(target.height / ratio)
+            self.overlay.setMask(QRegion(x, y, width, height))
+            self.overlay.show()
+            self.overlay.sync_above_window(target._hWnd)
+            region = self.overlay.capture_view_rect
+            if region is None or not (region[0] >= x and region[1] >= y and region[0]+region[2] <= x+width and region[1]+region[3] <= y+height):
+                self.capture_take_btn.setEnabled(False)
+                self.capture_area_status.setText("Keep the capture frame inside the source window")
+        except Exception:
+            self._capture_target = None
+            self.overlay.hide()
+            self.capture_take_btn.setEnabled(False)
 
     def _setup_package_selector(self, body_layout):
         self.pkg_container = QWidget()
-        pkg_layout = QHBoxLayout(self.pkg_container)
+        pkg_layout = QVBoxLayout(self.pkg_container)
         pkg_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.lbl_pkg_title = QLabel("PRODUCT:")
+        self.lbl_pkg_title = QLabel("PACKAGE / RECIPE")
         self.lbl_pkg_title.setStyleSheet(
             "font-size: 11px; font-weight: 600; color: #9CA3AF; letter-spacing: 0.5px;"
         )
 
         self.combo_pkg = QComboBox()
+        self.combo_pkg.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.combo_pkg.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        self.combo_pkg.setMinimumContentsLength(12)
 
         pkg_layout.addWidget(self.lbl_pkg_title)
         pkg_layout.addWidget(self.combo_pkg)
-        pkg_layout.addStretch()
         body_layout.addWidget(self.pkg_container)
 
     def _setup_result_card(self, body_layout):
@@ -412,9 +741,9 @@ class StatusWidget(QWidget):
         self.card.setStyleSheet(
             """
             QFrame {
-              border: 1px solid #10B981;
+              border: 1px solid #D1D5DB;
               border-radius: 8px;
-              background-color: #ECFDF5;
+              background-color: #F3F4F6;
             }
             """
         )
@@ -440,12 +769,14 @@ class StatusWidget(QWidget):
         # message box for log and error output.
         self.box_det, self.detected = self._create_big_box("DETECTED", "UNT")
         self.box_ori, self.orientation = self._create_big_box("ORIENTATION", " ")
+        self.box_marking, self.marking_status = self._create_big_box("MARKING", " ")
         self.box_score, self.score = self._create_big_box("SCORE", "")
         self.box_msg, self.message = self._create_long_box("MESSAGE")
 
         grid_layout.addWidget(self.box_det, 0, 0, 1, 2)
         grid_layout.addWidget(self.box_ori, 0, 2, 1, 2)
-        grid_layout.addWidget(self.box_msg, 1, 0, 1, 4)
+        grid_layout.addWidget(self.box_marking, 0, 4, 1, 2)
+        grid_layout.addWidget(self.box_msg, 1, 0, 1, 6)
         body_layout.addLayout(grid_layout)
         body_layout.addSpacing(4)
 
@@ -491,13 +822,14 @@ class StatusWidget(QWidget):
     @staticmethod
     def _create_long_box(title):
         box = QFrame()
+        box.setObjectName("MessageBox")
         box.setStyleSheet(
-            "QFrame { border: 1px solid #F3F4F6; border-radius: 8px;"
+            "QFrame#MessageBox { border: 1px solid #F3F4F6; border-radius: 8px;"
             " background-color: #F9FAFB; }"
         )
-        box.setFixedHeight(64)
+        box.setMinimumHeight(64)
 
-        layout = QHBoxLayout(box)
+        layout = QVBoxLayout(box)
         layout.setContentsMargins(12, 4, 12, 4)
 
         lbl_title = QLabel(f"{title.upper()}:")
@@ -506,15 +838,16 @@ class StatusWidget(QWidget):
             " background:transparent; border:none;"
         )
         lbl_val = QLabel("-")
+        lbl_val.setObjectName("MessageText")
         lbl_val.setWordWrap(True)
         lbl_val.setStyleSheet(
-            "color: #1F2937; font-size: 11px; font-weight: 600;"
-            " background:transparent; border:none;"
+            "QLabel#MessageText { color: #1F2937; font-size: 11px;"
+            " font-weight: 600; background: transparent; border: 0px;"
+            " outline: 0px; padding: 0px; }"
         )
 
         layout.addWidget(lbl_title)
         layout.addWidget(lbl_val)
-        layout.addStretch()
         return box, lbl_val
 
     def _setup_heatmap_panel(self, body_layout):
@@ -526,7 +859,10 @@ class StatusWidget(QWidget):
 
         self.heatmap = QLabel("Waiting for the first inspection")
         self.heatmap.setAlignment(Qt.AlignCenter)
-        self.heatmap.setFixedHeight(118)
+        self.heatmap.setWordWrap(True)
+        self.heatmap.setMinimumWidth(0)
+        self.heatmap.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        self.heatmap.setFixedHeight(150)
         self.heatmap.setStyleSheet(
             "QLabel { border: 1px solid #E5E7EB; border-radius: 8px;"
             " background-color: #111827; color: #6B7280;"
@@ -590,23 +926,30 @@ class StatusWidget(QWidget):
 
     def on_package_changed(self, index):
         recipe_data = self.combo_pkg.itemData(index)
+        self.recipe_request_id += 1
+        request_id = self.recipe_request_id
         if recipe_data is None:
             self.current_recipe = None
+            self.model_loading = False
             self.recipe_changed.emit(None)
+            self.recipe_request_changed.emit(None, request_id)
             self.message.setText("No recipe selected")
             return
 
         self.current_recipe = recipe_data
+        self.model_loading = True
         self.recipe_changed.emit(recipe_data)
+        self.recipe_request_changed.emit(recipe_data, request_id)
 
         print(
-            f"[RECIPE] Loaded {recipe_data.get('recipe_name', '-')} "
+            f"[RECIPE] Requested {recipe_data.get('recipe_name', '-')} "
             f"(package: {recipe_data.get('package_type', '-')}, "
             f"family: {recipe_data.get('package_family', '-')}, "
             f"pins: {recipe_data.get('pin_count', 0)})"
         )
 
-        self.message.setText(f"Loaded: {recipe_data.get('recipe_name', '')}")
+        self.message.setText(f"Loading: {recipe_data.get('recipe_name', '')}")
+        self._update_result_card("LOADING MODEL", False, "", model_loading=True)
 
     # ------------------------------------------------------------------
     # Window behaviour
@@ -634,6 +977,7 @@ class StatusWidget(QWidget):
         self.is_minimized = not self.is_minimized
 
         if self.is_minimized:
+            self.pages.hide()
             self.body_container.hide()
             self.pkg_container.hide()
             self.mini.show()
@@ -644,11 +988,12 @@ class StatusWidget(QWidget):
             self.setFixedSize(300, 148)
         else:
             self.mini.hide()
+            self.pages.show()
             self.body_container.show()
             self.pkg_container.show()
             self.btn_min.setText(ICONS["minimize"])
             self.btn_min.setToolTip("Minimize to compact view")
-            self.setFixedSize(360, 610)
+            self.setFixedSize(410, 690)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton and not self.is_pinned:
@@ -680,20 +1025,36 @@ class StatusWidget(QWidget):
         error_message="",
         heatmap=None,
         marking=None,
+        model_loading=False,
+        recipe_request_id=None,
     ):
         """Refresh every field of the status panel."""
+        if (
+            self.model_loading
+            and not model_loading
+            and recipe_request_id is None
+            and inspection_result not in ("NO SOURCE", "SELECT PACKAGE")
+        ):
+            return
+        if recipe_request_id is not None and recipe_request_id != self.recipe_request_id:
+            return
+        self.model_loading = bool(model_loading)
+        if model_loading:
+            inspection_result = "LOADING MODEL"
         self._update_system_state(system_state)
         self._update_result_card(
-            inspection_result, is_upside_down, fail_reason, error_message, score
+            inspection_result, is_upside_down, fail_reason, error_message, score,
+            model_loading=model_loading
         )
 
-        self.detected.setText(str(count))
+        display_count = 0 if inspection_result == "SELECT PACKAGE" else count
+        self.detected.setText(str(display_count))
         self.score.setText(f"{score:.3f}")
         marking = marking or {"status": "NOT CHECKED", "score": None}
         mark_status = marking["status"]
         color = "#10B981" if mark_status == "MATCH" else (
             "#EF4444" if mark_status in ("FAIL", "MISMATCH", "POSITION ERROR") else "#D97706")
-        self.marking_status.setText("Laser-mark: " + mark_status)
+        self.marking_status.setText(mark_status)
         self.marking_status.setStyleSheet(f"border:none;font-weight:700;color:{color};")
         similarity = marking.get("score")
         detail = "Similarity: —" if similarity is None else f"Similarity: {similarity:.3f}"
@@ -715,7 +1076,7 @@ class StatusWidget(QWidget):
             f"<font color='#9CA3AF'>FPS:</font>"
             f" <font color='#2563EB'>{fps:.1f} Hz</font>"
         )
-        self._update_mini(inspection_result, count, fps, score)
+        self._update_mini(inspection_result, display_count, fps, score)
 
     def _apply_style(self, key, widget, css):
         """Restyle a widget only when the stylesheet actually changes.
@@ -723,6 +1084,8 @@ class StatusWidget(QWidget):
         ``setStyleSheet`` repolishes the widget even for an identical string,
         which is pure overhead on the 700 ms status-update path.
         """
+        if widget is self.orientation:
+            css += " border: 0px; outline: 0px; background: transparent; padding: 0px;"
         if self._style_cache.get(key) != css:
             self._style_cache[key] = css
             widget.setStyleSheet(css)
@@ -737,9 +1100,16 @@ class StatusWidget(QWidget):
         )
 
     def _build_message(
-        self, inspection_result, is_upside_down, fail_reason, score, error_message=""
+        self, inspection_result, is_upside_down, fail_reason, score,
+        error_message="", model_loading=False
     ):
         """Compose an informative operator message for the current verdict."""
+        if model_loading:
+            name = (self.current_recipe or {}).get("recipe_name", "")
+            return f"Loading: {name}", "#D97706"
+        if inspection_result == "READY":
+            name = (self.current_recipe or {}).get("recipe_name", "")
+            return f"Ready: {name}", "#2563EB"
         if inspection_result == "NO SOURCE":
             if error_message:
                 return error_message, "#EF4444"
@@ -750,6 +1120,8 @@ class StatusWidget(QWidget):
             ), "#6B7280"
 
         if inspection_result == "SELECT PACKAGE":
+            if model_loading:
+                return "Loading recipe model...", "#D97706"
             return "Select a product recipe", "#2563EB"
 
         if inspection_result == "NOT FOUND":
@@ -801,6 +1173,7 @@ class StatusWidget(QWidget):
         fail_reason,
         error_message="",
         score=0.0,
+        model_loading=False,
     ):
         self.result.setText(inspection_result)
 
@@ -845,7 +1218,8 @@ class StatusWidget(QWidget):
             )
 
         display_text, message_color = self._build_message(
-            inspection_result, is_upside_down, fail_reason, score, error_message
+            inspection_result, is_upside_down, fail_reason, score, error_message,
+            model_loading=model_loading
         )
 
         self.message.setText(display_text)
@@ -1088,6 +1462,7 @@ class StatusWidget(QWidget):
                     self.combo_pkg.setItemData(index, updated)
                     break
             self.recipe_changed.emit(dict(updated))
+            self.recipe_request_changed.emit(dict(updated), self.recipe_request_id)
             self.overlay.finish_roi_mode()
             self.message.setText("Saved: " + ", ".join(sorted(dirty)))
         except Exception as error:

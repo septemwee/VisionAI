@@ -1,9 +1,4 @@
-"""Background worker that crops and QA-classifies images into a training set.
-
-The per-image loop (ROI detection, rotated crop, QA classification and
-letterboxed write) runs off the GUI thread so the window stays responsive
-while a dataset is being prepared.
-"""
+"""Build a Trainer dataset with the exact crop geometry used by Inspection."""
 
 from pathlib import Path
 
@@ -13,7 +8,8 @@ from PySide6.QtCore import QThread, Signal
 
 from services.roi_service import ROIService
 from services.training_assistant import classify_crop, qa_bounds
-from utils.image_utils import crop_rotated_roi, letterbox
+from services.dataset_split_service import assign_good_splits, write_split_manifest
+from utils.image_utils import crop_yolo_obb, prepare_inspection_crop
 
 
 class CropWorker(QThread):
@@ -45,8 +41,6 @@ class CropWorker(QThread):
 
     def _generate(self):
         roi_service = ROIService()
-        default_config = self.default_config
-        overrides = self.overrides
         tolerances = self.tolerances
         output_dir = self.output_dir
 
@@ -67,10 +61,10 @@ class CropWorker(QThread):
             if image is None:
                 continue
 
-            config = dict(default_config)
-            config.update(overrides.get(image_file.name, {}))
-
-            crop = crop_rotated_roi(image, roi, config)
+            points = roi.get("points")
+            if points is None:
+                raise ValueError("YOLO OBB corners are required for inspection-compatible crops")
+            crop = crop_yolo_obb(image, points)
 
             height, width = crop.shape[:2]
             if height <= 0 or width <= 0:
@@ -83,7 +77,6 @@ class CropWorker(QThread):
                     "image_name": image_file.name,
                     "path": str(image_file),
                     "roi": roi,
-                    "config": config,
                     "width": width,
                     "height": height,
                     "ratio": width / height,
@@ -108,15 +101,25 @@ class CropWorker(QThread):
 
         saved_count = 0
         flagged = []
+        valid_names = [item["image_name"] for item in entries
+                       if not classify_crop(item, bounds)]
+        if len(valid_names) != len(set(valid_names)):
+            raise ValueError('Duplicate source filenames: rename them before preparing crops.')
+        assignments, split_counts = assign_good_splits(valid_names)
+        dataset_root = output_dir.parent.parent
+        split_dirs = {
+            name: dataset_root / name / "good"
+            for name in ("train", "calibration", "test")
+        }
+        for directory in split_dirs.values():
+            directory.mkdir(parents=True, exist_ok=True)
 
         # Pass 2: re-crop each image from disk so only the current crop is
         # held in memory.
         for index, item in enumerate(entries):
             reasons = classify_crop(item, bounds)
 
-            crop = crop_rotated_roi(
-                cv2.imread(item["path"]), item["roi"], item["config"]
-            )
+            crop = crop_yolo_obb(cv2.imread(item["path"]), item["roi"]["points"])
 
             if reasons:
                 flagged.append(
@@ -130,8 +133,13 @@ class CropWorker(QThread):
                 )
                 print(f"[FLAG] {item['image_name']} — {'; '.join(reasons)}")
             else:
-                standardized_crop = letterbox(crop, target_width, target_height)
-                cv2.imwrite(str(output_dir / item["image_name"]), standardized_crop)
+                standardized_crop = prepare_inspection_crop(
+                    cv2.imread(item["path"]), item["roi"]["points"],
+                    target_width, target_height,
+                )
+                split = assignments[item["image_name"]]
+                if not cv2.imwrite(str(split_dirs[split] / item["image_name"]), standardized_crop):
+                    raise OSError(f"Cannot save crop: {item['image_name']}")
                 saved_count += 1
 
             self.progress.emit(60 + int((index + 1) * 40 / len(entries)))
@@ -139,6 +147,8 @@ class CropWorker(QThread):
         return {
             "valid": True,
             "output_dir": str(output_dir),
+            "split_counts": split_counts,
+            "split_manifest": str(write_split_manifest(dataset_root, assignments, split_counts)),
             "target_width": target_width,
             "target_height": target_height,
             "avg_width": avg_width,

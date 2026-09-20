@@ -1,7 +1,9 @@
 """Main wizard window for the trainer application."""
 
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtWidgets import (
+    QFrame,
     QHBoxLayout,
     QLabel,
     QMessageBox,
@@ -16,6 +18,7 @@ from ui.theme import (
     SPACE_M,
     SPACE_XL,
     TRAINER_STYLESHEET,
+    load_ui_fonts,
     make_button,
     title_label,
 )
@@ -32,14 +35,28 @@ from ui.trainer.step_status_bar import StepStatusBar
 # Page order matches the guided flow (S1-S7): the model recommendation is
 # placed AFTER the ROI crop step so it always runs on real crops.
 STEP_TITLES = [
-    "Recipe Manager",       # 0  S1
-    "Dataset Import",       # 1  S2
-    "ROI Verification",     # 2  S3
-    "Model Recommendation", # 3  S4
-    "Training",             # 4  S5 + S6 (calibration)
-    # "Model Review",         # 5  (visual check, not a gated step)
-    "Export",               # 6  S7
+    "Recipe Setup",
+    "Dataset",
+    "ROI Preparation",
+    "Model Strategy",
+    "Train & Validate",
+    "Model Review",
+    "Production Ready",
 ]
+PAGE_STEP_IDS = ["S1", "S2", "S3", "S4", "S5", "S6", "S7"]
+
+
+def navigation_state(index):
+    """Return concise wizard-navigation copy for a page index."""
+    last = len(STEP_TITLES) - 1
+    return {
+        "previous_enabled": index > 0,
+        "next_enabled": index < last,
+        "next_text": (
+            f"Continue to {STEP_TITLES[index + 1]}" if index < last
+            else "Setup complete"
+        ),
+    }
 
 # Index of the ROI Verification step, which needs the dataset loaded first.
 ROI_STEP_INDEX = 2
@@ -59,6 +76,7 @@ class TrainerWindow(QWidget):
         self.setup_ui()
 
     def setup_ui(self):
+        load_ui_fonts()
         self.setWindowTitle("VisionAI Trainer")
         # Preferred size, clamped to the available screen so the window
         # never opens larger than the desktop (e.g. 1366x768 laptops).
@@ -76,27 +94,45 @@ class TrainerWindow(QWidget):
         root_layout.setContentsMargins(SPACE_XL, SPACE_L, SPACE_XL, SPACE_L)
         root_layout.setSpacing(SPACE_M)
 
-        # ----- Header: title + recipe context chip -----
+        # ----- Product header: purpose + active recipe context -----
         header_row = QHBoxLayout()
         header_row.setSpacing(SPACE_M)
 
-        header_row.addWidget(title_label("VisionAI Trainer"))
+        header_copy = QVBoxLayout()
+        header_copy.setSpacing(2)
+        product_label = QLabel("VISIONAI  /  MODEL STUDIO")
+        product_label.setObjectName("productEyebrow")
+        header_copy.addWidget(product_label)
+        header_copy.addWidget(title_label("Inspection Model Trainer"))
+        subtitle = QLabel(
+            "A guided workflow for preparing data, training, and validating a production recipe."
+        )
+        subtitle.setObjectName("productSubtitle")
+        header_copy.addWidget(subtitle)
+        header_row.addLayout(header_copy)
         header_row.addStretch()
 
         self.context_label = QLabel("Package : - | Recipe : -")
         self.context_label.setObjectName("contextChip")
-        header_row.addWidget(self.context_label)
+        self.context_label.setFixedHeight(38)
+        header_row.addWidget(self.context_label, 0, Qt.AlignRight | Qt.AlignVCenter)
 
         root_layout.addLayout(header_row)
 
         # ----- Step status bar (S1-S7 badges + next-step shortcut) -----
+        workflow_card = QFrame()
+        workflow_card.setObjectName("workflowCard")
+        workflow_layout = QVBoxLayout(workflow_card)
+        workflow_layout.setContentsMargins(SPACE_L, SPACE_M, SPACE_L, SPACE_M)
         self.step_status_bar = StepStatusBar()
         self.step_status_bar.step_clicked.connect(self.go_to_step)
         self.step_status_bar.next_step_requested.connect(self.go_to_step)
-        root_layout.addWidget(self.step_status_bar)
+        workflow_layout.addWidget(self.step_status_bar)
+        root_layout.addWidget(workflow_card)
 
         # ----- Wizard pages -----
         self.pages = QStackedWidget()
+        self.pages.setObjectName("trainerPages")
 
         self.recipe_page = RecipePage()
         self.recipe_page.parent_window = self
@@ -137,13 +173,16 @@ class TrainerWindow(QWidget):
         root_layout.addWidget(self.pages)
 
         # ----- Navigation: previous | step indicator | next -----
-        nav_layout = QHBoxLayout()
+        footer = QFrame()
+        footer.setObjectName("trainerFooter")
+        nav_layout = QHBoxLayout(footer)
+        nav_layout.setContentsMargins(SPACE_L, SPACE_M, SPACE_L, SPACE_M)
         nav_layout.setSpacing(SPACE_M)
 
-        self.btn_previous = make_button("◀  Previous", "secondary")
+        self.btn_previous = make_button("Previous", "secondary")
         self.btn_previous.clicked.connect(self.previous_page)
 
-        self.btn_next = make_button("Next  ▶")
+        self.btn_next = make_button("Continue")
         self.btn_next.setMinimumWidth(120)
         self.btn_next.clicked.connect(self.next_page)
 
@@ -152,12 +191,11 @@ class TrainerWindow(QWidget):
             "font-size:12px;font-weight:700;color:#2563EB;background:transparent;"
         )
 
-        nav_layout.addWidget(self.btn_previous)
-        nav_layout.addStretch()
         nav_layout.addWidget(self.step_label)
         nav_layout.addStretch()
+        nav_layout.addWidget(self.btn_previous)
         nav_layout.addWidget(self.btn_next)
-        root_layout.addLayout(nav_layout)
+        root_layout.addWidget(footer)
 
         self.setLayout(root_layout)
         self.update_step_label()
@@ -214,6 +252,12 @@ class TrainerWindow(QWidget):
             f"Step {self.current_step + 1}/{len(STEP_TITLES)}"
             f"  •  {STEP_TITLES[self.current_step]}"
         )
+
+        self.step_status_bar.set_current_step(PAGE_STEP_IDS[self.current_step])
+        state = navigation_state(self.current_step)
+        self.btn_previous.setEnabled(state["previous_enabled"])
+        self.btn_next.setEnabled(state["next_enabled"])
+        self.btn_next.setText(state["next_text"])
 
     def refresh_step_bar(self):
         """Recompute S1-S7 statuses and sync the calibration panel."""

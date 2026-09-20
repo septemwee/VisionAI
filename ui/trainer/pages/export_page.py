@@ -77,7 +77,19 @@ class ExportPage(QWidget):
             return
 
         summary = finalize_summary(recipe)
-        self.summary_view.setPlainText(self._format_summary(summary))
+        text = self._format_summary(summary)
+        report = recipe.get('acceptance_report')
+        if report:
+            text += (f"\n\nIndependent test: {report['good']['above_threshold']}/{report['good']['count']} good images rejected."
+                     f"\nSimulated defects detected: {report['synthetic']['above_threshold']}/{report['synthetic']['count']}."
+                     '\nEvidence: synthetic only. Real-defect accuracy has not been measured.')
+            pixel = report.get('pixel_gate') or {}
+            if pixel:
+                text += (f"\nPixel gate: {pixel['good']['triggered']}/{pixel['good']['count']} good images triggered; "
+                         f"{pixel['synthetic']['triggered']}/{pixel['synthetic']['count']} simulated defects triggered.")
+        else:
+            text += '\n\nIndependent validation required before finalizing.'
+        self.summary_view.setPlainText(text)
         self.btn_finalize.setEnabled(True)
 
     @staticmethod
@@ -151,6 +163,13 @@ class ExportPage(QWidget):
             QMessageBox.warning(self, "Warning", "Please select a recipe first.")
             return
 
+        from services.validation_service import check_acceptance
+        try:
+            check_acceptance(recipe)
+        except (OSError, KeyError, ValueError) as error:
+            QMessageBox.warning(self, 'Validation required', str(error))
+            return
+        recipe['validation_scope'] = 'held_out_good_and_synthetic'
         version = apply_finalize(recipe)
         self.recipe_service.save_recipe(recipe["recipe_name"], recipe)
 
@@ -160,7 +179,7 @@ class ExportPage(QWidget):
         QMessageBox.information(
             self,
             "Finalized",
-            f"Recipe {recipe['recipe_name']} marked validated "
+            f"Recipe {recipe['recipe_name']} passed held-out and synthetic validation "
             f"(version {version}).\n\nReminder: capture the top-mark "
             "template in the inspection app before production use.",
         )

@@ -17,6 +17,7 @@ from services.recipe_service import RecipeService
 from services.training_assistant import (
     STATUS_OK,
     recommend_threshold,
+    recommend_threshold_with_anomalies,
     set_step_status,
     pre_flight,
     utc_now_iso,
@@ -49,7 +50,10 @@ class TrainingPage(QWidget):
         self.evaluation_worker = None
 
         self._scores = None
+        self._synthetic_scores = None
         self._proposal = None
+        self._validation_result = None
+        self._calibration_is_held_out = False
 
         self.recipe_service = RecipeService()
 
@@ -62,33 +66,15 @@ class TrainingPage(QWidget):
 
         self.lbl_title = title_label("PatchCore Training")
         root.addWidget(self.lbl_title)
+        root.addWidget(caption_label(
+            "Train the model first, then validate its threshold against held-out good images and simulated defects."
+        ))
 
-        training_row = QHBoxLayout()
-        training_row.setSpacing(SPACE_S)
-
-        self.btn_train = make_button("Start Training")
-        self.btn_train.clicked.connect(self.start_training)
-        training_row.addWidget(self.btn_train)
-
-        self.btn_clear_log = make_button("Clear Log", "ghost")
-        self.btn_clear_log.clicked.connect(self.clear_log)
-        training_row.addWidget(self.btn_clear_log)
-        training_row.addStretch()
-
-        root.addLayout(training_row)
-
-        self.progress = QProgressBar()
-        self.progress.setMinimum(0)
-        self.progress.setMaximum(0)  # Busy indicator while training runs.
-        self.progress.hide()
-        root.addWidget(self.progress)
-
-        self.txt_log = QPlainTextEdit()
-        self.txt_log.setObjectName("logView")
-        self.txt_log.setReadOnly(True)
-        root.addWidget(self.txt_log, 1)
-
-        root.addWidget(self._build_calibration_card(), 1)
+        workspace = QHBoxLayout()
+        workspace.setSpacing(SPACE_M)
+        workspace.addWidget(self._build_training_card(), 1)
+        workspace.addWidget(self._build_calibration_card(), 1)
+        root.addLayout(workspace, 1)
 
         # Training output is written via print(), so stdout and stderr are
         # redirected into the log view while a run is active.
@@ -98,6 +84,45 @@ class TrainingPage(QWidget):
         self.setLayout(root)
         self.refresh_calibration_panel()
 
+    def _build_training_card(self):
+        card = card_frame()
+        layout = QVBoxLayout(card)
+        layout.setContentsMargins(SPACE_L, SPACE_M, SPACE_L, SPACE_M)
+        layout.setSpacing(SPACE_S)
+        layout.addWidget(section_label("1  Train model"))
+        layout.addWidget(caption_label(
+            "Build the PatchCore memory bank from the prepared training crops."
+        ))
+
+        training_row = QHBoxLayout()
+        training_row.setSpacing(SPACE_S)
+
+        self.btn_train = make_button("Train model")
+        self.btn_train.clicked.connect(self.start_training)
+        training_row.addWidget(self.btn_train)
+
+        self.btn_clear_log = make_button("Clear Log", "ghost")
+        self.btn_clear_log.clicked.connect(self.clear_log)
+        training_row.addWidget(self.btn_clear_log)
+        training_row.addStretch()
+
+        layout.addLayout(training_row)
+
+        self.progress = QProgressBar()
+        self.progress.setMinimum(0)
+        self.progress.setMaximum(0)  # Busy indicator while training runs.
+        self.progress.hide()
+        layout.addWidget(self.progress)
+
+        self.txt_log = QPlainTextEdit()
+        self.txt_log.setObjectName("logView")
+        self.txt_log.setReadOnly(True)
+        self.txt_log.setPlaceholderText(
+            "Training activity and progress details will appear here."
+        )
+        layout.addWidget(self.txt_log, 1)
+        return card
+
     def _build_calibration_card(self):
         """Build the post-training threshold calibration panel (S6)."""
         card = card_frame()
@@ -105,23 +130,32 @@ class TrainingPage(QWidget):
         layout.setContentsMargins(SPACE_L, SPACE_M, SPACE_L, SPACE_M)
         layout.setSpacing(SPACE_S)
 
-        layout.addWidget(section_label("Threshold Calibration"))
+        layout.addWidget(section_label("2  Validate model"))
+        layout.addWidget(caption_label(
+            "Measure separation between acceptable parts and simulated defects, then review the recommended threshold."
+        ))
 
         row = QHBoxLayout()
         row.setSpacing(SPACE_S)
 
-        self.btn_calibrate = make_button("Calibrate Threshold", "secondary")
+        self.btn_calibrate = make_button("Validate model", "secondary")
         self.btn_calibrate.clicked.connect(self.start_calibration)
         row.addWidget(self.btn_calibrate)
 
-        margin_caption = caption_label("Margin")
-        row.addWidget(margin_caption)
+        self.margin_caption = caption_label("Fallback margin")
+        self.margin_caption.setToolTip(
+            "Used only when synthetic validation scores are unavailable."
+        )
+        row.addWidget(self.margin_caption)
 
         self.margin_spin = QDoubleSpinBox()
         self.margin_spin.setRange(1.0, 3.0)
         self.margin_spin.setSingleStep(0.05)
         self.margin_spin.setValue(1.2)
         self.margin_spin.setFixedWidth(90)
+        self.margin_spin.setToolTip(
+            "Used only when synthetic validation scores are unavailable."
+        )
         self.margin_spin.valueChanged.connect(self._recompute_proposal)
         row.addWidget(self.margin_spin)
         row.addStretch()
@@ -131,15 +165,17 @@ class TrainingPage(QWidget):
         layout.addWidget(self.histogram)
 
         self.lbl_stats = QLabel("Good-set scores — run calibration first.")
+        self.lbl_stats.setWordWrap(True)
         layout.addWidget(self.lbl_stats)
 
         self.lbl_proposed = QLabel("Proposed threshold : -")
+        self.lbl_proposed.setWordWrap(True)
         self.lbl_proposed.setStyleSheet(
             "border:none;background:transparent;font-weight:600;color:#111827;"
         )
         layout.addWidget(self.lbl_proposed)
 
-        self.btn_apply_calibration = make_button("Apply to Recipe")
+        self.btn_apply_calibration = make_button("Use recommended threshold")
         self.btn_apply_calibration.clicked.connect(self.apply_calibration)
         self.btn_apply_calibration.setEnabled(False)
         layout.addWidget(self.btn_apply_calibration)
@@ -174,6 +210,13 @@ class TrainingPage(QWidget):
         recipe = self.parent_window.current_recipe_data
         if not recipe:
             QMessageBox.warning(self, "Warning", "Please select a recipe first.")
+            return
+
+        if recipe.get("preprocessing_version") != "inspection_obb_v1":
+            QMessageBox.warning(
+                self, "Dataset update required",
+                "Regenerate the ROI dataset before training. New models use the live Inspection OBB crop.",
+            )
             return
 
         allowed, reasons = pre_flight(recipe)
@@ -276,22 +319,34 @@ class TrainingPage(QWidget):
             return
 
         prepared = resolve_recipe_path(recipe.get("prepared_dataset_path"))
-        good_dir = prepared / "train" / "good" if prepared is not None else None
+        calibration_dir = prepared / "calibration" / "good" if prepared is not None else None
+        legacy_dir = prepared / "train" / "good" if prepared is not None else None
+        self._calibration_is_held_out = bool(
+            calibration_dir and calibration_dir.exists()
+        )
+        good_dir = calibration_dir if self._calibration_is_held_out else legacy_dir
         if good_dir is None or not good_dir.exists():
             QMessageBox.warning(
                 self,
                 "Warning",
-                "The prepared training crops were not found.\n"
+                "The prepared calibration crops were not found.\n"
                 "Generate the training dataset first.",
             )
             return
 
         self.append_log("\n===== CALIBRATION START =====\n\n")
-        self.append_log(f"Scoring good-image folder: {good_dir}\n")
+        source_label = "held-out" if self._calibration_is_held_out else "legacy training"
+        self.append_log(f"Scoring {source_label} good-image folder: {good_dir}\n")
+        if not self._calibration_is_held_out:
+            self.append_log(
+                "WARNING: this older dataset has no held-out calibration split. "
+                "Regenerate crops for independent calibration.\n"
+            )
 
         self.btn_calibrate.setEnabled(False)
         self._proposal = None
         self._scores = None
+        self._synthetic_scores = None
         self.btn_apply_calibration.setEnabled(False)
 
         self._previous_stdout = sys.stdout
@@ -308,7 +363,21 @@ class TrainingPage(QWidget):
         self.append_log("\n===== CALIBRATION COMPLETE =====\n")
         self.restore_output()
 
-        self._scores = scores
+        recipe = self.parent_window.current_recipe_data
+        if not recipe or recipe.get('recipe_name') != scores.get('recipe_name'):
+            self._proposal = None
+            self.btn_apply_calibration.setEnabled(False)
+            self.append_log('Recipe changed; validation result was not applied.\n')
+            return
+        self._validation_result = scores
+        report = scores['report']
+        self.append_log(
+            f"Independent test: {report['good']['above_threshold']}/{report['good']['count']} good images rejected; "
+            f"{report['synthetic']['above_threshold']}/{report['synthetic']['count']} simulated defects detected.\n"
+            'Synthetic results do not establish real-defect detection accuracy.\n')
+
+        self._scores = scores["good"]
+        self._synthetic_scores = scores["synthetic"]
         self.refresh_calibration_panel()
         self._recompute_proposal()
 
@@ -325,14 +394,22 @@ class TrainingPage(QWidget):
             return
 
         try:
-            proposed, trace = recommend_threshold(
-                [score for _, score in self._scores],
-                self.margin_spin.value(),
-            )
+            if self._synthetic_scores:
+                proposed, trace = recommend_threshold_with_anomalies(
+                    [score for _, score in self._scores],
+                    [score for _, score in self._synthetic_scores],
+                )
+            else:
+                proposed, trace = recommend_threshold(
+                    [score for _, score in self._scores], self.margin_spin.value())
         except ValueError:
             return
 
         self._proposal = (proposed, trace)
+        trace["good_set_role"] = (
+            "held_out_calibration" if self._calibration_is_held_out
+            else "legacy_training_fallback"
+        )
 
         stats = trace["good_summary"]
         stats_text = (
@@ -341,22 +418,29 @@ class TrainingPage(QWidget):
             f"P99 {stats['p99']:.3f} | max {stats['max']:.3f} "
             f"({stats['count']} images)"
         )
+        if not self._calibration_is_held_out:
+            stats_text += "   WARNING: using training images; regenerate crops."
         if trace["warning"]:
-            stats_text += "   WARNING: good-image scores reach the 1.0 ceiling."
+            stats_text += f"   WARNING: {trace.get('warning_reason', 'review required')}"
         self.lbl_stats.setText(stats_text)
 
         self.lbl_proposed.setText(
             f"Proposed threshold : {proposed:.3f}   |   "
             f"Expected false alarms on good set : "
-            f"{trace['expected_false_alarms']}"
+            f"{trace['expected_false_alarms']}   |   Synthetic detected: "
+            f"{trace.get('synthetic_detected', 0)}/{trace.get('synthetic_total', 0)}"
         )
         self.histogram.set_data([score for _, score in self._scores], proposed)
+
+        using_synthetic = bool(self._synthetic_scores)
+        self.margin_caption.setEnabled(not using_synthetic)
+        self.margin_spin.setEnabled(not using_synthetic)
 
         # A threshold of exactly 1.0 can never be exceeded — live inspection
         # classifies it as an invalid calibrated value and fails every part.
         # Block the apply path here so a saturated proposal cannot be saved.
-        saturated = proposed >= 1.0 or trace["warning"]
-        self.btn_apply_calibration.setEnabled(not saturated)
+        blocked = proposed >= 1.0 or trace["warning"]
+        self.btn_apply_calibration.setEnabled(not blocked)
 
     def apply_calibration(self):
         """Write the proposed threshold + calibration trace to the recipe."""
@@ -373,14 +457,28 @@ class TrainingPage(QWidget):
             return
 
         proposed, trace = self._proposal
+        from services.validation_service import artifact_identity, audit_splits
+        result = self._validation_result
+        try:
+            if not result or result['recipe_name'] != recipe['recipe_name']:
+                raise ValueError('Validate the current recipe first.')
+            report = result['report']
+            if (artifact_identity(recipe) != report['model_identity']
+                    or audit_splits(resolve_recipe_path(recipe['prepared_dataset_path'])) != report['dataset_audit']
+                    or proposed != report['threshold']):
+                raise ValueError('Model, dataset or threshold changed. Validate again.')
+        except (OSError, KeyError, ValueError) as error:
+            QMessageBox.warning(self, 'Validation expired', str(error))
+            return
         if proposed >= 1.0 or trace.get("warning"):
+            reason = trace.get("warning_reason") or (
+                f"Proposed threshold {proposed:.3f} reaches the unusable scale ceiling."
+            )
             QMessageBox.warning(
                 self,
                 "Calibration Blocked",
-                f"Proposed threshold {proposed:.3f} is unusable: good-image "
-                "scores reach the 1.0 scale ceiling. Raise the margin, "
-                "retrain with more/better good crops, or fix the capture "
-                "conditions, then recalibrate.",
+                f"{reason}\n\nRetrain with more representative good crops or "
+                "improve the capture conditions, then recalibrate.",
             )
             return
 
@@ -388,7 +486,13 @@ class TrainingPage(QWidget):
         trace["evaluated_at"] = utc_now_iso()
 
         recipe["anomaly_threshold"] = proposed
+        recipe["pixel_gate"] = report['pixel_gate']['config']
+        recipe["verdict_policy"] = "image_and_pixel_v1"
         recipe["calibration"] = trace
+        recipe["calibration"]["pixel_gate"] = report['pixel_gate']['config']
+        recipe["calibration"]["pixel_gate_metrics"] = report['pixel_gate']['calibration']
+        recipe['acceptance_report'] = report
+        recipe['validated'] = False
         set_step_status(recipe, "S6", STATUS_OK)
         self.recipe_service.save_recipe(recipe["recipe_name"], recipe)
 

@@ -7,18 +7,42 @@ The palette is the original VisionAI light theme (white surfaces, blue
 primary, Poppins with a system fallback).
 """
 
+from pathlib import Path
+
+from PySide6.QtGui import QFontDatabase
 from PySide6.QtWidgets import QFrame, QLabel, QPushButton
+
+from utils.resource_path import resource_path
+
+_LOADED_FONT_COUNT = None
+
+
+def load_ui_fonts():
+    """Load bundled Poppins faces once for both source and frozen builds."""
+    global _LOADED_FONT_COUNT
+    if _LOADED_FONT_COUNT is not None:
+        return _LOADED_FONT_COUNT
+    loaded = 0
+    for filename in (
+        "Poppins-Regular.ttf", "Poppins-Medium.ttf",
+        "Poppins-SemiBold.ttf", "Poppins-Bold.ttf",
+    ):
+        path = Path(resource_path(f"assets/fonts/{filename}"))
+        if path.is_file() and QFontDatabase.addApplicationFont(str(path)) >= 0:
+            loaded += 1
+    _LOADED_FONT_COUNT = loaded
+    return loaded
 
 # ---------------------------------------------------------------------------
 # Palette
 # ---------------------------------------------------------------------------
 
-BG = "#FFFFFF"
-SURFACE = "#F9FAFB"
-BORDER = "#E5E7EB"
-TEXT = "#111827"
-TEXT_SECONDARY = "#374151"
-MUTED = "#6B7280"
+BG = "#F5F7FB"
+SURFACE = "#F8FAFC"
+BORDER = "#E2E8F0"
+TEXT = "#0F172A"
+TEXT_SECONDARY = "#334155"
+MUTED = "#64748B"
 DISABLED = "#9CA3AF"
 
 PRIMARY = "#2563EB"
@@ -63,11 +87,15 @@ QWidget {{
     color: {TEXT_SECONDARY};
 }}
 
+QWidget#stepRail, QWidget#qt_scrollarea_viewport {{ background: transparent; }}
+QScrollArea {{ background: transparent; border: none; }}
+QStackedWidget#trainerPages {{ background: transparent; }}
+
 QLabel {{
     background: transparent;
 }}
 
-QLabel[role="title"] {{ font-size: 26px; font-weight: 700; color: {TEXT}; }}
+QLabel[role="title"] {{ font-size: 24px; font-weight: 700; color: {TEXT}; }}
 QLabel[role="section"] {{ font-size: 15px; font-weight: 600; color: {TEXT}; }}
 QLabel[role="body"] {{ font-size: 13px; color: {TEXT_SECONDARY}; }}
 QLabel[role="caption"] {{ font-size: 11px; color: {MUTED}; }}
@@ -82,6 +110,17 @@ QLabel#contextChip {{
     font-weight: 600;
 }}
 
+QLabel#productEyebrow {{
+    color: {PRIMARY}; font-size: 10px; font-weight: 700; letter-spacing: 1px;
+}}
+QLabel#productSubtitle {{ color: {MUTED}; font-size: 12px; }}
+
+QFrame#workflowCard, QFrame#trainerFooter {{
+    background: #FFFFFF;
+    border: 1px solid {BORDER};
+    border-radius: 12px;
+}}
+
 QLabel#preview {{
     background: {SURFACE};
     border: 1px solid {BORDER};
@@ -91,7 +130,7 @@ QLabel#preview {{
 }}
 
 QFrame#card {{
-    background: {BG};
+    background: #FFFFFF;
     border: 1px solid {BORDER};
     border-radius: 12px;
 }}
@@ -102,6 +141,7 @@ QPushButton {{
     color: #FFFFFF;
     border: none;
     border-radius: 8px;
+    min-height: 18px;
     padding: 9px 18px;
     font-size: 13px;
     font-weight: 600;
@@ -160,6 +200,12 @@ QLineEdit, QPlainTextEdit, QTextEdit, QComboBox, QSpinBox, QDoubleSpinBox {{
     color: {TEXT};
     selection-background-color: {PRIMARY};
     selection-color: #FFFFFF;
+}}
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {{ min-height: 20px; }}
+QLineEdit[compactField="true"], QComboBox[compactField="true"],
+QTextEdit[compactField="true"] {{
+    min-height: 20px;
+    padding: 3px 8px;
 }}
 QLineEdit:focus, QPlainTextEdit:focus, QTextEdit:focus, QComboBox:focus,
 QSpinBox:focus, QDoubleSpinBox:focus {{
@@ -296,6 +342,7 @@ def caption_label(text=""):
     """Muted helper text (11px)."""
     label = QLabel(text)
     label.setProperty("role", "caption")
+    label.setWordWrap(True)
     return label
 
 

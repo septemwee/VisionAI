@@ -1,10 +1,10 @@
 """Recipe creation and management page of the trainer."""
 
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
-    QFormLayout,
+    QGridLayout,
     QHBoxLayout,
+    QLabel,
     QLineEdit,
     QListWidget,
     QMessageBox,
@@ -18,6 +18,7 @@ from ui.theme import (
     SPACE_L,
     SPACE_M,
     SPACE_S,
+    SPACE_XS,
     card_frame,
     make_button,
     section_label,
@@ -25,6 +26,16 @@ from ui.theme import (
 )
 
 PACKAGE_FAMILIES = ["SO", "QFN", "QFP", "BGA", "DIP"]
+RECIPE_FIELD_ORDER = [
+    "Recipe Name",
+    "Package Family",
+    "Package Type",
+    "Package Size",
+    "Package Version",
+    "Type Name",
+    "Pin Count",
+    "Notes",
+]
 
 
 class RecipePage(QWidget):
@@ -42,14 +53,14 @@ class RecipePage(QWidget):
 
     def setup_ui(self):
         root_layout = QHBoxLayout()
-        root_layout.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
-        root_layout.setSpacing(SPACE_L)
+        root_layout.setContentsMargins(SPACE_S, 0, SPACE_S, 0)
+        root_layout.setSpacing(SPACE_M)
 
         # ----- Left panel: recipe list -----
         list_card = card_frame()
         list_layout = QVBoxLayout(list_card)
-        list_layout.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
-        list_layout.setSpacing(SPACE_M)
+        list_layout.setContentsMargins(SPACE_M, SPACE_M, SPACE_M, SPACE_M)
+        list_layout.setSpacing(SPACE_S)
 
         list_layout.addWidget(section_label("Recipes"))
 
@@ -57,21 +68,31 @@ class RecipePage(QWidget):
         self.recipe_list.itemClicked.connect(self.load_selected_recipe)
         list_layout.addWidget(self.recipe_list, 1)
 
-        self.btn_add_recipe = make_button("+  Add Recipe")
-        self.btn_add_recipe.clicked.connect(self.new_recipe)
-        list_layout.addWidget(self.btn_add_recipe)
+        list_actions = QHBoxLayout()
+        list_actions.setSpacing(SPACE_S)
 
-        self.btn_delete_recipe = make_button("Delete Recipe", "danger")
+        self.btn_add_recipe = make_button("Add Recipe")
+        self.btn_add_recipe.clicked.connect(self.new_recipe)
+        list_actions.addWidget(self.btn_add_recipe)
+
+        self.btn_delete_recipe = make_button("Delete", "danger")
         self.btn_delete_recipe.clicked.connect(self.delete_recipe)
-        list_layout.addWidget(self.btn_delete_recipe)
+        list_actions.addWidget(self.btn_delete_recipe)
+        list_layout.addLayout(list_actions)
 
         # ----- Right panel: recipe form -----
         form_card = card_frame()
         form_layout = QVBoxLayout(form_card)
-        form_layout.setContentsMargins(SPACE_L, SPACE_L, SPACE_L, SPACE_L)
-        form_layout.setSpacing(SPACE_M)
+        form_layout.setContentsMargins(SPACE_S, SPACE_S, SPACE_S, SPACE_S)
+        form_layout.setSpacing(SPACE_XS)
 
-        form_layout.addWidget(title_label("Recipe Configuration"))
+        form_header = QHBoxLayout()
+        form_header.addWidget(section_label("Recipe Configuration"))
+        form_header.addStretch()
+        self.btn_save_recipe = make_button("Save Recipe")
+        self.btn_save_recipe.clicked.connect(self.save_recipe)
+        form_header.addWidget(self.btn_save_recipe)
+        form_layout.addLayout(form_header)
 
         self.recipe_name = QLineEdit()
         self.package_family = QComboBox()
@@ -82,27 +103,41 @@ class RecipePage(QWidget):
         self.type_name = QLineEdit()
         self.pin_count = QLineEdit()
         self.notes = QTextEdit()
+        compact_inputs = (
+            self.recipe_name, self.package_family, self.package_type,
+            self.package_size, self.package_version, self.type_name,
+            self.pin_count, self.notes,
+        )
+        for field in compact_inputs:
+            field.setProperty("compactField", True)
+            field.setFixedHeight(28)
+        self.notes.setFixedHeight(32)
+        self.notes.document().setDocumentMargin(0)
+        self.notes.setPlaceholderText("Optional notes")
 
-        fields = QFormLayout()
-        fields.setLabelAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        fields = QGridLayout()
         fields.setHorizontalSpacing(SPACE_M)
-        fields.setVerticalSpacing(SPACE_S)
-        fields.addRow("Recipe Name", self.recipe_name)
-        fields.addRow("Package Family", self.package_family)
-        fields.addRow("Package Type", self.package_type)
-        fields.addRow("Package Size", self.package_size)
-        fields.addRow("Package Version", self.package_version)
-        fields.addRow("Type Name", self.type_name)
-        fields.addRow("Pin Count", self.pin_count)
+        fields.setVerticalSpacing(3)
+        rows = [
+            ("Recipe Name", self.recipe_name),
+            ("Package Family", self.package_family),
+            ("Package Type", self.package_type),
+            ("Package Size", self.package_size),
+            ("Package Version", self.package_version),
+            ("Type Name", self.type_name),
+            ("Pin Count", self.pin_count),
+            ("Notes", self.notes),
+        ]
+        for row, (label, field) in enumerate(rows):
+            fields.addWidget(QLabel(label), row, 0)
+            fields.addWidget(field, row, 1)
+        fields.setColumnStretch(1, 1)
         form_layout.addLayout(fields)
+        form_layout.addStretch(1)
 
-        notes_label = section_label("Notes")
-        form_layout.addWidget(notes_label)
-        form_layout.addWidget(self.notes, 1)
-
-        self.btn_save_recipe = make_button("Save Recipe")
-        self.btn_save_recipe.clicked.connect(self.save_recipe)
-        form_layout.addWidget(self.btn_save_recipe)
+        for previous, following in zip(compact_inputs, compact_inputs[1:]):
+            QWidget.setTabOrder(previous, following)
+        QWidget.setTabOrder(self.notes, self.btn_save_recipe)
 
         root_layout.addWidget(list_card, 1)
         root_layout.addWidget(form_card, 3)

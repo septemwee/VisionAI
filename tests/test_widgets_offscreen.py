@@ -112,7 +112,7 @@ def test_step_status_bar_next_button(qapp):
     bar = StepStatusBar()
 
     bar.update_statuses(ta.compute_step_status({"recipe_name": "R"}))
-    assert bar.next_button.text().startswith("Next: S1")
+    assert bar.next_button.text() == "Required next: Recipe"
     assert bar.next_button.isEnabled()
 
     complete = {
@@ -120,7 +120,7 @@ def test_step_status_bar_next_button(qapp):
         for step_id in ta.STEP_IDS
     }
     bar.update_statuses(complete)
-    assert bar.next_button.text() == "All Steps OK"
+    assert bar.next_button.text() == "Setup complete"
     assert not bar.next_button.isEnabled()
 
 
@@ -137,6 +137,9 @@ def test_training_page_panel_states(qapp):
 
 def test_training_page_proposal_and_apply(qapp, temp_recipes_dir, monkeypatch):
     monkeypatch.setattr(QMessageBox, "information", lambda *a, **k: None)
+    monkeypatch.setattr(QMessageBox, 'warning', lambda *a, **k: None)
+    monkeypatch.setattr('services.validation_service.artifact_identity', lambda recipe: 'verified-model')
+    monkeypatch.setattr('services.validation_service.audit_splits', lambda root: {'sha256': 'verified-data'})
 
     page = TrainingPage()
     recipe = _ok_recipe()
@@ -149,6 +152,16 @@ def test_training_page_proposal_and_apply(qapp, temp_recipes_dir, monkeypatch):
     assert page.btn_apply_calibration.isEnabled()
     assert "Proposed threshold" in page.lbl_proposed.text()
     assert "2 images" in page.lbl_stats.text()
+
+    page._validation_result = {'recipe_name': recipe['recipe_name'], 'report': {
+        'model_identity': 'verified-model', 'dataset_audit': {'sha256': 'verified-data'},
+        'threshold': page._proposal[0],
+        'pixel_gate': {
+            'config': {'enabled': True, 'threshold_ratio': .5, 'min_area_px': 4, 'max_area_px': 64},
+            'calibration': {},
+        },
+    }}
+    recipe['prepared_dataset_path'] = str(temp_recipes_dir)
 
     page.apply_calibration()
 
@@ -185,6 +198,7 @@ def test_training_page_blocks_saturated_proposal(qapp, temp_recipes_dir, monkeyp
 
 def test_export_page_summary_and_finalize(qapp, temp_recipes_dir, monkeypatch):
     monkeypatch.setattr(QMessageBox, "information", lambda *a, **k: None)
+    monkeypatch.setattr(QMessageBox, 'warning', lambda *a, **k: None)
 
     page = ExportPage()
     recipe = _ok_recipe()
@@ -197,11 +211,7 @@ def test_export_page_summary_and_finalize(qapp, temp_recipes_dir, monkeypatch):
     assert page.btn_finalize.isEnabled()
 
     page.finalize()
-    assert recipe["validated"] is True
-    assert recipe["version"] == "1.1"
-
-    saved = recipe_service_module.RecipeService().load_recipe("R")
-    assert saved["validated"] is True
+    assert not recipe.get('validated', False)
 
 
 def test_dataset_page_analysis_display(qapp):

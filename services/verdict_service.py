@@ -10,10 +10,11 @@ gate that cannot be evaluated always yields FAIL, never PASS.
 """
 
 import math
+import numpy as np
 
 from services.patchcore_service import SCORE_SCALE
 from services.recipe_service import normalize_pixel_gate
-from utils.pixel_gate import evaluate_pixel_gate
+from utils.pixel_gate import evaluate_pixel_gate, unwrap_anomaly_map
 
 
 def evaluate_verdict(score, anomaly_map, threshold, recipe):
@@ -29,6 +30,12 @@ def evaluate_verdict(score, anomaly_map, threshold, recipe):
         # silently pass the part; an unevaluable prediction must fail.
         return True, f"Invalid PatchCore score {score!r}", 0
 
+    if not math.isfinite(threshold) or threshold <= 0:
+        return True, "Invalid anomaly threshold", 0
+    amap = unwrap_anomaly_map(anomaly_map)
+    if amap is None or amap.ndim != 2 or not amap.size or not np.isfinite(amap).all():
+        return True, "Inspection unavailable: invalid anomaly map", 0
+
     is_defect = score > threshold
     reason = f"Score: {score:.4f} (threshold: {threshold:.4f})"
     gate_region_px = 0
@@ -40,9 +47,15 @@ def evaluate_verdict(score, anomaly_map, threshold, recipe):
         # region still fails the part.
         gate = normalize_pixel_gate(recipe)
 
-        gate["enabled"] = False
-        
-        if gate["enabled"]:
+        # Legacy recipes were calibrated for image scores only. A local rule
+        # needs an explicit version and a matching calibration record.
+        local_policy = recipe.get("verdict_policy") == "image_and_pixel_v1"
+        if local_policy:
+            calibration = recipe.get("calibration") or {}
+            if (calibration.get("pixel_gate") != gate
+                    or calibration.get("proposed") != threshold):
+                return True, "Inspection unavailable: pixel gate requires calibration", 0
+        if local_policy and gate["enabled"]:
             pixel_threshold = gate["threshold_ratio"] * threshold * SCORE_SCALE
 
             if anomaly_map is None:
@@ -70,11 +83,3 @@ def evaluate_verdict(score, anomaly_map, threshold, recipe):
                 )
 
     return is_defect, reason, gate_region_px
-
-"""Shared PASS/FAIL verdict logic for live inspection and trainer review.
-
-DEBUG VERSION:
-Force every prediction to PASS so the UI / heatmap pipeline can be tested
-without verdict interference.
-"""
-
