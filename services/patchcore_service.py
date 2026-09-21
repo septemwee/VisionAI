@@ -13,7 +13,7 @@ from safetensors.torch import load_file
 from services.recipe_service import RecipeService
 from utils.paths import BACKBONE_WEIGHTS_PATH, RECIPES_DIR, relativize_recipe_path, resolve_recipe_path
 
-IMAGE_SIZE = (256, 256)
+IMAGE_SIZE = (512, 512)
 BACKBONE = "wide_resnet50_2"
 
 Folder = None
@@ -299,7 +299,8 @@ class PatchCoreService:
         prediction = self._predict_single(image)
 
         score = float(prediction.pred_score[0]) / SCORE_SCALE
-        print(f"[PATCHCORE] score={score:.4f}")
+        if os.environ.get("VISIONAI_INSPECTION_TRACE", "0") == "1":
+            print(f"[PATCHCORE] score={score:.4f}")
         return score
 
     def predict_full(self, image):
@@ -320,7 +321,8 @@ class PatchCoreService:
         if anomaly_map is not None:
             anomaly_map = anomaly_map.cpu().numpy()
 
-        print(f"[PATCHCORE] score={score:.4f} map={anomaly_map is not None}")
+        if os.environ.get("VISIONAI_INSPECTION_TRACE", "0") == "1":
+            print(f"[PATCHCORE] score={score:.4f} map={anomaly_map is not None}")
         return score, anomaly_map
 
     def predict_full_batch(self, images):

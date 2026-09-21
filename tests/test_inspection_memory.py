@@ -131,6 +131,8 @@ def test_fresh_detection_is_reinspected_not_carried(worker, monkeypatch):
     assert payload["inspection_result"] == "PASS"
     assert payload["score"] == pytest.approx(0.1)
     assert frames[-1][2][0]["result"] == "PASS"
+    # A preliminary DETECTED emission causes yellow/green flicker each cycle.
+    assert len(frames) == 1
 
 
 def test_lost_part_resets_orientation_cache(worker, monkeypatch):

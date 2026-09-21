@@ -12,16 +12,18 @@ import math
 import os
 import sys
 import time
+import threading
 
 import cv2
 import mss
 import numpy as np
 import pygetwindow as gw
-from PySide6.QtCore import QObject, QThread, Signal, Slot
+from PySide6.QtCore import QObject, QThread, Signal, Slot, QTimer
 from PySide6.QtWidgets import QApplication, QMessageBox
 from ultralytics import YOLO
 
 from services.patchcore_service import PatchCoreService
+from services.latest_frame import LatestFrame
 from services.recipe_service import (
     RecipeService,
     normalize_anomaly_threshold,
@@ -50,17 +52,14 @@ ORIENTATION_POSITION_TOLERANCE = 2.0
 MAX_INSPECTIONS_PER_FRAME = 8
 FALLBACK_TARGET_WIDTH = 1000
 FALLBACK_TARGET_HEIGHT = 700
+INSPECTION_TRACE = os.environ.get("VISIONAI_INSPECTION_TRACE", "0") == "1"
+OVERLAY_Z_ORDER_INTERVAL_SECONDS = 0.5
 
 _NO_PENDING_RECIPE = object()
 
 
 class InspectionWorker(QThread):
-    """Runs capture → detect → inspect away from the GUI thread.
-
-    Every result is delivered to the GUI thread through signals; no QWidget
-    is ever touched from this thread. A slow cycle simply delays the next
-    tick instead of starving the UI event loop.
-    """
+    """Inspect the latest detection while an independent producer runs YOLO."""
 
     overlay_update = Signal(object, object, object, object)
     status_update = Signal(dict)
@@ -89,11 +88,17 @@ class InspectionWorker(QThread):
         self.orientation_states = {}
         self.orientation_ticks = {}
         self.orientation_dirty = False
+        self._last_normalized_roi = None
 
         self.sct = None
         self.last_capture_from_screen = False
         self.capture_only = False
         self._source_window = None
+        self.live_frames = LatestFrame()
+        self.completed_frames = LatestFrame()
+        self.pipeline_epoch = 0
+        self._inspection_source = None
+        self._last_perf_log = 0.0
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -102,9 +107,11 @@ class InspectionWorker(QThread):
     def apply_recipe(self, recipe_data, request_id=0):
         """Queue a recipe switch; the model is loaded on this thread."""
         self.pending_recipe = (recipe_data, int(request_id))
+        self.pipeline_epoch += 1
 
     def set_capture_only(self, enabled):
         self.capture_only = bool(enabled)
+        self.pipeline_epoch += 1
 
     def stop(self):
         self.requestInterruption()
@@ -127,7 +134,7 @@ class InspectionWorker(QThread):
         self.orientation_dirty = False
 
     def run(self):
-        """Drive the pipeline in a fixed-interval loop on this thread.
+        """Consume the latest available capture on this thread.
 
         A plain loop (instead of a QTimer inside the thread) keeps every
         tick on the worker: a QTimer connected to a QThread-subclass method
@@ -152,20 +159,81 @@ class InspectionWorker(QThread):
                 return
         self.state_manager.set_state(ProgramState.READY)
 
-        interval = PROCESS_INTERVAL_MS / 1000.0
-        next_deadline = time.time() + interval
-
-        while not self.isInterruptionRequested():
-            now = time.time()
-            if now >= next_deadline:
+        producer = threading.Thread(target=self._detect_latest, name="live-detection")
+        producer.start()
+        consumed = 0
+        try:
+            while not self.isInterruptionRequested():
+                version, packet = self.live_frames.read()
+                if packet is None or version == consumed or self.capture_only:
+                    self.msleep(10)
+                    continue
+                consumed = version
+                if packet["epoch"] != self.pipeline_epoch:
+                    continue
                 try:
-                    self.tick()
-                except Exception as error:  # A tick must never kill the worker.
+                    inspection_started = time.monotonic()
+                    self.tick(packet)
+                    finished = time.monotonic()
+                    if finished - self._last_perf_log >= 5.0:
+                        print(f"[PERF] capture_yolo_ms={packet.get('detection_ms', 0):.1f} "
+                              f"inspection_ms={(finished-inspection_started)*1000:.1f} "
+                              f"sample_age_ms={(finished-packet['captured_at'])*1000:.1f}")
+                        self._last_perf_log = finished
+                except Exception as error:
                     print(f"Pipeline tick error: {error}")
                     self.state_manager.set_state(ProgramState.ERROR, str(error))
-                next_deadline = time.time() + interval
-            else:
-                time.sleep(min(0.02, max(next_deadline - now, 0.001)))
+        finally:
+            self.requestInterruption()
+            producer.join()
+            self.sct.close()
+
+    def _detect_latest(self):
+        """YOLO has one owner; publish only the newest capture, never a queue."""
+        detector = InspectionWorker(self.detection_model)
+        detector.sct = mss.mss()
+        source_id = 0
+        previous_source = None
+        try:
+            while not self.isInterruptionRequested():
+                if self.capture_only:
+                    previous_source = None
+                    time.sleep(0.05)
+                    continue
+                started = time.monotonic()
+                epoch = self.pipeline_epoch
+                window = None
+                frame = rect = result = None
+                fps = 0.0
+                error = ""
+                boxes = []
+                try:
+                    window = detector.find_window()
+                    if window is not None and not getattr(window, "isMinimized", False):
+                        frame, rect = detector.grab_frame(window)
+                        result, fps = detector.detect(frame)
+                        boxes = detector.parse_boxes(result)
+                    else:
+                        window = None
+                except Exception as exc:
+                    error = str(exc)
+                    window = None
+                source = (getattr(window, "_hWnd", None), rect, bool(boxes)) if window else None
+                if source != previous_source:
+                    source_id += 1
+                    previous_source = source
+                if epoch == self.pipeline_epoch:
+                    self.live_frames.put(dict(
+                        epoch=epoch, source_id=source_id, window=window,
+                        frame=frame, rect=rect, result=result, fps=fps,
+                        boxes=boxes,
+                        screen=detector.last_capture_from_screen, error=error,
+                        captured_at=started,
+                        detection_ms=(time.monotonic()-started)*1000,
+                    ))
+                time.sleep(max(0.001, 0.05 - (time.monotonic() - started)))
+        finally:
+            detector.sct.close()
 
     # ------------------------------------------------------------------
     # Recipe handling
@@ -359,6 +427,9 @@ class InspectionWorker(QThread):
         for points, conf, _cls_id in zip(points_list, conf_list, cls_list):
             boxes.append({"points": points, "conf": float(conf), "label": label})
 
+        # Use the current detection for both crop and display. Temporal
+        # smoothing here makes the crop trail a moving physical package.
+
         return boxes
 
     def apply_detection_memory(self, boxes):
@@ -399,18 +470,28 @@ class InspectionWorker(QThread):
     # Inspection pipeline
     # ------------------------------------------------------------------
 
-    def tick(self):
+    def tick(self, packet=None):
         """Run one capture-detect-inspect cycle on the worker thread."""
         if self.capture_only:
             return
         self._load_pending_recipe()
+        if packet is not None:
+            if packet["epoch"] != self.pipeline_epoch:
+                return
+            source = (packet["epoch"], packet["source_id"])
+            if source != self._inspection_source:
+                self.reset_scene_memory()
+                self._inspection_source = source
 
-        window = self.find_window()
+        window = packet["window"] if packet is not None else self.find_window()
 
         # A minimized source cannot be captured reliably; treat it like a
         # missing source so the overlay and verdicts reset instead of
         # drawing stale boxes over other windows.
         if window is None or getattr(window, "isMinimized", False):
+            if packet is not None:
+                self.reset_scene_memory()
+                return  # The GUI polls source state independently of inference.
             self._source_window = None
             self.state_manager.set_state(ProgramState.WAITING_SOURCE)
             self.overlay_update.emit(None, None, [], None)
@@ -426,7 +507,11 @@ class InspectionWorker(QThread):
             return
 
         try:
-            frame, rect = self.grab_frame(window)
+            if packet is not None:
+                frame, rect = packet["frame"], packet["rect"]
+                self.last_capture_from_screen = packet["screen"]
+            else:
+                frame, rect = self.grab_frame(window)
         except Exception as error:
             self.state_manager.set_state(ProgramState.ERROR, str(error))
             print(f"Capture error: {error}")
@@ -457,7 +542,7 @@ class InspectionWorker(QThread):
             return
 
         try:
-            result, fps = self.detect(frame)
+            result, fps = (packet["result"], packet["fps"]) if packet is not None else self.detect(frame)
         except Exception as error:
             self.state_manager.set_state(ProgramState.ERROR, str(error))
             print(f"Detection error: {error}")
@@ -481,6 +566,9 @@ class InspectionWorker(QThread):
 
         boxes = self.apply_detection_memory(boxes)
         holding = any(box.get("stale") for box in boxes)
+
+        # Publish one coherent frame with its verdict below. Publishing a
+        # DETECTED frame here resets the result colour on every cycle.
 
         count = len(boxes)
         score = 0.0
@@ -535,19 +623,27 @@ class InspectionWorker(QThread):
                 self._last_roi_shape = None
                 self._last_anomaly_map = None
                 self._last_marking = {"status": "NOT CHECKED", "score": None}
+                self._last_normalized_roi = None
                 try:
                     try:
                         result, item_score, item_reason, upside_down, item_heatmap = self.inspect(
-                            frame, box["points"], object_index
+                            frame, box["points"], object_index, render_heatmap=False
                         )
                     except TypeError as error:
-                        # Preserve compatibility with injected two-argument
+                        # Preserve compatibility with injected legacy
                         # inspectors used by integrations and tests.
-                        if "positional" not in str(error):
+                        if "render_heatmap" not in str(error) and "positional" not in str(error):
                             raise
-                        result, item_score, item_reason, upside_down, item_heatmap = self.inspect(
-                            frame, box["points"]
-                        )
+                        try:
+                            result, item_score, item_reason, upside_down, item_heatmap = self.inspect(
+                                frame, box["points"], object_index
+                            )
+                        except TypeError as fallback_error:
+                            if "positional" not in str(fallback_error):
+                                raise
+                            result, item_score, item_reason, upside_down, item_heatmap = self.inspect(
+                                frame, box["points"]
+                            )
                 except Exception as error:
                     self.state_manager.set_state(ProgramState.ERROR, str(error))
                     print(f"Inspection error: {error}")
@@ -561,13 +657,19 @@ class InspectionWorker(QThread):
                 box["is_upside_down"] = upside_down
                 box["marking"] = dict(self._last_marking, object=next(
                     i for i, candidate in enumerate(boxes, 1) if candidate is box))
-                box["heatmap"] = None if self.last_capture_from_screen else item_heatmap
-                box["segments"] = self._segment_contours(
-                    box["points"],
-                    getattr(self, "_last_roi_shape", None),
-                    getattr(self, "_last_anomaly_map", None),
-                    self.target_width,
-                    self.target_height,
+                box["_normalized_roi"] = self._last_normalized_roi
+                box["_anomaly_map"] = self._last_anomaly_map
+                # A PASS has no anomaly segment to show. Skipping this image
+                # mapping avoids several large resize/morphology operations
+                # on every normal inspection tick.
+                box["segments"] = (
+                    self._segment_contours(
+                        box["points"],
+                        getattr(self, "_last_roi_shape", None),
+                        getattr(self, "_last_anomaly_map", None),
+                        self.target_width,
+                        self.target_height,
+                    ) if result == "FAIL" else []
                 )
 
             for box in sorted(boxes, key=lambda item: item["conf"], reverse=True)[MAX_INSPECTIONS_PER_FRAME:]:
@@ -590,12 +692,17 @@ class InspectionWorker(QThread):
                 score = summary["score"]
                 fail_reason = summary.get("fail_reason", "")
                 is_upside_down = summary.get("is_upside_down", False)
-                heatmap = summary.get("heatmap")
+                if not self.last_capture_from_screen:
+                    heatmap = self._summary_heatmap(summary)
                 marking = summary.get("marking")
 
-        self.overlay_update.emit(frame, rect, boxes, getattr(window, "_hWnd", None))
-        self.status_update.emit(
-            {
+            # Raw crops/maps are worker-only data. Do not retain or queue
+            # them with overlay payloads after the status heatmap is built.
+            for box in boxes:
+                box.pop("_normalized_roi", None)
+                box.pop("_anomaly_map", None)
+
+        payload = {
                 "system_state": self.state_manager.get_state(),
                 "inspection_result": inspection_result,
                 "count": count,
@@ -608,7 +715,24 @@ class InspectionWorker(QThread):
                 "error_message": self.state_manager.get_message(),
                 "recipe_request_id": self.active_recipe_request_id,
             }
-        )
+        if packet is not None:
+            self.completed_frames.put(dict(packet, boxes=boxes, payload=payload))
+        else:
+            self.overlay_update.emit(frame, rect, boxes, getattr(window, "_hWnd", None))
+            self.status_update.emit(payload)
+
+    def _summary_heatmap(self, box):
+        """Build one status heatmap instead of one per detected package."""
+        roi = box.get("_normalized_roi")
+        anomaly_map = box.get("_anomaly_map")
+        if roi is None or anomaly_map is None:
+            return None
+        try:
+            return heatmap_overlay(roi, anomaly_map, opacity=0.45)
+        except Exception as error:
+            if INSPECTION_TRACE:
+                print(f"[HEATMAP] status rendering failed: {error}")
+            return None
 
     @staticmethod
     def _segment_contours(points, crop_shape, anomaly_map, target_width, target_height):
@@ -680,6 +804,7 @@ class InspectionWorker(QThread):
             )
             due = tick >= ORIENTATION_RECHECK_TICKS
             if cached_path == template_path and not moved and not due:
+                self.orientation_ticks[object_key] = tick
                 return is_upside_down, angle, ""
 
         is_upside_down, angle, orientation_error = self.check_orientation(roi)
@@ -716,7 +841,7 @@ class InspectionWorker(QThread):
             "angle": math.radians(theta),
         }
 
-    def inspect(self, frame, points, object_key=None):
+    def inspect(self, frame, points, object_key=None, render_heatmap=True):
         """Inspect one detected package.
 
         Returns ``(inspection_result, score, fail_reason, is_upside_down,
@@ -767,6 +892,7 @@ class InspectionWorker(QThread):
             return "FAIL", 0.0, laser_reason, False, None
 
         normalized_roi = letterbox(roi, int(self.target_width), int(self.target_height))
+        self._last_normalized_roi = normalized_roi
         score, anomaly_map = self.patchcore_service.predict_full(normalized_roi)
         self._last_anomaly_map = anomaly_map
 
@@ -775,27 +901,21 @@ class InspectionWorker(QThread):
             score, anomaly_map, threshold, self.current_recipe
         )
 
-        # Display the heatmap over the normalized inspection crop.
-        display_map = self.patchcore_service.display_anomaly_map(anomaly_map)
-
-        try:
-            heatmap = heatmap_overlay(
-                normalized_roi,
-                anomaly_map,
-                opacity=0.45
-            )
-
-        except Exception as error:
-            print(f"[HEATMAP] box-aligned display failed: {error}")
-            heatmap = heatmap_overlay(normalized_roi, display_map)
+        heatmap = None
+        if render_heatmap:
+            heatmap = self._summary_heatmap({
+                "_normalized_roi": normalized_roi,
+                "_anomaly_map": anomaly_map,
+            })
 
         result = "FAIL" if is_defect else "PASS"
 
         gate_info = f" gate_region={gate_region_px}px" if gate_region_px else ""
-        print(
-            f"[INSPECTION] {result} score={score:.4f} "
-            f"threshold={threshold:.4f}{gate_info}"
-        )
+        if INSPECTION_TRACE:
+            print(
+                f"[INSPECTION] {result} score={score:.4f} "
+                f"threshold={threshold:.4f}{gate_info}"
+            )
 
         return result, score, reason, False, heatmap
 
@@ -828,9 +948,10 @@ class InspectionWorker(QThread):
             print(f"Orientation check error: {error}")
             return False, 0, f"Orientation check failed: {error}"
 
-        print(
-            f"[TOPMARK] angle={angle} score={match_score:.4f} gap={score_gap:.4f}"
-        )
+        if INSPECTION_TRACE:
+            print(
+                f"[TOPMARK] angle={angle} score={match_score:.4f} gap={score_gap:.4f}"
+            )
         return angle != 0, angle, ""
 
 
@@ -848,6 +969,14 @@ class InspectionApp(QObject):
         self.status_widget = StatusWidget(self.overlay)
 
         self.worker = InspectionWorker(detection_model, detection_model_path)
+        self._last_overlay_z_order_sync = 0.0
+        self._display_versions = None
+        self._display_source = None
+        self._status_result_version = 0
+        self.live_timer = QTimer(self)
+        self.live_timer.setInterval(33)
+        self.live_timer.timeout.connect(self._poll_live)
+        self.live_timer.start()
         self.worker.overlay_update.connect(self._apply_overlay)
         self.worker.status_update.connect(self._apply_status)
         self.status_widget.recipe_request_changed.connect(self.worker.apply_recipe)
@@ -867,6 +996,66 @@ class InspectionApp(QObject):
 
         self.worker.start()
 
+    def _poll_live(self):
+        """Render latest geometry; results explicitly describe a sampled frame."""
+        if self.status_widget.capture_mode or self.overlay.roi_mode:
+            return
+        version, packet = self.worker.live_frames.read()
+        result_version, completed = self.worker.completed_frames.read()
+        if packet is None or packet["epoch"] != self.worker.pipeline_epoch:
+            return
+        versions = (version, result_version)
+        if self._display_versions == versions:
+            return
+        self._display_versions = versions
+        source = (packet["epoch"], packet["source_id"])
+        if packet["window"] is None:
+            self._apply_overlay(None, None, [], None)
+            self.status_widget.update_status(
+                system_state=ProgramState.WAITING_SOURCE,
+                inspection_result="NO SOURCE", count=0, fps=0,
+                error_message=packet["error"],
+            )
+            self._display_source = source
+            return
+        boxes = [dict(box, label="Package") for box in packet["boxes"]]
+        valid_result = (
+            completed is not None
+            and (completed["epoch"], completed["source_id"]) == source
+            and completed["payload"]["recipe_request_id"] == self.status_widget.recipe_request_id
+        )
+        if valid_result:
+            # Only annotate geometrically corresponding boxes. The LAST
+            # prefix distinguishes the completed sample from the live view;
+            # never project old anomaly contours onto a moving frame.
+            available = list(completed["boxes"])
+            for box in boxes:
+                match = next((old for old in available if np.allclose(
+                    old["points"], box["points"], atol=2.0, rtol=0)), None)
+                if match is not None:
+                    available = [old for old in available if old is not match]
+                    box.update(result=match.get("result", "DETECTED"),
+                               score=match.get("score", 0), label=match["label"])
+                    box["display_text"] = f"{match['label']} | LAST {box['result']} | {box['score']:.3f}"
+                    box["segments"] = match.get("segments", [])
+            if result_version != self._status_result_version:
+                payload = dict(completed["payload"])
+                elapsed = time.monotonic() - completed["captured_at"]
+                payload["fail_reason"] = f"Last inspected sample ({elapsed:.2f}s): " + payload.get("fail_reason", "")
+                self._apply_status(payload)
+                self._status_result_version = result_version
+        elif self._display_source != source:
+            self.status_widget.update_status(
+                system_state=ProgramState.READY,
+                inspection_result="READY" if boxes else "NOT FOUND",
+                count=len(boxes), fps=packet["fps"],
+                fail_reason="Waiting for the first inspected sample",
+                recipe_request_id=self.status_widget.recipe_request_id,
+            )
+        self._display_source = source
+        self._apply_overlay(packet["frame"], packet["rect"], boxes,
+                            getattr(packet["window"], "_hWnd", None))
+
     @Slot(object, object, object, object)
     def _apply_overlay(self, frame, rect, boxes, hwnd):
         """Apply one overlay frame on the GUI thread.
@@ -884,7 +1073,10 @@ class InspectionApp(QObject):
             return
 
         left, top, width, height = rect
-        self.overlay.setGeometry(int(left), int(top), int(width), int(height))
+        if (self.overlay.x(), self.overlay.y(), self.overlay.width(), self.overlay.height()) != (
+            int(left), int(top), int(width), int(height)
+        ):
+            self.overlay.setGeometry(int(left), int(top), int(width), int(height))
         self._place_status_widget(left, top, width, height)
         if not self.status_widget.isVisible():
             self.status_widget.show()
@@ -892,7 +1084,10 @@ class InspectionApp(QObject):
         self.overlay.capture_view_rect = None
         self.overlay.update_boxes(boxes)
         self.overlay.show()
-        self.overlay.sync_above_window(hwnd)
+        now = time.monotonic()
+        if now - self._last_overlay_z_order_sync >= OVERLAY_Z_ORDER_INTERVAL_SECONDS:
+            self.overlay.sync_above_window(hwnd)
+            self._last_overlay_z_order_sync = now
 
     def _place_status_widget(self, left, top, width, height):
         if QApplication.activePopupWidget() is not None:
@@ -923,8 +1118,10 @@ class InspectionApp(QObject):
         self.status_widget.update_status(**payload)
 
     def _shutdown(self):
+        self.live_timer.stop()
         self.worker.stop()
-        self.worker.wait(3000)
+        # Do not destroy a running QThread/model while inference is finishing.
+        self.worker.wait()
 
 
 def main():

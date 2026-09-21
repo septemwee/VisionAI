@@ -1,0 +1,11 @@
+{
+    "model_type": "patchcore",
+    "backbone": "wide_resnet50_2",
+    "memory_bank_shape": [
+        32768,
+        1536
+    ],
+    "saved_at": "2026-09-21T07:28:53+00:00",
+    "memory_bank_sha256": "06965581ca62194045d1cbd22b9bba37a07aed3f2890c741ef722258f4d75264",
+    "patchcore_sha256": "cf74d739a793d80129d75b57a3aba2403e20602cffb7fdcd08c2bf3ab1465044"
+}

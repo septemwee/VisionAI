@@ -1,0 +1,1026 @@
+{
+  "selected": {
+    "size": 512,
+    "bank": 512,
+    "neighbors": 1
+  },
+  "measurements": [
+    {
+      "model": "saved_baseline",
+      "size": 512,
+      "bank": 32768,
+      "neighbors": 9,
+      "threads": 2,
+      "median_ms": 17785.85975000169,
+      "p95_ms": 19133.359695004765,
+      "latency_samples_ms": [
+        8888.412999978755,
+        19173.733700008597,
+        18456.826300011016,
+        17114.893199992366,
+        19058.379399997648,
+        12542.609800002538,
+        14466.030599956866,
+        18766.372499987483
+      ],
+      "scores": [
+        0.4400773620605469,
+        0.36925449371337893,
+        0.36958324432373046,
+        0.36315792083740234,
+        0.3971223831176758,
+        0.3956219482421875,
+        0.3639051818847656,
+        0.38676368713378906
+      ]
+    },
+    {
+      "model": "saved_baseline",
+      "size": 512,
+      "bank": 32768,
+      "neighbors": 9,
+      "threads": 4,
+      "median_ms": 8162.580800038995,
+      "p95_ms": 9062.634939982672,
+      "latency_samples_ms": [
+        7933.624400000554,
+        7306.9511000067,
+        7942.403200024273,
+        9172.818299965002,
+        8711.868399986997,
+        8858.008700015489,
+        7619.3290000082925,
+        8382.758400053717
+      ],
+      "scores": [
+        0.4400773620605469,
+        0.36925449371337893,
+        0.36958324432373046,
+        0.36315792083740234,
+        0.3971223831176758,
+        0.3956219482421875,
+        0.3639051818847656,
+        0.38676368713378906
+      ]
+    },
+    {
+      "model": "saved_baseline",
+      "size": 512,
+      "bank": 32768,
+      "neighbors": 9,
+      "threads": 8,
+      "median_ms": 5312.536199984606,
+      "p95_ms": 5736.288465012331,
+      "latency_samples_ms": [
+        5707.501200027764,
+        5751.78930000402,
+        4945.47470001271,
+        5317.384800000582,
+        5097.368099959567,
+        5257.306300045457,
+        5555.134500027634,
+        5307.687599968631
+      ],
+      "scores": [
+        0.4400773620605469,
+        0.36925449371337893,
+        0.36958324432373046,
+        0.36315792083740234,
+        0.3971223831176758,
+        0.3956219482421875,
+        0.3639051818847656,
+        0.38676368713378906
+      ]
+    },
+    {
+      "model": "calibration_selected",
+      "size": 512,
+      "bank": 512,
+      "neighbors": 1,
+      "threads": 2,
+      "median_ms": 4563.283199997386,
+      "p95_ms": 5139.155340005527,
+      "latency_samples_ms": [
+        3912.537800031714,
+        4635.61200001277,
+        4050.4558000247926,
+        5116.887899988797,
+        4465.345000033267,
+        4490.954399982002,
+        5151.145500014536,
+        4916.092699975707
+      ],
+      "scores": [
+        0.48609588623046873,
+        0.5087635803222657,
+        0.4942638397216797,
+        0.48001239776611326,
+        0.48880958557128906,
+        0.4728954315185547,
+        0.5148308563232422,
+        0.47665889739990236
+      ]
+    },
+    {
+      "model": "calibration_selected",
+      "size": 512,
+      "bank": 512,
+      "neighbors": 1,
+      "threads": 4,
+      "median_ms": 2372.56275000982,
+      "p95_ms": 2656.903030021931,
+      "latency_samples_ms": [
+        2191.446599957999,
+        2516.0789000219665,
+        2364.621000015177,
+        2226.7327000154182,
+        1965.0253999861889,
+        2729.937600030098,
+        2521.2674000067636,
+        2380.504500004463
+      ],
+      "scores": [
+        0.48609588623046873,
+        0.5087635803222657,
+        0.4942638397216797,
+        0.48001239776611326,
+        0.48880958557128906,
+        0.4728954315185547,
+        0.5148308563232422,
+        0.47665889739990236
+      ]
+    },
+    {
+      "model": "calibration_selected",
+      "size": 512,
+      "bank": 512,
+      "neighbors": 1,
+      "threads": 8,
+      "median_ms": 1351.4740499958862,
+      "p95_ms": 1595.1913949829757,
+      "latency_samples_ms": [
+        1713.7413999880664,
+        1348.94820000045,
+        1304.989599972032,
+        1363.0530000082217,
+        1353.9998999913223,
+        1323.7361999927089,
+        1263.1517000263557,
+        1375.0270999735221
+      ],
+      "scores": [
+        0.48609588623046873,
+        0.5087635803222657,
+        0.4942638397216797,
+        0.48001239776611326,
+        0.48880958557128906,
+        0.4728954315185547,
+        0.5148308563232422,
+        0.47665889739990236
+      ]
+    }
+  ],
+  "baseline_threshold": 0.5954712295532226,
+  "baseline_test": [
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_25792.jpg",
+      "kind": "good",
+      "score": 0.4400773620605469,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.4401 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_25796.jpg",
+      "kind": "good",
+      "score": 0.36925449371337893,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3693 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28363.jpg",
+      "kind": "good",
+      "score": 0.36958324432373046,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3696 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28364.jpg",
+      "kind": "good",
+      "score": 0.36315792083740234,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3632 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28368.jpg",
+      "kind": "good",
+      "score": 0.3971223831176758,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3971 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28375.jpg",
+      "kind": "good",
+      "score": 0.3956219482421875,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3956 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28381.jpg",
+      "kind": "good",
+      "score": 0.3639051818847656,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3639 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28401.jpg",
+      "kind": "good",
+      "score": 0.38676368713378906,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3868 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28412.jpg",
+      "kind": "good",
+      "score": 0.3903010177612305,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3903 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28413.jpg",
+      "kind": "good",
+      "score": 0.379823112487793,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3798 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28425.jpg",
+      "kind": "good",
+      "score": 0.45576038360595705,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.4558 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28436.jpg",
+      "kind": "good",
+      "score": 0.5389666366577148,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.5390 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28455.jpg",
+      "kind": "good",
+      "score": 0.41402008056640627,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.4140 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28456.jpg",
+      "kind": "good",
+      "score": 0.38586002349853515,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3859 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28459.jpg",
+      "kind": "good",
+      "score": 0.41568790435791014,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.4157 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28467.jpg",
+      "kind": "good",
+      "score": 0.3946189880371094,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3946 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28472.jpg",
+      "kind": "good",
+      "score": 0.40102592468261716,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.4010 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28478.jpg",
+      "kind": "good",
+      "score": 0.31199106216430667,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3120 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28481.jpg",
+      "kind": "good",
+      "score": 0.30158397674560544,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3016 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28507.jpg",
+      "kind": "good",
+      "score": 0.3355060958862305,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3355 (threshold: 0.5955)"
+    },
+    {
+      "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\test\\good\\Image_28509.jpg",
+      "kind": "good",
+      "score": 0.38808834075927734,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.3881 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_25792_f9cfe4af__scratch.png",
+      "kind": "scratch",
+      "score": 0.6721163177490235,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6721 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_25792_f9cfe4af__spot.png",
+      "kind": "spot",
+      "score": 0.7827799224853516,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7828 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_25792_f9cfe4af__chip.png",
+      "kind": "chip",
+      "score": 0.7584136199951171,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7584 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_25792_f9cfe4af__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.7174372863769531,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7174 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_25796_0a20a92f__scratch.png",
+      "kind": "scratch",
+      "score": 0.613776512145996,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6138 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_25796_0a20a92f__spot.png",
+      "kind": "spot",
+      "score": 0.811918716430664,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8119 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_25796_0a20a92f__chip.png",
+      "kind": "chip",
+      "score": 0.7184373474121094,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7184 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_25796_0a20a92f__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.7538179016113281,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7538 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28363_82371fdc__scratch.png",
+      "kind": "scratch",
+      "score": 0.674400405883789,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6744 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28363_82371fdc__spot.png",
+      "kind": "spot",
+      "score": 0.7455973052978515,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7456 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28363_82371fdc__chip.png",
+      "kind": "chip",
+      "score": 0.6443904876708985,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6444 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28363_82371fdc__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.8001422882080078,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8001 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28364_03e2307b__scratch.png",
+      "kind": "scratch",
+      "score": 0.5973762512207031,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.5974 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28364_03e2307b__spot.png",
+      "kind": "spot",
+      "score": 0.7784931182861328,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7785 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28364_03e2307b__chip.png",
+      "kind": "chip",
+      "score": 0.6578987121582032,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6579 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28364_03e2307b__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.67559814453125,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6756 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28368_c19d8858__scratch.png",
+      "kind": "scratch",
+      "score": 0.5051885223388672,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.5052 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28368_c19d8858__spot.png",
+      "kind": "spot",
+      "score": 0.775552978515625,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7756 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28368_c19d8858__chip.png",
+      "kind": "chip",
+      "score": 0.6800059509277344,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6800 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28368_c19d8858__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.6206644439697265,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6207 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28375_4e1ea55d__scratch.png",
+      "kind": "scratch",
+      "score": 0.6514250946044922,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6514 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28375_4e1ea55d__spot.png",
+      "kind": "spot",
+      "score": 0.7723512268066406,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7724 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28375_4e1ea55d__chip.png",
+      "kind": "chip",
+      "score": 0.6935939025878907,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6936 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28375_4e1ea55d__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.5768118667602539,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.5768 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28381_839709ad__scratch.png",
+      "kind": "scratch",
+      "score": 0.64765380859375,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6477 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28381_839709ad__spot.png",
+      "kind": "spot",
+      "score": 0.8449652862548828,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8450 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28381_839709ad__chip.png",
+      "kind": "chip",
+      "score": 0.6345781707763671,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6346 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28381_839709ad__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.7579832458496094,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7580 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28401_6432e845__scratch.png",
+      "kind": "scratch",
+      "score": 0.5479519653320313,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.5480 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28401_6432e845__spot.png",
+      "kind": "spot",
+      "score": 0.8002562713623047,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8003 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28401_6432e845__chip.png",
+      "kind": "chip",
+      "score": 0.6227053070068359,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6227 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28401_6432e845__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.6300400161743164,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6300 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28412_11f5fb24__scratch.png",
+      "kind": "scratch",
+      "score": 0.7457395935058594,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7457 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28412_11f5fb24__spot.png",
+      "kind": "spot",
+      "score": 0.7669180297851562,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7669 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28412_11f5fb24__chip.png",
+      "kind": "chip",
+      "score": 0.7189112854003906,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7189 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28412_11f5fb24__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.6855854034423828,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6856 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28413_584a9425__scratch.png",
+      "kind": "scratch",
+      "score": 0.6684381103515625,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6684 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28413_584a9425__spot.png",
+      "kind": "spot",
+      "score": 0.6923755645751953,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6924 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28413_584a9425__chip.png",
+      "kind": "chip",
+      "score": 0.6607223510742187,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6607 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28413_584a9425__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.5955476760864258,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.5955 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28425_9286af3e__scratch.png",
+      "kind": "scratch",
+      "score": 0.6331630706787109,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6332 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28425_9286af3e__spot.png",
+      "kind": "spot",
+      "score": 0.7051128387451172,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7051 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28425_9286af3e__chip.png",
+      "kind": "chip",
+      "score": 0.6486091613769531,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6486 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28425_9286af3e__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.6329425811767578,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6329 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28436_247adeab__scratch.png",
+      "kind": "scratch",
+      "score": 0.5714601898193359,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.5715 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28436_247adeab__spot.png",
+      "kind": "spot",
+      "score": 0.7772533416748046,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7773 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28436_247adeab__chip.png",
+      "kind": "chip",
+      "score": 0.6763207244873047,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6763 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28436_247adeab__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.7046472930908203,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7046 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28455_f3b3c997__scratch.png",
+      "kind": "scratch",
+      "score": 0.6445174407958985,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6445 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28455_f3b3c997__spot.png",
+      "kind": "spot",
+      "score": 0.790853271484375,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7909 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28455_f3b3c997__chip.png",
+      "kind": "chip",
+      "score": 0.6840775299072266,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6841 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28455_f3b3c997__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.7903498840332032,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7903 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28456_41d1a021__scratch.png",
+      "kind": "scratch",
+      "score": 0.6546127319335937,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6546 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28456_41d1a021__spot.png",
+      "kind": "spot",
+      "score": 0.8105514526367188,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8106 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28456_41d1a021__chip.png",
+      "kind": "chip",
+      "score": 0.668709716796875,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6687 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28456_41d1a021__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.8210692596435547,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8211 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28459_5393ec99__scratch.png",
+      "kind": "scratch",
+      "score": 0.5517147827148438,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.5517 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28459_5393ec99__spot.png",
+      "kind": "spot",
+      "score": 0.6907425689697265,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6907 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28459_5393ec99__chip.png",
+      "kind": "chip",
+      "score": 0.6715560150146485,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6716 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28459_5393ec99__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.7017798614501953,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7018 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28467_3fa4f3ea__scratch.png",
+      "kind": "scratch",
+      "score": 0.4337642288208008,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.4338 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28467_3fa4f3ea__spot.png",
+      "kind": "spot",
+      "score": 0.7083078765869141,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7083 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28467_3fa4f3ea__chip.png",
+      "kind": "chip",
+      "score": 0.6945719146728515,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6946 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28467_3fa4f3ea__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.6430475616455078,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6430 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28472_b179566e__scratch.png",
+      "kind": "scratch",
+      "score": 0.6266007614135742,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6266 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28472_b179566e__spot.png",
+      "kind": "spot",
+      "score": 0.7975389862060547,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7975 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28472_b179566e__chip.png",
+      "kind": "chip",
+      "score": 0.7022835540771485,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7023 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28472_b179566e__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.7541451263427734,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7541 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28478_247e30a6__scratch.png",
+      "kind": "scratch",
+      "score": 0.662249526977539,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6622 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28478_247e30a6__spot.png",
+      "kind": "spot",
+      "score": 0.7707803344726563,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7708 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28478_247e30a6__chip.png",
+      "kind": "chip",
+      "score": 0.7016755676269532,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7017 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28478_247e30a6__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.7989429473876953,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7989 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28481_882df65d__scratch.png",
+      "kind": "scratch",
+      "score": 0.5857458877563476,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.5857 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28481_882df65d__spot.png",
+      "kind": "spot",
+      "score": 0.7239859008789062,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7240 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28481_882df65d__chip.png",
+      "kind": "chip",
+      "score": 0.7066222381591797,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7066 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28481_882df65d__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.7131616973876953,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.7132 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28507_90cdc6f0__scratch.png",
+      "kind": "scratch",
+      "score": 0.6469723510742188,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6470 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28507_90cdc6f0__spot.png",
+      "kind": "spot",
+      "score": 0.8157001495361328,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8157 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28507_90cdc6f0__chip.png",
+      "kind": "chip",
+      "score": 0.6877729797363281,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6878 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28507_90cdc6f0__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.8086244964599609,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8086 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28509_3bac9fb9__scratch.png",
+      "kind": "scratch",
+      "score": 0.5514215850830078,
+      "image_fail": false,
+      "full_verdict_fail": false,
+      "reason": "Score: 0.5514 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28509_3bac9fb9__spot.png",
+      "kind": "spot",
+      "score": 0.8195503997802734,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8196 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28509_3bac9fb9__chip.png",
+      "kind": "chip",
+      "score": 0.6352828216552734,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.6353 (threshold: 0.5955)"
+    },
+    {
+      "file": "reports\\patchcore_experiment_20260921\\synthetic_test\\Image_28509_3bac9fb9__pin_discoloration.png",
+      "kind": "pin_discoloration",
+      "score": 0.8004684448242188,
+      "image_fail": true,
+      "full_verdict_fail": true,
+      "reason": "Score: 0.8005 (threshold: 0.5955)"
+    }
+  ]
+}

@@ -12,10 +12,10 @@
     "thumbnail_path": "",
     "anomaly_model": "",
     "confidence_threshold": 0.85,
-    "anomaly_threshold": 0.46176941833496066,
+    "anomaly_threshold": 0.5954712295532226,
     "created_date": "",
-    "last_trained": "2026-09-07T06:42:32+00:00",
-    "version": "1.4",
+    "last_trained": "2026-09-21T07:51:23+00:00",
+    "version": "1.5",
     "notes": "",
     "golden_image": "",
     "model_type": "patchcore",
@@ -34,38 +34,44 @@
         "trained": true,
         "type": "patchcore",
         "backbone": "wide_resnet50_2",
-        "path": "recipes\\TJA1041_SO14\\model"
+        "path": "recipes\\TJA1041_SO14\\model_versions\\c59dc39a1b6a44b4be0c682003bfb0e8"
     },
     "top_mark_template": "recipes\\TJA1041_SO14\\top_mark_template.jpg",
     "top_mark_roi": {
-        "x": 532,
-        "y": 296,
-        "w": 752,
-        "h": 491
+        "x": 489,
+        "y": 347,
+        "w": 765,
+        "h": 515
     },
     "roi_statistics": {
-        "avg_width": 1332,
-        "avg_height": 905,
-        "min_width": 999.0,
-        "max_width": 1665.0,
-        "min_height": 678.75,
-        "max_height": 1131.25,
-        "avg_area": 1205460,
-        "avg_ratio": 1.4718232044198896,
-        "target_width": 1154,
-        "target_height": 792,
-        "saved_count": 147,
-        "rejected_count": 45
+        "avg_width": 1245,
+        "avg_height": 864,
+        "min_width": 933.75,
+        "max_width": 1556.25,
+        "min_height": 648.0,
+        "max_height": 1080.0,
+        "avg_area": 1075680,
+        "avg_ratio": 1.4409722222222223,
+        "target_width": 1095,
+        "target_height": 744,
+        "saved_count": 142,
+        "rejected_count": 58,
+        "split_counts": {
+            "calibration": 21,
+            "test": 21,
+            "train": 100
+        },
+        "split_manifest": "recipes\\TJA1041_SO14\\patchcore_dataset\\split_manifest.json"
     },
     "assistant_state": {
         "steps": {
             "S6": {
                 "status": "ok",
-                "updated_at": "2026-09-07T06:42:22+00:00"
+                "updated_at": "2026-09-21T07:51:01+00:00"
             },
             "S7": {
                 "status": "ok",
-                "updated_at": "2026-09-07T06:42:32+00:00"
+                "updated_at": "2026-09-21T07:51:23+00:00"
             }
         },
         "chosen_path": "train_new",
@@ -94,29 +100,110 @@
             }
         },
         "flagged_count": 0,
-        "analyzed_at": "2026-09-07T05:07:32+00:00"
-    },
-    "calibration": {
-        "p99": 0.44176941833496064,
-        "margin": 1.0,
-        "proposed": 0.46176941833496066,
-        "expected_false_alarms": 0,
-        "warning": false,
-        "good_summary": {
-            "min": 0.2740650177001953,
-            "median": 0.28681154251098634,
-            "p95": 0.3626584587097168,
-            "p99": 0.44176941833496064,
-            "max": 0.45786792755126954,
-            "count": 147
-        },
-        "evaluated_at": "2026-09-07T06:42:22+00:00"
+        "analyzed_at": "2026-09-21T02:34:41+00:00"
     },
     "validated": true,
     "pixel_gate": {
         "enabled": true,
-        "threshold_ratio": 0.65,
-        "min_area_px": 12,
-        "max_area_px": 600
-    }
+        "threshold_ratio": 1.0,
+        "min_area_px": 64,
+        "max_area_px": 65536
+    },
+    "preprocessing_version": "inspection_obb_v1",
+    "training_dataset_audit": {
+        "counts": {
+            "train": 100,
+            "calibration": 21,
+            "test": 21
+        },
+        "sha256": "f620c3a45d693b1eb2bcc5485e77d554185fa9ec86a35282607bf61e416a6db5"
+    },
+    "verdict_policy": "image_and_pixel_v1",
+    "calibration": {
+        "method": "held_out_good_plus_synthetic_v1",
+        "proposed": 0.5954712295532226,
+        "expected_false_alarms": 0,
+        "synthetic_detected": 69,
+        "synthetic_total": 84,
+        "synthetic_detection_rate": 0.8214285714285714,
+        "warning": false,
+        "good_summary": {
+            "min": 0.32248970031738283,
+            "median": 0.37671134948730467,
+            "p95": 0.5385339736938477,
+            "p99": 0.5837370071411133,
+            "max": 0.5950377655029296,
+            "count": 21
+        },
+        "good_set_role": "held_out_calibration",
+        "evaluated_at": "2026-09-21T07:51:01+00:00",
+        "pixel_gate": {
+            "enabled": true,
+            "threshold_ratio": 1.0,
+            "min_area_px": 64,
+            "max_area_px": 65536
+        },
+        "pixel_gate_metrics": {
+            "enabled": true,
+            "threshold_ratio": 1.0,
+            "min_area_px": 64,
+            "max_area_px": 65536,
+            "synthetic_detected": 63,
+            "synthetic_total": 84,
+            "synthetic_detection_rate": 0.75,
+            "expected_false_alarms": 0
+        }
+    },
+    "acceptance_report": {
+        "model_identity": "bacead19a39093b51d3c64cf3ea82d25221aa6daeeff3d30c5545e482863da1a",
+        "dataset_audit": {
+            "counts": {
+                "train": 100,
+                "calibration": 21,
+                "test": 21
+            },
+            "sha256": "f620c3a45d693b1eb2bcc5485e77d554185fa9ec86a35282607bf61e416a6db5"
+        },
+        "threshold": 0.5954712295532226,
+        "good": {
+            "count": 21,
+            "above_threshold": 0,
+            "rate": 0.0
+        },
+        "synthetic": {
+            "count": 84,
+            "above_threshold": 76,
+            "rate": 0.9047619047619048
+        },
+        "pixel_gate": {
+            "config": {
+                "enabled": true,
+                "threshold_ratio": 1.0,
+                "min_area_px": 64,
+                "max_area_px": 65536
+            },
+            "calibration": {
+                "enabled": true,
+                "threshold_ratio": 1.0,
+                "min_area_px": 64,
+                "max_area_px": 65536,
+                "synthetic_detected": 63,
+                "synthetic_total": 84,
+                "synthetic_detection_rate": 0.75,
+                "expected_false_alarms": 0
+            },
+            "good": {
+                "count": 21,
+                "triggered": 0,
+                "rate": 0.0
+            },
+            "synthetic": {
+                "count": 84,
+                "triggered": 74,
+                "rate": 0.8809523809523809
+            }
+        },
+        "evidence": "synthetic_only"
+    },
+    "validation_scope": "held_out_good_and_synthetic"
 }
