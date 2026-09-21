@@ -1133,6 +1133,8 @@ class StatusWidget(QWidget):
             return fail_reason or "Inspection could not be determined", "#D97706"
 
         if inspection_result == "PASS":
+            if fail_reason.startswith("Last inspected sample"):
+                return fail_reason, "#10B981"
             threshold = self._recipe_threshold()
             margin = self._percent(threshold - score, threshold)
             return (

@@ -216,7 +216,10 @@ class OverlayWindow(QWidget):
     def set_frame(self, frame):
         if self.roi_mode or self.capture_area_mode:
             return
-        self.current_frame = frame.copy()
+        # Normal detection mode never paints the source image. Retain the
+        # current immutable capture for a later ROI action without copying a
+        # full camera frame on every inspection result.
+        self.current_frame = frame
 
     def set_capture_frame(self, frame):
         self.current_frame = None if frame is None else frame.copy()
@@ -447,7 +450,7 @@ class OverlayWindow(QWidget):
             else:
                 text = f"{prefix} | {result} | {box.get('score', 0.0):.3f}"
 
-            painter.drawText(label_x, label_y, text)
+            painter.drawText(label_x, label_y, box.get("display_text", text))
 
     @staticmethod
     def _result_color(result):

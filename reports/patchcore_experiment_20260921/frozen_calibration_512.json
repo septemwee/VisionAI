@@ -1,0 +1,3894 @@
+[
+  {
+    "size": 512,
+    "bank": 512,
+    "neighbors": 1,
+    "train_seconds": 64.33482829999411,
+    "candidate_patches": 12800,
+    "total_train_patches": 409600,
+    "rows": [
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_25789.jpg",
+        "score": 0.4723314666748047,
+        "feature_ms": 665.6276000430807,
+        "search_ms": 45.50760000711307,
+        "score_ms": 0.05579995922744274
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_25793.jpg",
+        "score": 0.5892531967163086,
+        "feature_ms": 672.993200016208,
+        "search_ms": 43.25889999745414,
+        "score_ms": 0.049099966417998075
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28362.jpg",
+        "score": 0.48074390411376955,
+        "feature_ms": 598.7251999904402,
+        "search_ms": 36.12479998264462,
+        "score_ms": 0.04680000711232424
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28369.jpg",
+        "score": 0.4922654724121094,
+        "feature_ms": 656.7245000042021,
+        "search_ms": 38.98569999728352,
+        "score_ms": 0.04569999873638153
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28373.jpg",
+        "score": 0.5101707077026367,
+        "feature_ms": 703.5591999883763,
+        "search_ms": 41.38569999486208,
+        "score_ms": 0.05199998850002885
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28377.jpg",
+        "score": 0.48334426879882814,
+        "feature_ms": 649.8536000144668,
+        "search_ms": 34.977100032847375,
+        "score_ms": 0.040000013541430235
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28405.jpg",
+        "score": 0.4664562225341797,
+        "feature_ms": 727.2363000083715,
+        "search_ms": 31.361899978946894,
+        "score_ms": 0.039700011257082224
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28409.jpg",
+        "score": 0.47396804809570314,
+        "feature_ms": 619.1359999938868,
+        "search_ms": 45.302200014702976,
+        "score_ms": 0.045599997974932194
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28411.jpg",
+        "score": 0.4909716796875,
+        "feature_ms": 655.7175000198185,
+        "search_ms": 29.080399952363223,
+        "score_ms": 0.04079996142536402
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28416.jpg",
+        "score": 0.5143769073486328,
+        "feature_ms": 625.7274000090547,
+        "search_ms": 36.14720003679395,
+        "score_ms": 0.053099996875971556
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28419.jpg",
+        "score": 0.6371330261230469,
+        "feature_ms": 581.4432000042871,
+        "search_ms": 46.48880002787337,
+        "score_ms": 0.04050001734867692
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28427.jpg",
+        "score": 0.4840916442871094,
+        "feature_ms": 653.0138000380248,
+        "search_ms": 41.18890000972897,
+        "score_ms": 0.04469999112188816
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28433.jpg",
+        "score": 0.5072427749633789,
+        "feature_ms": 601.4898000285029,
+        "search_ms": 33.71839999454096,
+        "score_ms": 0.042000028770416975
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28442.jpg",
+        "score": 0.5574181365966797,
+        "feature_ms": 643.3993999962695,
+        "search_ms": 42.52639994956553,
+        "score_ms": 0.04900002386420965
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28443.jpg",
+        "score": 0.5341495895385742,
+        "feature_ms": 617.5334000145085,
+        "search_ms": 42.16149996500462,
+        "score_ms": 0.04080001963302493
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28464.jpg",
+        "score": 0.5223417663574219,
+        "feature_ms": 626.8710000440478,
+        "search_ms": 36.99440002674237,
+        "score_ms": 0.04539999645203352
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28483.jpg",
+        "score": 0.4632699966430664,
+        "feature_ms": 622.2123000188731,
+        "search_ms": 43.32480003358796,
+        "score_ms": 0.038300000596791506
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28492.jpg",
+        "score": 0.46746479034423827,
+        "feature_ms": 623.7909999908879,
+        "search_ms": 32.34219999285415,
+        "score_ms": 0.04800001624971628
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28493.jpg",
+        "score": 0.4650107192993164,
+        "feature_ms": 613.0209999973886,
+        "search_ms": 45.52179999882355,
+        "score_ms": 0.048900023102760315
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28498.jpg",
+        "score": 0.4715028381347656,
+        "feature_ms": 587.879900005646,
+        "search_ms": 44.065000023692846,
+        "score_ms": 0.04759995499625802
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28501.jpg",
+        "score": 0.48570579528808594,
+        "feature_ms": 713.4267999790609,
+        "search_ms": 41.9668999966234,
+        "score_ms": 0.051200040616095066
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__scratch.png",
+        "score": 0.6092351531982422,
+        "feature_ms": 618.8079999992624,
+        "search_ms": 37.064299976918846,
+        "score_ms": 0.0467000063508749
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__spot.png",
+        "score": 0.7076725006103516,
+        "feature_ms": 630.4460000246763,
+        "search_ms": 37.02960000373423,
+        "score_ms": 0.03950000973418355
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__chip.png",
+        "score": 0.7186804962158203,
+        "feature_ms": 572.8545999736525,
+        "search_ms": 37.40949998609722,
+        "score_ms": 0.038700003642588854
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__pin_discoloration.png",
+        "score": 0.8225395965576172,
+        "feature_ms": 626.4549000188708,
+        "search_ms": 36.44290001830086,
+        "score_ms": 0.05030003376305103
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__scratch.png",
+        "score": 0.6239330291748046,
+        "feature_ms": 618.4225000324659,
+        "search_ms": 40.74729996500537,
+        "score_ms": 0.04010001430287957
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__spot.png",
+        "score": 0.8075815582275391,
+        "feature_ms": 674.5042999973521,
+        "search_ms": 35.839299962390214,
+        "score_ms": 0.053499999921768904
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__chip.png",
+        "score": 0.6376916122436523,
+        "feature_ms": 643.3731999713928,
+        "search_ms": 34.14500004146248,
+        "score_ms": 0.04139996599406004
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__pin_discoloration.png",
+        "score": 0.7347328186035156,
+        "feature_ms": 655.8992000063881,
+        "search_ms": 26.105600001756102,
+        "score_ms": 0.03950000973418355
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__scratch.png",
+        "score": 0.6786052703857421,
+        "feature_ms": 639.9405000265688,
+        "search_ms": 40.10069998912513,
+        "score_ms": 0.041599967516958714
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__spot.png",
+        "score": 0.8089030456542968,
+        "feature_ms": 646.3459000224248,
+        "search_ms": 45.298199984245,
+        "score_ms": 0.04950002767145634
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__chip.png",
+        "score": 0.6987623596191406,
+        "feature_ms": 640.6448999769054,
+        "search_ms": 37.83159999875352,
+        "score_ms": 0.04229997284710407
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__pin_discoloration.png",
+        "score": 0.8290107727050782,
+        "feature_ms": 635.7411000062712,
+        "search_ms": 42.23000002093613,
+        "score_ms": 0.04919996717944741
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__scratch.png",
+        "score": 0.6283523559570312,
+        "feature_ms": 638.1452000350691,
+        "search_ms": 42.90860000764951,
+        "score_ms": 0.040499959141016006
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__spot.png",
+        "score": 0.8084022521972656,
+        "feature_ms": 633.9371000067331,
+        "search_ms": 44.2806999781169,
+        "score_ms": 0.03809999907389283
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__chip.png",
+        "score": 0.736827621459961,
+        "feature_ms": 622.6474000141025,
+        "search_ms": 46.514199988450855,
+        "score_ms": 0.05069997860118747
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__pin_discoloration.png",
+        "score": 0.6809189605712891,
+        "feature_ms": 655.1208000164479,
+        "search_ms": 40.531600010581315,
+        "score_ms": 0.03969995304942131
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__scratch.png",
+        "score": 0.6377024841308594,
+        "feature_ms": 603.2924000173807,
+        "search_ms": 26.044300000648946,
+        "score_ms": 0.04099996294826269
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__spot.png",
+        "score": 0.793159408569336,
+        "feature_ms": 624.7342000133358,
+        "search_ms": 36.57010005554184,
+        "score_ms": 0.04539999645203352
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__chip.png",
+        "score": 0.7802775573730468,
+        "feature_ms": 634.0591000043787,
+        "search_ms": 37.249899993184954,
+        "score_ms": 0.040300015825778246
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__pin_discoloration.png",
+        "score": 0.6411264038085938,
+        "feature_ms": 634.6510000294074,
+        "search_ms": 45.43299996294081,
+        "score_ms": 0.045900000259280205
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__scratch.png",
+        "score": 0.5929082489013672,
+        "feature_ms": 644.7820999892429,
+        "search_ms": 37.550600012764335,
+        "score_ms": 0.04039995837956667
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__spot.png",
+        "score": 0.8356720733642579,
+        "feature_ms": 655.8489999733865,
+        "search_ms": 35.11250001611188,
+        "score_ms": 0.046900007873773575
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__chip.png",
+        "score": 0.7457263946533204,
+        "feature_ms": 639.4515000283718,
+        "search_ms": 39.65920000337064,
+        "score_ms": 0.04569999873638153
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__pin_discoloration.png",
+        "score": 0.6376578521728515,
+        "feature_ms": 658.8095999904908,
+        "search_ms": 41.88490001251921,
+        "score_ms": 0.04050001734867692
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__scratch.png",
+        "score": 0.4664562225341797,
+        "feature_ms": 645.6194999627769,
+        "search_ms": 33.49050000542775,
+        "score_ms": 0.04240003181621432
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__spot.png",
+        "score": 0.7554130554199219,
+        "feature_ms": 629.7464999952354,
+        "search_ms": 43.546499975491315,
+        "score_ms": 0.06620003841817379
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__chip.png",
+        "score": 0.6399343872070312,
+        "feature_ms": 660.8261999790557,
+        "search_ms": 41.31350002717227,
+        "score_ms": 0.05030003376305103
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__pin_discoloration.png",
+        "score": 0.6734123992919921,
+        "feature_ms": 593.9890000154264,
+        "search_ms": 44.216200010851026,
+        "score_ms": 0.05979998968541622
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__scratch.png",
+        "score": 0.7254502868652344,
+        "feature_ms": 636.1606999998912,
+        "search_ms": 38.522400020156056,
+        "score_ms": 0.03880000440403819
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__spot.png",
+        "score": 0.7452445220947266,
+        "feature_ms": 588.0347999627702,
+        "search_ms": 44.22149999300018,
+        "score_ms": 0.05540001438930631
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__chip.png",
+        "score": 0.7633071899414062,
+        "feature_ms": 600.1365999691188,
+        "search_ms": 33.87829998973757,
+        "score_ms": 0.04349998198449612
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__pin_discoloration.png",
+        "score": 0.7617797088623047,
+        "feature_ms": 684.7605999791995,
+        "search_ms": 45.61289999401197,
+        "score_ms": 0.042899977415800095
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__scratch.png",
+        "score": 0.6318768310546875,
+        "feature_ms": 645.6949000130408,
+        "search_ms": 37.009600026067346,
+        "score_ms": 0.04090002039447427
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__spot.png",
+        "score": 0.8261803436279297,
+        "feature_ms": 646.2293000076897,
+        "search_ms": 36.1449999618344,
+        "score_ms": 0.05420000525191426
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__chip.png",
+        "score": 0.6708311462402343,
+        "feature_ms": 613.6502999579534,
+        "search_ms": 38.95269997883588,
+        "score_ms": 0.03880000440403819
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__pin_discoloration.png",
+        "score": 0.67477294921875,
+        "feature_ms": 595.5495999660343,
+        "search_ms": 45.99790001520887,
+        "score_ms": 0.051200040616095066
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__scratch.png",
+        "score": 0.6635255432128906,
+        "feature_ms": 638.4390000021085,
+        "search_ms": 33.97160000167787,
+        "score_ms": 0.0447999918833375
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__spot.png",
+        "score": 0.7861212921142579,
+        "feature_ms": 623.738200054504,
+        "search_ms": 34.62170000420883,
+        "score_ms": 0.040300015825778246
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__chip.png",
+        "score": 0.7154519653320313,
+        "feature_ms": 641.4013999747112,
+        "search_ms": 48.56570000993088,
+        "score_ms": 0.058100034948438406
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__pin_discoloration.png",
+        "score": 0.6705775451660156,
+        "feature_ms": 690.9662000252865,
+        "search_ms": 32.63239999068901,
+        "score_ms": 0.046900007873773575
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__scratch.png",
+        "score": 0.6371330261230469,
+        "feature_ms": 561.5341999800876,
+        "search_ms": 31.68249997543171,
+        "score_ms": 0.04060001811012626
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__spot.png",
+        "score": 0.7788418579101563,
+        "feature_ms": 669.8532000300474,
+        "search_ms": 36.04129998711869,
+        "score_ms": 0.0523999915458262
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__chip.png",
+        "score": 0.7859880065917969,
+        "feature_ms": 609.9635999999009,
+        "search_ms": 25.639700004830956,
+        "score_ms": 0.0371999922208488
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__pin_discoloration.png",
+        "score": 0.6976374053955078,
+        "feature_ms": 567.6191000384279,
+        "search_ms": 28.670999978203326,
+        "score_ms": 0.042700034100562334
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__scratch.png",
+        "score": 0.6942072296142578,
+        "feature_ms": 583.7169999722391,
+        "search_ms": 43.7528999755159,
+        "score_ms": 0.050499977078288794
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__spot.png",
+        "score": 0.8388624572753907,
+        "feature_ms": 628.9190999814309,
+        "search_ms": 35.47549998620525,
+        "score_ms": 0.03980001201853156
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__chip.png",
+        "score": 0.6956546783447266,
+        "feature_ms": 571.0357000352815,
+        "search_ms": 36.498399975243956,
+        "score_ms": 0.041000021155923605
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__pin_discoloration.png",
+        "score": 0.6922329711914063,
+        "feature_ms": 605.5716999690048,
+        "search_ms": 32.04289998393506,
+        "score_ms": 0.04140002420172095
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__scratch.png",
+        "score": 0.5929806137084961,
+        "feature_ms": 602.9643999645486,
+        "search_ms": 41.51469998760149,
+        "score_ms": 0.04269997589290142
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__spot.png",
+        "score": 0.8628056335449219,
+        "feature_ms": 609.0206999797374,
+        "search_ms": 27.957200014498085,
+        "score_ms": 0.03880000440403819
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__chip.png",
+        "score": 0.7357411193847656,
+        "feature_ms": 599.1907000425272,
+        "search_ms": 34.56310002366081,
+        "score_ms": 0.042300031054764986
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__pin_discoloration.png",
+        "score": 0.8886746978759765,
+        "feature_ms": 623.083200014662,
+        "search_ms": 34.62250001030043,
+        "score_ms": 0.04160002572461963
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__scratch.png",
+        "score": 0.6702318572998047,
+        "feature_ms": 595.3535999869928,
+        "search_ms": 41.84160003205761,
+        "score_ms": 0.04640000406652689
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__spot.png",
+        "score": 0.7735609436035156,
+        "feature_ms": 571.4313999633305,
+        "search_ms": 36.67000000132248,
+        "score_ms": 0.045900000259280205
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__chip.png",
+        "score": 0.572124900817871,
+        "feature_ms": 572.4773000110872,
+        "search_ms": 43.36369998054579,
+        "score_ms": 0.04719995195046067
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__pin_discoloration.png",
+        "score": 0.6910267639160156,
+        "feature_ms": 650.0505000003614,
+        "search_ms": 39.59709999617189,
+        "score_ms": 0.0399000127799809
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__scratch.png",
+        "score": 0.6249646377563477,
+        "feature_ms": 596.1313999723643,
+        "search_ms": 38.3538999594748,
+        "score_ms": 0.044599990360438824
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__spot.png",
+        "score": 0.7871355438232421,
+        "feature_ms": 603.4745999495499,
+        "search_ms": 34.78390001691878,
+        "score_ms": 0.0543000060133636
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__chip.png",
+        "score": 0.7199452209472657,
+        "feature_ms": 631.5200999961235,
+        "search_ms": 41.109399986453354,
+        "score_ms": 0.046600005589425564
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__pin_discoloration.png",
+        "score": 0.8471344757080078,
+        "feature_ms": 604.7449000179768,
+        "search_ms": 31.291699968278408,
+        "score_ms": 0.04120002267882228
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__scratch.png",
+        "score": 0.5523519134521484,
+        "feature_ms": 580.608399992343,
+        "search_ms": 46.457999967969954,
+        "score_ms": 0.05059997783973813
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__spot.png",
+        "score": 0.7173561096191406,
+        "feature_ms": 585.6911999871954,
+        "search_ms": 45.40569998789579,
+        "score_ms": 0.047200010158121586
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__chip.png",
+        "score": 0.7020114135742187,
+        "feature_ms": 619.433400046546,
+        "search_ms": 45.04370002541691,
+        "score_ms": 0.040000013541430235
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__pin_discoloration.png",
+        "score": 0.710212631225586,
+        "feature_ms": 607.5044000172056,
+        "search_ms": 33.603599993512034,
+        "score_ms": 0.049400026910007
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__scratch.png",
+        "score": 0.5646157836914063,
+        "feature_ms": 612.2342000016943,
+        "search_ms": 28.02450000308454,
+        "score_ms": 0.04999997327104211
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__spot.png",
+        "score": 0.8122509765625,
+        "feature_ms": 619.1599000012502,
+        "search_ms": 32.54380001453683,
+        "score_ms": 0.03960001049563289
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__chip.png",
+        "score": 0.7701350402832031,
+        "feature_ms": 602.781799971126,
+        "search_ms": 36.065399996005,
+        "score_ms": 0.0399000127799809
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__pin_discoloration.png",
+        "score": 0.7468185424804688,
+        "feature_ms": 613.7445999775082,
+        "search_ms": 25.51010000752285,
+        "score_ms": 0.039700011257082224
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__scratch.png",
+        "score": 0.5747947692871094,
+        "feature_ms": 627.6967000449076,
+        "search_ms": 43.81150001427159,
+        "score_ms": 0.04250003257766366
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__spot.png",
+        "score": 0.7718626403808594,
+        "feature_ms": 596.4478999958374,
+        "search_ms": 59.02829999104142,
+        "score_ms": 0.05069997860118747
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__chip.png",
+        "score": 0.6992494964599609,
+        "feature_ms": 684.7128000226803,
+        "search_ms": 54.37039997195825,
+        "score_ms": 0.0447999918833375
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__pin_discoloration.png",
+        "score": 0.6590379333496094,
+        "feature_ms": 652.6155000319704,
+        "search_ms": 30.79199994681403,
+        "score_ms": 0.04579999949783087
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__scratch.png",
+        "score": 0.6024084091186523,
+        "feature_ms": 619.8765999870375,
+        "search_ms": 36.84600000269711,
+        "score_ms": 0.042899977415800095
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__spot.png",
+        "score": 0.8705404663085937,
+        "feature_ms": 579.7963999793865,
+        "search_ms": 31.896299973595887,
+        "score_ms": 0.041000021155923605
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__chip.png",
+        "score": 0.7697412872314453,
+        "feature_ms": 579.2247999925166,
+        "search_ms": 42.99009998794645,
+        "score_ms": 0.046900007873773575
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__pin_discoloration.png",
+        "score": 0.7233863067626953,
+        "feature_ms": 590.0339999934658,
+        "search_ms": 25.543500029016286,
+        "score_ms": 0.05140004213899374
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__scratch.png",
+        "score": 0.7446906280517578,
+        "feature_ms": 588.4880000376143,
+        "search_ms": 38.53499999968335,
+        "score_ms": 0.0391000066883862
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__spot.png",
+        "score": 0.8808818817138672,
+        "feature_ms": 599.2955000256188,
+        "search_ms": 26.459400018211454,
+        "score_ms": 0.046900007873773575
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__chip.png",
+        "score": 0.7437055206298828,
+        "feature_ms": 585.4470999911427,
+        "search_ms": 39.0622999984771,
+        "score_ms": 0.048200017772614956
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__pin_discoloration.png",
+        "score": 0.6737444305419922,
+        "feature_ms": 605.3481999551877,
+        "search_ms": 33.895399945322424,
+        "score_ms": 0.04800001624971628
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__scratch.png",
+        "score": 0.5629318618774414,
+        "feature_ms": 569.7249000077136,
+        "search_ms": 33.77869998803362,
+        "score_ms": 0.04680000711232424
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__spot.png",
+        "score": 0.7601637268066406,
+        "feature_ms": 604.1563000180759,
+        "search_ms": 35.3076999890618,
+        "score_ms": 0.0714000198058784
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__chip.png",
+        "score": 0.6724335479736329,
+        "feature_ms": 571.0725999670103,
+        "search_ms": 30.44519998366013,
+        "score_ms": 0.03880000440403819
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__pin_discoloration.png",
+        "score": 0.6567850494384766,
+        "feature_ms": 582.4119999888353,
+        "search_ms": 33.29930000472814,
+        "score_ms": 0.0445000478066504
+      }
+    ],
+    "threshold": 0.6373954391479493,
+    "calibration": {
+      "method": "held_out_good_plus_synthetic_v1",
+      "proposed": 0.6373954391479493,
+      "expected_false_alarms": 0,
+      "synthetic_detected": 69,
+      "synthetic_total": 84,
+      "synthetic_detection_rate": 0.8214285714285714,
+      "warning": false,
+      "good_summary": {
+        "min": 0.4632699966430664,
+        "median": 0.48570579528808594,
+        "p95": 0.5892531967163086,
+        "p99": 0.6275570602416993,
+        "max": 0.6371330261230469,
+        "count": 21
+      }
+    }
+  },
+  {
+    "size": 512,
+    "bank": 512,
+    "neighbors": 9,
+    "train_seconds": 64.33482829999411,
+    "candidate_patches": 12800,
+    "total_train_patches": 409600,
+    "rows": [
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_25789.jpg",
+        "score": 0.4723313140869141,
+        "feature_ms": 665.6276000430807,
+        "search_ms": 45.50760000711307,
+        "score_ms": 1.4733000425621867
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_25793.jpg",
+        "score": 0.5892497253417969,
+        "feature_ms": 672.993200016208,
+        "search_ms": 43.25889999745414,
+        "score_ms": 0.805000017862767
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28362.jpg",
+        "score": 0.48074386596679686,
+        "feature_ms": 598.7251999904402,
+        "search_ms": 36.12479998264462,
+        "score_ms": 0.7322999881580472
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28369.jpg",
+        "score": 0.4922613525390625,
+        "feature_ms": 656.7245000042021,
+        "search_ms": 38.98569999728352,
+        "score_ms": 0.729300023522228
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28373.jpg",
+        "score": 0.5101663970947266,
+        "feature_ms": 703.5591999883763,
+        "search_ms": 41.38569999486208,
+        "score_ms": 0.9334000060334802
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28377.jpg",
+        "score": 0.4833322906494141,
+        "feature_ms": 649.8536000144668,
+        "search_ms": 34.977100032847375,
+        "score_ms": 0.6668000132776797
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28405.jpg",
+        "score": 0.46624088287353516,
+        "feature_ms": 727.2363000083715,
+        "search_ms": 31.361899978946894,
+        "score_ms": 0.6704000406898558
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28409.jpg",
+        "score": 0.4739679336547852,
+        "feature_ms": 619.1359999938868,
+        "search_ms": 45.302200014702976,
+        "score_ms": 0.9257000056095421
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28411.jpg",
+        "score": 0.49094051361083985,
+        "feature_ms": 655.7175000198185,
+        "search_ms": 29.080399952363223,
+        "score_ms": 0.6358999526128173
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28416.jpg",
+        "score": 0.5143745040893555,
+        "feature_ms": 625.7274000090547,
+        "search_ms": 36.14720003679395,
+        "score_ms": 0.8107999456115067
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28419.jpg",
+        "score": 0.6371319198608398,
+        "feature_ms": 581.4432000042871,
+        "search_ms": 46.48880002787337,
+        "score_ms": 0.6797999958507717
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28427.jpg",
+        "score": 0.4840246200561523,
+        "feature_ms": 653.0138000380248,
+        "search_ms": 41.18890000972897,
+        "score_ms": 0.6382999708876014
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28433.jpg",
+        "score": 0.5072381210327148,
+        "feature_ms": 601.4898000285029,
+        "search_ms": 33.71839999454096,
+        "score_ms": 0.6080999737605453
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28442.jpg",
+        "score": 0.557415885925293,
+        "feature_ms": 643.3993999962695,
+        "search_ms": 42.52639994956553,
+        "score_ms": 0.7660000119358301
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28443.jpg",
+        "score": 0.5341144561767578,
+        "feature_ms": 617.5334000145085,
+        "search_ms": 42.16149996500462,
+        "score_ms": 0.5812000017613173
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28464.jpg",
+        "score": 0.5223273849487304,
+        "feature_ms": 626.8710000440478,
+        "search_ms": 36.99440002674237,
+        "score_ms": 0.6845999741926789
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28483.jpg",
+        "score": 0.4632698440551758,
+        "feature_ms": 622.2123000188731,
+        "search_ms": 43.32480003358796,
+        "score_ms": 0.5839999648742378
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28492.jpg",
+        "score": 0.4674531936645508,
+        "feature_ms": 623.7909999908879,
+        "search_ms": 32.34219999285415,
+        "score_ms": 0.9978999732993543
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28493.jpg",
+        "score": 0.4650098419189453,
+        "feature_ms": 613.0209999973886,
+        "search_ms": 45.52179999882355,
+        "score_ms": 0.8641000022180378
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28498.jpg",
+        "score": 0.47149765014648437,
+        "feature_ms": 587.879900005646,
+        "search_ms": 44.065000023692846,
+        "score_ms": 0.715100031811744
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28501.jpg",
+        "score": 0.48570579528808594,
+        "feature_ms": 713.4267999790609,
+        "search_ms": 41.9668999966234,
+        "score_ms": 1.0949000134132802
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__scratch.png",
+        "score": 0.6087180328369141,
+        "feature_ms": 618.8079999992624,
+        "search_ms": 37.064299976918846,
+        "score_ms": 0.7865999941714108
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__spot.png",
+        "score": 0.7060336303710938,
+        "feature_ms": 630.4460000246763,
+        "search_ms": 37.02960000373423,
+        "score_ms": 0.5226000212132931
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__chip.png",
+        "score": 0.7184900665283203,
+        "feature_ms": 572.8545999736525,
+        "search_ms": 37.40949998609722,
+        "score_ms": 0.5204000044614077
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__pin_discoloration.png",
+        "score": 0.8219283294677734,
+        "feature_ms": 626.4549000188708,
+        "search_ms": 36.44290001830086,
+        "score_ms": 0.8297000313177705
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__scratch.png",
+        "score": 0.62383056640625,
+        "feature_ms": 618.4225000324659,
+        "search_ms": 40.74729996500537,
+        "score_ms": 0.6339999963529408
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__spot.png",
+        "score": 0.8074944305419922,
+        "feature_ms": 674.5042999973521,
+        "search_ms": 35.839299962390214,
+        "score_ms": 0.7956000044941902
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__chip.png",
+        "score": 0.6372603607177735,
+        "feature_ms": 643.3731999713928,
+        "search_ms": 34.14500004146248,
+        "score_ms": 0.6646999972872436
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__pin_discoloration.png",
+        "score": 0.7346305847167969,
+        "feature_ms": 655.8992000063881,
+        "search_ms": 26.105600001756102,
+        "score_ms": 0.6012999801896513
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__scratch.png",
+        "score": 0.6782640838623046,
+        "feature_ms": 639.9405000265688,
+        "search_ms": 40.10069998912513,
+        "score_ms": 0.724000041373074
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__spot.png",
+        "score": 0.8085890197753907,
+        "feature_ms": 646.3459000224248,
+        "search_ms": 45.298199984245,
+        "score_ms": 0.8007999858818948
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__chip.png",
+        "score": 0.6986397552490234,
+        "feature_ms": 640.6448999769054,
+        "search_ms": 37.83159999875352,
+        "score_ms": 0.7411999977193773
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__pin_discoloration.png",
+        "score": 0.8288172912597657,
+        "feature_ms": 635.7411000062712,
+        "search_ms": 42.23000002093613,
+        "score_ms": 0.7082000374794006
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__scratch.png",
+        "score": 0.62832275390625,
+        "feature_ms": 638.1452000350691,
+        "search_ms": 42.90860000764951,
+        "score_ms": 0.5312999710440636
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__spot.png",
+        "score": 0.8082948303222657,
+        "feature_ms": 633.9371000067331,
+        "search_ms": 44.2806999781169,
+        "score_ms": 0.5457999650388956
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__chip.png",
+        "score": 0.7367805480957031,
+        "feature_ms": 622.6474000141025,
+        "search_ms": 46.514199988450855,
+        "score_ms": 0.9999999892897904
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__pin_discoloration.png",
+        "score": 0.6794944000244141,
+        "feature_ms": 655.1208000164479,
+        "search_ms": 40.531600010581315,
+        "score_ms": 0.5778999766334891
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__scratch.png",
+        "score": 0.6376548385620118,
+        "feature_ms": 603.2924000173807,
+        "search_ms": 26.044300000648946,
+        "score_ms": 0.556300044991076
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__spot.png",
+        "score": 0.7931123352050782,
+        "feature_ms": 624.7342000133358,
+        "search_ms": 36.57010005554184,
+        "score_ms": 0.9836000390350819
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__chip.png",
+        "score": 0.7799008178710938,
+        "feature_ms": 634.0591000043787,
+        "search_ms": 37.249899993184954,
+        "score_ms": 0.5151000223122537
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__pin_discoloration.png",
+        "score": 0.6406108856201171,
+        "feature_ms": 634.6510000294074,
+        "search_ms": 45.43299996294081,
+        "score_ms": 0.693799986038357
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__scratch.png",
+        "score": 0.5926447677612304,
+        "feature_ms": 644.7820999892429,
+        "search_ms": 37.550600012764335,
+        "score_ms": 0.8907999726943672
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__spot.png",
+        "score": 0.835573959350586,
+        "feature_ms": 655.8489999733865,
+        "search_ms": 35.11250001611188,
+        "score_ms": 0.7320999866351485
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__chip.png",
+        "score": 0.7457234954833984,
+        "feature_ms": 639.4515000283718,
+        "search_ms": 39.65920000337064,
+        "score_ms": 0.7467999821528792
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__pin_discoloration.png",
+        "score": 0.6374942016601562,
+        "feature_ms": 658.8095999904908,
+        "search_ms": 41.88490001251921,
+        "score_ms": 0.5599000141955912
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__scratch.png",
+        "score": 0.46624088287353516,
+        "feature_ms": 645.6194999627769,
+        "search_ms": 33.49050000542775,
+        "score_ms": 0.6833999650552869
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__spot.png",
+        "score": 0.7541498565673828,
+        "feature_ms": 629.7464999952354,
+        "search_ms": 43.546499975491315,
+        "score_ms": 0.972700014244765
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__chip.png",
+        "score": 0.6398921203613281,
+        "feature_ms": 660.8261999790557,
+        "search_ms": 41.31350002717227,
+        "score_ms": 0.8030000026337802
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__pin_discoloration.png",
+        "score": 0.6733733367919922,
+        "feature_ms": 593.9890000154264,
+        "search_ms": 44.216200010851026,
+        "score_ms": 0.9318999946117401
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__scratch.png",
+        "score": 0.7254423522949218,
+        "feature_ms": 636.1606999998912,
+        "search_ms": 38.522400020156056,
+        "score_ms": 0.5250999820418656
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__spot.png",
+        "score": 0.7428689575195313,
+        "feature_ms": 588.0347999627702,
+        "search_ms": 44.22149999300018,
+        "score_ms": 0.6840000278316438
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__chip.png",
+        "score": 0.7615380859375,
+        "feature_ms": 600.1365999691188,
+        "search_ms": 33.87829998973757,
+        "score_ms": 0.6022999878041446
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__pin_discoloration.png",
+        "score": 0.761768569946289,
+        "feature_ms": 684.7605999791995,
+        "search_ms": 45.61289999401197,
+        "score_ms": 0.7165999850258231
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__scratch.png",
+        "score": 0.630664405822754,
+        "feature_ms": 645.6949000130408,
+        "search_ms": 37.009600026067346,
+        "score_ms": 0.6018999847583473
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__spot.png",
+        "score": 0.8261368560791016,
+        "feature_ms": 646.2293000076897,
+        "search_ms": 36.1449999618344,
+        "score_ms": 0.9389999904669821
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__chip.png",
+        "score": 0.6707512664794922,
+        "feature_ms": 613.6502999579534,
+        "search_ms": 38.95269997883588,
+        "score_ms": 0.575500016566366
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__pin_discoloration.png",
+        "score": 0.674586181640625,
+        "feature_ms": 595.5495999660343,
+        "search_ms": 45.99790001520887,
+        "score_ms": 1.160199986770749
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__scratch.png",
+        "score": 0.6635163116455078,
+        "feature_ms": 638.4390000021085,
+        "search_ms": 33.97160000167787,
+        "score_ms": 0.6464999751187861
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__spot.png",
+        "score": 0.7860763549804688,
+        "feature_ms": 623.738200054504,
+        "search_ms": 34.62170000420883,
+        "score_ms": 0.6060000159777701
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__chip.png",
+        "score": 0.7154385375976563,
+        "feature_ms": 641.4013999747112,
+        "search_ms": 48.56570000993088,
+        "score_ms": 1.0280999704264104
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__pin_discoloration.png",
+        "score": 0.6705585479736328,
+        "feature_ms": 690.9662000252865,
+        "search_ms": 32.63239999068901,
+        "score_ms": 0.6965000065974891
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__scratch.png",
+        "score": 0.6371319198608398,
+        "feature_ms": 561.5341999800876,
+        "search_ms": 31.68249997543171,
+        "score_ms": 0.5939000402577221
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__spot.png",
+        "score": 0.7785260772705078,
+        "feature_ms": 669.8532000300474,
+        "search_ms": 36.04129998711869,
+        "score_ms": 1.067599980160594
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__chip.png",
+        "score": 0.784132080078125,
+        "feature_ms": 609.9635999999009,
+        "search_ms": 25.639700004830956,
+        "score_ms": 0.5505000008270144
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__pin_discoloration.png",
+        "score": 0.6975960540771484,
+        "feature_ms": 567.6191000384279,
+        "search_ms": 28.670999978203326,
+        "score_ms": 0.5254999850876629
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__scratch.png",
+        "score": 0.6941706848144531,
+        "feature_ms": 583.7169999722391,
+        "search_ms": 43.7528999755159,
+        "score_ms": 0.8107000030577183
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__spot.png",
+        "score": 0.8386602783203125,
+        "feature_ms": 628.9190999814309,
+        "search_ms": 35.47549998620525,
+        "score_ms": 0.5256000440567732
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__chip.png",
+        "score": 0.6950050354003906,
+        "feature_ms": 571.0357000352815,
+        "search_ms": 36.498399975243956,
+        "score_ms": 0.5931999767199159
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__pin_discoloration.png",
+        "score": 0.6921875,
+        "feature_ms": 605.5716999690048,
+        "search_ms": 32.04289998393506,
+        "score_ms": 0.5489999894052744
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__scratch.png",
+        "score": 0.5900669479370118,
+        "feature_ms": 602.9643999645486,
+        "search_ms": 41.51469998760149,
+        "score_ms": 0.6791999912820756
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__spot.png",
+        "score": 0.8627906036376953,
+        "feature_ms": 609.0206999797374,
+        "search_ms": 27.957200014498085,
+        "score_ms": 0.512500002514571
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__chip.png",
+        "score": 0.7356766510009766,
+        "feature_ms": 599.1907000425272,
+        "search_ms": 34.56310002366081,
+        "score_ms": 0.5957999965175986
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__pin_discoloration.png",
+        "score": 0.8880030059814453,
+        "feature_ms": 623.083200014662,
+        "search_ms": 34.62250001030043,
+        "score_ms": 0.7569000008516014
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__scratch.png",
+        "score": 0.6702288818359375,
+        "feature_ms": 595.3535999869928,
+        "search_ms": 41.84160003205761,
+        "score_ms": 0.7139000226743519
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__spot.png",
+        "score": 0.7711085510253907,
+        "feature_ms": 571.4313999633305,
+        "search_ms": 36.67000000132248,
+        "score_ms": 0.7711999933235347
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__chip.png",
+        "score": 0.5721162796020508,
+        "feature_ms": 572.4773000110872,
+        "search_ms": 43.36369998054579,
+        "score_ms": 0.7324999896809459
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__pin_discoloration.png",
+        "score": 0.6905882263183594,
+        "feature_ms": 650.0505000003614,
+        "search_ms": 39.59709999617189,
+        "score_ms": 0.5298000178299844
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__scratch.png",
+        "score": 0.6249580383300781,
+        "feature_ms": 596.1313999723643,
+        "search_ms": 38.3538999594748,
+        "score_ms": 0.7085999823175371
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__spot.png",
+        "score": 0.7855807495117187,
+        "feature_ms": 603.4745999495499,
+        "search_ms": 34.78390001691878,
+        "score_ms": 0.9014999959617853
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__chip.png",
+        "score": 0.7198024749755859,
+        "feature_ms": 631.5200999961235,
+        "search_ms": 41.109399986453354,
+        "score_ms": 0.5939999828115106
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__pin_discoloration.png",
+        "score": 0.8459414672851563,
+        "feature_ms": 604.7449000179768,
+        "search_ms": 31.291699968278408,
+        "score_ms": 0.598300015553832
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__scratch.png",
+        "score": 0.5521301651000976,
+        "feature_ms": 580.608399992343,
+        "search_ms": 46.457999967969954,
+        "score_ms": 0.8374999742954969
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__spot.png",
+        "score": 0.7168773651123047,
+        "feature_ms": 585.6911999871954,
+        "search_ms": 45.40569998789579,
+        "score_ms": 0.734600005671382
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__chip.png",
+        "score": 0.7018798828125,
+        "feature_ms": 619.433400046546,
+        "search_ms": 45.04370002541691,
+        "score_ms": 0.5307999672368169
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__pin_discoloration.png",
+        "score": 0.7101390075683593,
+        "feature_ms": 607.5044000172056,
+        "search_ms": 33.603599993512034,
+        "score_ms": 0.7173999911174178
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__scratch.png",
+        "score": 0.5622925567626953,
+        "feature_ms": 612.2342000016943,
+        "search_ms": 28.02450000308454,
+        "score_ms": 0.6195000023581088
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__spot.png",
+        "score": 0.8121555328369141,
+        "feature_ms": 619.1599000012502,
+        "search_ms": 32.54380001453683,
+        "score_ms": 0.5201000021770597
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__chip.png",
+        "score": 0.7699556732177735,
+        "feature_ms": 602.781799971126,
+        "search_ms": 36.065399996005,
+        "score_ms": 0.5657000001519918
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__pin_discoloration.png",
+        "score": 0.74677734375,
+        "feature_ms": 613.7445999775082,
+        "search_ms": 25.51010000752285,
+        "score_ms": 0.5995999672450125
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__scratch.png",
+        "score": 0.5747690582275391,
+        "feature_ms": 627.6967000449076,
+        "search_ms": 43.81150001427159,
+        "score_ms": 0.7363999611698091
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__spot.png",
+        "score": 0.771766357421875,
+        "feature_ms": 596.4478999958374,
+        "search_ms": 59.02829999104142,
+        "score_ms": 1.1736000305972993
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__chip.png",
+        "score": 0.6989177703857422,
+        "feature_ms": 684.7128000226803,
+        "search_ms": 54.37039997195825,
+        "score_ms": 1.0605000425130129
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__pin_discoloration.png",
+        "score": 0.6585073089599609,
+        "feature_ms": 652.6155000319704,
+        "search_ms": 30.79199994681403,
+        "score_ms": 0.6192000000737607
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__scratch.png",
+        "score": 0.6019729614257813,
+        "feature_ms": 619.8765999870375,
+        "search_ms": 36.84600000269711,
+        "score_ms": 0.5676000146195292
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__spot.png",
+        "score": 0.8683811950683594,
+        "feature_ms": 579.7963999793865,
+        "search_ms": 31.896299973595887,
+        "score_ms": 0.631400034762919
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__chip.png",
+        "score": 0.7693419647216797,
+        "feature_ms": 579.2247999925166,
+        "search_ms": 42.99009998794645,
+        "score_ms": 0.8603999740444124
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__pin_discoloration.png",
+        "score": 0.7230980682373047,
+        "feature_ms": 590.0339999934658,
+        "search_ms": 25.543500029016286,
+        "score_ms": 0.7581000099889934
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__scratch.png",
+        "score": 0.7446598815917969,
+        "feature_ms": 588.4880000376143,
+        "search_ms": 38.53499999968335,
+        "score_ms": 0.59120001969859
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__spot.png",
+        "score": 0.8781449127197266,
+        "feature_ms": 599.2955000256188,
+        "search_ms": 26.459400018211454,
+        "score_ms": 0.7038000039756298
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__chip.png",
+        "score": 0.7435920715332032,
+        "feature_ms": 585.4470999911427,
+        "search_ms": 39.0622999984771,
+        "score_ms": 0.790799967944622
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__pin_discoloration.png",
+        "score": 0.6736026763916015,
+        "feature_ms": 605.3481999551877,
+        "search_ms": 33.895399945322424,
+        "score_ms": 1.0150999878533185
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__scratch.png",
+        "score": 0.5628133010864258,
+        "feature_ms": 569.7249000077136,
+        "search_ms": 33.77869998803362,
+        "score_ms": 0.798500026576221
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__spot.png",
+        "score": 0.7568505096435547,
+        "feature_ms": 604.1563000180759,
+        "search_ms": 35.3076999890618,
+        "score_ms": 0.540599983651191
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__chip.png",
+        "score": 0.6724051666259766,
+        "feature_ms": 571.0725999670103,
+        "search_ms": 30.44519998366013,
+        "score_ms": 0.5740000051446259
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__pin_discoloration.png",
+        "score": 0.6566108703613281,
+        "feature_ms": 582.4119999888353,
+        "search_ms": 33.29930000472814,
+        "score_ms": 0.6898999563418329
+      }
+    ],
+    "threshold": 0.6371961402893067,
+    "calibration": {
+      "method": "held_out_good_plus_synthetic_v1",
+      "proposed": 0.6371961402893067,
+      "expected_false_alarms": 0,
+      "synthetic_detected": 69,
+      "synthetic_total": 84,
+      "synthetic_detection_rate": 0.8214285714285714,
+      "warning": false,
+      "good_summary": {
+        "min": 0.4632698440551758,
+        "median": 0.48570579528808594,
+        "p95": 0.5892497253417969,
+        "p99": 0.6275554809570313,
+        "max": 0.6371319198608398,
+        "count": 21
+      }
+    }
+  },
+  {
+    "size": 512,
+    "bank": 2048,
+    "neighbors": 1,
+    "train_seconds": 64.33482829999411,
+    "candidate_patches": 12800,
+    "total_train_patches": 409600,
+    "rows": [
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_25789.jpg",
+        "score": 0.44190971374511717,
+        "feature_ms": 665.6276000430807,
+        "search_ms": 137.19589996617287,
+        "score_ms": 0.05470000905916095
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_25793.jpg",
+        "score": 0.5675041580200195,
+        "feature_ms": 672.993200016208,
+        "search_ms": 150.5263999570161,
+        "score_ms": 0.07270002970471978
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28362.jpg",
+        "score": 0.4331673812866211,
+        "feature_ms": 598.7251999904402,
+        "search_ms": 144.85100004822016,
+        "score_ms": 0.06470002699643373
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28369.jpg",
+        "score": 0.4698663330078125,
+        "feature_ms": 656.7245000042021,
+        "search_ms": 139.4471000530757,
+        "score_ms": 0.0714000198058784
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28373.jpg",
+        "score": 0.4429771041870117,
+        "feature_ms": 703.5591999883763,
+        "search_ms": 143.93349998863414,
+        "score_ms": 0.06479996955022216
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28377.jpg",
+        "score": 0.4583327865600586,
+        "feature_ms": 649.8536000144668,
+        "search_ms": 141.7236999841407,
+        "score_ms": 0.06210000719875097
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28405.jpg",
+        "score": 0.4372581481933594,
+        "feature_ms": 727.2363000083715,
+        "search_ms": 124.88309998298064,
+        "score_ms": 0.05859998054802418
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28409.jpg",
+        "score": 0.4351045608520508,
+        "feature_ms": 619.1359999938868,
+        "search_ms": 137.32989999698475,
+        "score_ms": 0.055800017435103655
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28411.jpg",
+        "score": 0.43389957427978515,
+        "feature_ms": 655.7175000198185,
+        "search_ms": 134.3757000286132,
+        "score_ms": 0.051099981646984816
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28416.jpg",
+        "score": 0.49892837524414063,
+        "feature_ms": 625.7274000090547,
+        "search_ms": 132.02679995447397,
+        "score_ms": 0.049600028432905674
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28419.jpg",
+        "score": 0.6205796432495118,
+        "feature_ms": 581.4432000042871,
+        "search_ms": 133.3724000141956,
+        "score_ms": 0.0488999648950994
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28427.jpg",
+        "score": 0.4426841735839844,
+        "feature_ms": 653.0138000380248,
+        "search_ms": 122.24719999358058,
+        "score_ms": 0.06639998173341155
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28433.jpg",
+        "score": 0.46700199127197267,
+        "feature_ms": 601.4898000285029,
+        "search_ms": 129.00620000436902,
+        "score_ms": 0.05360000068321824
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28442.jpg",
+        "score": 0.5453534317016602,
+        "feature_ms": 643.3993999962695,
+        "search_ms": 134.17189999017864,
+        "score_ms": 0.09200000204145908
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28443.jpg",
+        "score": 0.4877708053588867,
+        "feature_ms": 617.5334000145085,
+        "search_ms": 144.83509998535737,
+        "score_ms": 0.06230000872164965
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28464.jpg",
+        "score": 0.487746467590332,
+        "feature_ms": 626.8710000440478,
+        "search_ms": 126.16709998110309,
+        "score_ms": 0.059999991208314896
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28483.jpg",
+        "score": 0.41837295532226565,
+        "feature_ms": 622.2123000188731,
+        "search_ms": 130.2811999921687,
+        "score_ms": 0.04810001701116562
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28492.jpg",
+        "score": 0.41822032928466796,
+        "feature_ms": 623.7909999908879,
+        "search_ms": 132.9253999865614,
+        "score_ms": 0.04870002157986164
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28493.jpg",
+        "score": 0.41251426696777344,
+        "feature_ms": 613.0209999973886,
+        "search_ms": 143.96010001655668,
+        "score_ms": 0.05099998088553548
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28498.jpg",
+        "score": 0.43640148162841796,
+        "feature_ms": 587.879900005646,
+        "search_ms": 141.10569999320433,
+        "score_ms": 0.059699988923966885
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28501.jpg",
+        "score": 0.4074932861328125,
+        "feature_ms": 713.4267999790609,
+        "search_ms": 116.67349998606369,
+        "score_ms": 0.06150000263005495
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__scratch.png",
+        "score": 0.5927461624145508,
+        "feature_ms": 618.8079999992624,
+        "search_ms": 130.31600002432242,
+        "score_ms": 0.04899996565654874
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__spot.png",
+        "score": 0.6911083221435547,
+        "feature_ms": 630.4460000246763,
+        "search_ms": 113.54969994863495,
+        "score_ms": 0.054800009820610285
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__chip.png",
+        "score": 0.7022970581054687,
+        "feature_ms": 572.8545999736525,
+        "search_ms": 140.42050001444295,
+        "score_ms": 0.05979998968541622
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__pin_discoloration.png",
+        "score": 0.7831884765625,
+        "feature_ms": 626.4549000188708,
+        "search_ms": 124.01630001841113,
+        "score_ms": 0.051799986977130175
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__scratch.png",
+        "score": 0.6022813415527344,
+        "feature_ms": 618.4225000324659,
+        "search_ms": 138.6380000039935,
+        "score_ms": 0.05530001362785697
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__spot.png",
+        "score": 0.8027118682861328,
+        "feature_ms": 674.5042999973521,
+        "search_ms": 147.38300000317395,
+        "score_ms": 0.047900015488266945
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__chip.png",
+        "score": 0.6197919464111328,
+        "feature_ms": 643.3731999713928,
+        "search_ms": 141.2277999916114,
+        "score_ms": 0.05840003723278642
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__pin_discoloration.png",
+        "score": 0.7171771240234375,
+        "feature_ms": 655.8992000063881,
+        "search_ms": 136.7160999798216,
+        "score_ms": 0.047600013203918934
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__scratch.png",
+        "score": 0.6469033813476562,
+        "feature_ms": 639.9405000265688,
+        "search_ms": 140.5807000119239,
+        "score_ms": 0.05440000677481294
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__spot.png",
+        "score": 0.7981970977783203,
+        "feature_ms": 646.3459000224248,
+        "search_ms": 126.28319999203086,
+        "score_ms": 0.06260001100599766
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__chip.png",
+        "score": 0.6752015686035157,
+        "feature_ms": 640.6448999769054,
+        "search_ms": 136.63190003717318,
+        "score_ms": 0.06230000872164965
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__pin_discoloration.png",
+        "score": 0.8168492889404297,
+        "feature_ms": 635.7411000062712,
+        "search_ms": 141.87009999295697,
+        "score_ms": 0.047900015488266945
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__scratch.png",
+        "score": 0.616588134765625,
+        "feature_ms": 638.1452000350691,
+        "search_ms": 127.22080003004521,
+        "score_ms": 0.047200010158121586
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__spot.png",
+        "score": 0.8023029327392578,
+        "feature_ms": 633.9371000067331,
+        "search_ms": 136.7459000321105,
+        "score_ms": 0.05630002124235034
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__chip.png",
+        "score": 0.7173493957519531,
+        "feature_ms": 622.6474000141025,
+        "search_ms": 111.64450005162507,
+        "score_ms": 0.04749995423480868
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__pin_discoloration.png",
+        "score": 0.65073486328125,
+        "feature_ms": 655.1208000164479,
+        "search_ms": 136.83099998161197,
+        "score_ms": 0.06610003765672445
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__scratch.png",
+        "score": 0.6377024841308594,
+        "feature_ms": 603.2924000173807,
+        "search_ms": 134.4118999550119,
+        "score_ms": 0.04830001853406429
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__spot.png",
+        "score": 0.7869805908203125,
+        "feature_ms": 624.7342000133358,
+        "search_ms": 135.66249998984858,
+        "score_ms": 0.05069997860118747
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__chip.png",
+        "score": 0.7286936950683593,
+        "feature_ms": 634.0591000043787,
+        "search_ms": 129.58700000308454,
+        "score_ms": 0.05039997631683946
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__pin_discoloration.png",
+        "score": 0.6185496139526367,
+        "feature_ms": 634.6510000294074,
+        "search_ms": 116.5039999759756,
+        "score_ms": 0.0513000413775444
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__scratch.png",
+        "score": 0.5744923400878906,
+        "feature_ms": 644.7820999892429,
+        "search_ms": 135.83679997827858,
+        "score_ms": 0.05840003723278642
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__spot.png",
+        "score": 0.8293629455566406,
+        "feature_ms": 655.8489999733865,
+        "search_ms": 139.22719995025545,
+        "score_ms": 0.062400009483098984
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__chip.png",
+        "score": 0.7353879547119141,
+        "feature_ms": 639.4515000283718,
+        "search_ms": 134.42130002658814,
+        "score_ms": 0.04819995956495404
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__pin_discoloration.png",
+        "score": 0.624320297241211,
+        "feature_ms": 658.8095999904908,
+        "search_ms": 137.40639999741688,
+        "score_ms": 0.05549995694309473
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__scratch.png",
+        "score": 0.4372581481933594,
+        "feature_ms": 645.6194999627769,
+        "search_ms": 138.00069998251274,
+        "score_ms": 0.052099989261478186
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__spot.png",
+        "score": 0.7469546508789062,
+        "feature_ms": 629.7464999952354,
+        "search_ms": 127.43190000765026,
+        "score_ms": 0.05400000372901559
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__chip.png",
+        "score": 0.6110499572753906,
+        "feature_ms": 660.8261999790557,
+        "search_ms": 143.738399958238,
+        "score_ms": 0.04780001472681761
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__pin_discoloration.png",
+        "score": 0.6545455169677734,
+        "feature_ms": 593.9890000154264,
+        "search_ms": 131.4480000291951,
+        "score_ms": 0.051099981646984816
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__scratch.png",
+        "score": 0.7124134063720703,
+        "feature_ms": 636.1606999998912,
+        "search_ms": 140.12140000704676,
+        "score_ms": 0.059999991208314896
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__spot.png",
+        "score": 0.7388182830810547,
+        "feature_ms": 588.0347999627702,
+        "search_ms": 123.5029999515973,
+        "score_ms": 0.053800002206116915
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__chip.png",
+        "score": 0.7388561248779297,
+        "feature_ms": 600.1365999691188,
+        "search_ms": 138.83079995866865,
+        "score_ms": 0.04759995499625802
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__pin_discoloration.png",
+        "score": 0.7566478729248047,
+        "feature_ms": 684.7605999791995,
+        "search_ms": 130.3571000462398,
+        "score_ms": 0.05870003951713443
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__scratch.png",
+        "score": 0.6223805236816407,
+        "feature_ms": 645.6949000130408,
+        "search_ms": 150.08439996745437,
+        "score_ms": 0.05470000905916095
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__spot.png",
+        "score": 0.8230429840087891,
+        "feature_ms": 646.2293000076897,
+        "search_ms": 137.38089997787029,
+        "score_ms": 0.062700011767447
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__chip.png",
+        "score": 0.6539089965820313,
+        "feature_ms": 613.6502999579534,
+        "search_ms": 136.91170001402497,
+        "score_ms": 0.07270002970471978
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__pin_discoloration.png",
+        "score": 0.6258383560180664,
+        "feature_ms": 595.5495999660343,
+        "search_ms": 141.0465000080876,
+        "score_ms": 0.049099966417998075
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__scratch.png",
+        "score": 0.6608911895751953,
+        "feature_ms": 638.4390000021085,
+        "search_ms": 141.42030000220984,
+        "score_ms": 0.06500002928078175
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__spot.png",
+        "score": 0.7718125915527344,
+        "feature_ms": 623.738200054504,
+        "search_ms": 122.37880000611767,
+        "score_ms": 0.05269999383017421
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__chip.png",
+        "score": 0.6913414001464844,
+        "feature_ms": 641.4013999747112,
+        "search_ms": 153.02209998480976,
+        "score_ms": 0.0686999992467463
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__pin_discoloration.png",
+        "score": 0.6609491729736328,
+        "feature_ms": 690.9662000252865,
+        "search_ms": 114.14979997789487,
+        "score_ms": 0.052900053560733795
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__scratch.png",
+        "score": 0.6224524307250977,
+        "feature_ms": 561.5341999800876,
+        "search_ms": 133.63720005145296,
+        "score_ms": 0.10429997928440571
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__spot.png",
+        "score": 0.7566788482666016,
+        "feature_ms": 669.8532000300474,
+        "search_ms": 158.30800001276657,
+        "score_ms": 0.049799971748143435
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__chip.png",
+        "score": 0.753908462524414,
+        "feature_ms": 609.9635999999009,
+        "search_ms": 134.48000000789762,
+        "score_ms": 0.045199994929134846
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__pin_discoloration.png",
+        "score": 0.6662007904052735,
+        "feature_ms": 567.6191000384279,
+        "search_ms": 106.58560000592843,
+        "score_ms": 0.056699966080486774
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__scratch.png",
+        "score": 0.6898914337158203,
+        "feature_ms": 583.7169999722391,
+        "search_ms": 125.63049996970221,
+        "score_ms": 0.05500001134350896
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__spot.png",
+        "score": 0.8303211975097656,
+        "feature_ms": 628.9190999814309,
+        "search_ms": 122.85789998713881,
+        "score_ms": 0.054800009820610285
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__chip.png",
+        "score": 0.6679759979248047,
+        "feature_ms": 571.0357000352815,
+        "search_ms": 127.59799999184906,
+        "score_ms": 0.05000003147870302
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__pin_discoloration.png",
+        "score": 0.6762950897216797,
+        "feature_ms": 605.5716999690048,
+        "search_ms": 130.53920003585517,
+        "score_ms": 0.0488999648950994
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__scratch.png",
+        "score": 0.564871940612793,
+        "feature_ms": 602.9643999645486,
+        "search_ms": 128.59699997352436,
+        "score_ms": 0.05089998012408614
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__spot.png",
+        "score": 0.8543379974365234,
+        "feature_ms": 609.0206999797374,
+        "search_ms": 111.56669998308644,
+        "score_ms": 0.051799986977130175
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__chip.png",
+        "score": 0.7222366333007812,
+        "feature_ms": 599.1907000425272,
+        "search_ms": 135.6091999914497,
+        "score_ms": 0.047900015488266945
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__pin_discoloration.png",
+        "score": 0.8691539001464844,
+        "feature_ms": 623.083200014662,
+        "search_ms": 130.43080002535135,
+        "score_ms": 0.04859996261075139
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__scratch.png",
+        "score": 0.6650006103515625,
+        "feature_ms": 595.3535999869928,
+        "search_ms": 107.05910000251606,
+        "score_ms": 0.05440000677481294
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__spot.png",
+        "score": 0.7685372924804688,
+        "feature_ms": 571.4313999633305,
+        "search_ms": 133.30039998982102,
+        "score_ms": 0.047200010158121586
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__chip.png",
+        "score": 0.563553581237793,
+        "feature_ms": 572.4773000110872,
+        "search_ms": 119.51589997624978,
+        "score_ms": 0.05640002200379968
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__pin_discoloration.png",
+        "score": 0.6686978149414062,
+        "feature_ms": 650.0505000003614,
+        "search_ms": 128.4489000099711,
+        "score_ms": 0.05600001895800233
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__scratch.png",
+        "score": 0.6249646377563477,
+        "feature_ms": 596.1313999723643,
+        "search_ms": 124.17560000903904,
+        "score_ms": 0.054500007536262274
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__spot.png",
+        "score": 0.7807958984375,
+        "feature_ms": 603.4745999495499,
+        "search_ms": 136.45639998139814,
+        "score_ms": 0.04710000939667225
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__chip.png",
+        "score": 0.6999333190917969,
+        "feature_ms": 631.5200999961235,
+        "search_ms": 138.26529996003956,
+        "score_ms": 0.051900045946240425
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__pin_discoloration.png",
+        "score": 0.8168114471435547,
+        "feature_ms": 604.7449000179768,
+        "search_ms": 130.58290001936257,
+        "score_ms": 0.05820003570988774
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__scratch.png",
+        "score": 0.487746467590332,
+        "feature_ms": 580.608399992343,
+        "search_ms": 127.66439997358248,
+        "score_ms": 0.05339999916031957
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__spot.png",
+        "score": 0.7068891143798828,
+        "feature_ms": 585.6911999871954,
+        "search_ms": 108.26250002719462,
+        "score_ms": 0.04919996717944741
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__chip.png",
+        "score": 0.6701122283935547,
+        "feature_ms": 619.433400046546,
+        "search_ms": 129.35510004172102,
+        "score_ms": 0.04740001168102026
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__pin_discoloration.png",
+        "score": 0.6770273590087891,
+        "feature_ms": 607.5044000172056,
+        "search_ms": 138.0685999756679,
+        "score_ms": 0.049399968702346087
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__scratch.png",
+        "score": 0.5403474426269531,
+        "feature_ms": 612.2342000016943,
+        "search_ms": 107.39759996067733,
+        "score_ms": 0.048900023102760315
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__spot.png",
+        "score": 0.7856580352783203,
+        "feature_ms": 619.1599000012502,
+        "search_ms": 130.1674999995157,
+        "score_ms": 0.06589997792616487
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__chip.png",
+        "score": 0.747890625,
+        "feature_ms": 602.781799971126,
+        "search_ms": 129.62900003185496,
+        "score_ms": 0.046600005589425564
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__pin_discoloration.png",
+        "score": 0.7333462524414063,
+        "feature_ms": 613.7445999775082,
+        "search_ms": 136.31550001446158,
+        "score_ms": 0.048200017772614956
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__scratch.png",
+        "score": 0.5467851257324219,
+        "feature_ms": 627.6967000449076,
+        "search_ms": 120.88679999578744,
+        "score_ms": 0.05240004975348711
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__spot.png",
+        "score": 0.7640254974365235,
+        "feature_ms": 596.4478999958374,
+        "search_ms": 137.69879995379597,
+        "score_ms": 0.0475000124424696
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__chip.png",
+        "score": 0.6880409240722656,
+        "feature_ms": 684.7128000226803,
+        "search_ms": 123.75840003369376,
+        "score_ms": 0.05360000068321824
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__pin_discoloration.png",
+        "score": 0.641070556640625,
+        "feature_ms": 652.6155000319704,
+        "search_ms": 120.04309997428209,
+        "score_ms": 0.05929998587816954
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__scratch.png",
+        "score": 0.5830337905883789,
+        "feature_ms": 619.8765999870375,
+        "search_ms": 123.68790002074093,
+        "score_ms": 0.05989999044686556
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__spot.png",
+        "score": 0.8625643920898437,
+        "feature_ms": 579.7963999793865,
+        "search_ms": 129.17629996081814,
+        "score_ms": 0.05449994932860136
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__chip.png",
+        "score": 0.738701171875,
+        "feature_ms": 579.2247999925166,
+        "search_ms": 130.38280000910163,
+        "score_ms": 0.04569999873638153
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__pin_discoloration.png",
+        "score": 0.6989238739013672,
+        "feature_ms": 590.0339999934658,
+        "search_ms": 116.14190001273528,
+        "score_ms": 0.049900030717253685
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__scratch.png",
+        "score": 0.71320556640625,
+        "feature_ms": 588.4880000376143,
+        "search_ms": 114.09930000081658,
+        "score_ms": 0.049799971748143435
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__spot.png",
+        "score": 0.8741399383544922,
+        "feature_ms": 599.2955000256188,
+        "search_ms": 131.85979996342212,
+        "score_ms": 0.05000003147870302
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__chip.png",
+        "score": 0.7246195220947266,
+        "feature_ms": 585.4470999911427,
+        "search_ms": 125.07710000500083,
+        "score_ms": 0.06279995432123542
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__pin_discoloration.png",
+        "score": 0.6398988342285157,
+        "feature_ms": 605.3481999551877,
+        "search_ms": 135.0393999600783,
+        "score_ms": 0.05099998088553548
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__scratch.png",
+        "score": 0.5387636947631836,
+        "feature_ms": 569.7249000077136,
+        "search_ms": 141.44520001718774,
+        "score_ms": 0.05010003224015236
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__spot.png",
+        "score": 0.739847412109375,
+        "feature_ms": 604.1563000180759,
+        "search_ms": 127.78169999364763,
+        "score_ms": 0.061400001868605614
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__chip.png",
+        "score": 0.6724335479736329,
+        "feature_ms": 571.0725999670103,
+        "search_ms": 127.34750000527129,
+        "score_ms": 0.04569999873638153
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__pin_discoloration.png",
+        "score": 0.6380604934692383,
+        "feature_ms": 582.4119999888353,
+        "search_ms": 134.4000999815762,
+        "score_ms": 0.05440000677481294
+      }
+    ],
+    "threshold": 0.6214800834655763,
+    "calibration": {
+      "method": "held_out_good_plus_synthetic_v1",
+      "proposed": 0.6214800834655763,
+      "expected_false_alarms": 0,
+      "synthetic_detected": 69,
+      "synthetic_total": 84,
+      "synthetic_detection_rate": 0.8214285714285714,
+      "warning": false,
+      "good_summary": {
+        "min": 0.4074932861328125,
+        "median": 0.4426841735839844,
+        "p95": 0.5675041580200195,
+        "p99": 0.6099645462036134,
+        "max": 0.6205796432495118,
+        "count": 21
+      }
+    }
+  },
+  {
+    "size": 512,
+    "bank": 2048,
+    "neighbors": 9,
+    "train_seconds": 64.33482829999411,
+    "candidate_patches": 12800,
+    "total_train_patches": 409600,
+    "rows": [
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_25789.jpg",
+        "score": 0.44188480377197265,
+        "feature_ms": 665.6276000430807,
+        "search_ms": 137.19589996617287,
+        "score_ms": 2.8740999987348914
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_25793.jpg",
+        "score": 0.5672809219360352,
+        "feature_ms": 672.993200016208,
+        "search_ms": 150.5263999570161,
+        "score_ms": 3.647900011856109
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28362.jpg",
+        "score": 0.4331671142578125,
+        "feature_ms": 598.7251999904402,
+        "search_ms": 144.85100004822016,
+        "score_ms": 2.5587999843992293
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28369.jpg",
+        "score": 0.46979217529296874,
+        "feature_ms": 656.7245000042021,
+        "search_ms": 139.4471000530757,
+        "score_ms": 3.2048000139184296
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28373.jpg",
+        "score": 0.4429760360717773,
+        "feature_ms": 703.5591999883763,
+        "search_ms": 143.93349998863414,
+        "score_ms": 3.38560005184263
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28377.jpg",
+        "score": 0.4582542037963867,
+        "feature_ms": 649.8536000144668,
+        "search_ms": 141.7236999841407,
+        "score_ms": 2.9206000035628676
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28405.jpg",
+        "score": 0.4372504425048828,
+        "feature_ms": 727.2363000083715,
+        "search_ms": 124.88309998298064,
+        "score_ms": 3.0353000038303435
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28409.jpg",
+        "score": 0.4348847198486328,
+        "feature_ms": 619.1359999938868,
+        "search_ms": 137.32989999698475,
+        "score_ms": 2.7427999884821475
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28411.jpg",
+        "score": 0.43389286041259767,
+        "feature_ms": 655.7175000198185,
+        "search_ms": 134.3757000286132,
+        "score_ms": 2.5260000256821513
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28416.jpg",
+        "score": 0.4989228057861328,
+        "feature_ms": 625.7274000090547,
+        "search_ms": 132.02679995447397,
+        "score_ms": 2.856200037058443
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28419.jpg",
+        "score": 0.6183293151855469,
+        "feature_ms": 581.4432000042871,
+        "search_ms": 133.3724000141956,
+        "score_ms": 2.867500006686896
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28427.jpg",
+        "score": 0.44268360137939455,
+        "feature_ms": 653.0138000380248,
+        "search_ms": 122.24719999358058,
+        "score_ms": 2.81510001514107
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28433.jpg",
+        "score": 0.46699947357177735,
+        "feature_ms": 601.4898000285029,
+        "search_ms": 129.00620000436902,
+        "score_ms": 2.510500024072826
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28442.jpg",
+        "score": 0.5453084945678711,
+        "feature_ms": 643.3993999962695,
+        "search_ms": 134.17189999017864,
+        "score_ms": 2.785000018775463
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28443.jpg",
+        "score": 0.4877664566040039,
+        "feature_ms": 617.5334000145085,
+        "search_ms": 144.83509998535737,
+        "score_ms": 3.0211000121198595
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28464.jpg",
+        "score": 0.487669792175293,
+        "feature_ms": 626.8710000440478,
+        "search_ms": 126.16709998110309,
+        "score_ms": 3.0371000175364316
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28483.jpg",
+        "score": 0.41837249755859374,
+        "feature_ms": 622.2123000188731,
+        "search_ms": 130.2811999921687,
+        "score_ms": 2.492800005711615
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28492.jpg",
+        "score": 0.41821537017822263,
+        "feature_ms": 623.7909999908879,
+        "search_ms": 132.9253999865614,
+        "score_ms": 2.6997000095434487
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28493.jpg",
+        "score": 0.4124729919433594,
+        "feature_ms": 613.0209999973886,
+        "search_ms": 143.96010001655668,
+        "score_ms": 2.687100030016154
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28498.jpg",
+        "score": 0.43631458282470703,
+        "feature_ms": 587.879900005646,
+        "search_ms": 141.10569999320433,
+        "score_ms": 2.6706000207923353
+      },
+      {
+        "role": "calibration",
+        "kind": "good",
+        "file": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\patchcore_dataset\\calibration\\good\\Image_28501.jpg",
+        "score": 0.4074795532226563,
+        "feature_ms": 713.4267999790609,
+        "search_ms": 116.67349998606369,
+        "score_ms": 3.1522000208497047
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__scratch.png",
+        "score": 0.5921990585327148,
+        "feature_ms": 618.8079999992624,
+        "search_ms": 130.31600002432242,
+        "score_ms": 2.655099960975349
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__spot.png",
+        "score": 0.6903125,
+        "feature_ms": 630.4460000246763,
+        "search_ms": 113.54969994863495,
+        "score_ms": 2.6714999694377184
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__chip.png",
+        "score": 0.7000997924804687,
+        "feature_ms": 572.8545999736525,
+        "search_ms": 140.42050001444295,
+        "score_ms": 3.2531999750062823
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25789_6ae45555__pin_discoloration.png",
+        "score": 0.7829903411865234,
+        "feature_ms": 626.4549000188708,
+        "search_ms": 124.01630001841113,
+        "score_ms": 2.789099991787225
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__scratch.png",
+        "score": 0.6022396087646484,
+        "feature_ms": 618.4225000324659,
+        "search_ms": 138.6380000039935,
+        "score_ms": 2.838999964296818
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__spot.png",
+        "score": 0.8026531982421875,
+        "feature_ms": 674.5042999973521,
+        "search_ms": 147.38300000317395,
+        "score_ms": 2.97209998825565
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__chip.png",
+        "score": 0.6195274353027344,
+        "feature_ms": 643.3731999713928,
+        "search_ms": 141.2277999916114,
+        "score_ms": 2.53950001206249
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_25793_8f3c7195__pin_discoloration.png",
+        "score": 0.7153791046142578,
+        "feature_ms": 655.8992000063881,
+        "search_ms": 136.7160999798216,
+        "score_ms": 2.8740999987348914
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__scratch.png",
+        "score": 0.6465520477294922,
+        "feature_ms": 639.9405000265688,
+        "search_ms": 140.5807000119239,
+        "score_ms": 2.8303000144660473
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__spot.png",
+        "score": 0.797718505859375,
+        "feature_ms": 646.3459000224248,
+        "search_ms": 126.28319999203086,
+        "score_ms": 3.160500025842339
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__chip.png",
+        "score": 0.6750556182861328,
+        "feature_ms": 640.6448999769054,
+        "search_ms": 136.63190003717318,
+        "score_ms": 2.931599970906973
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28362_5e6d9110__pin_discoloration.png",
+        "score": 0.816219482421875,
+        "feature_ms": 635.7411000062712,
+        "search_ms": 141.87009999295697,
+        "score_ms": 2.487400022801012
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__scratch.png",
+        "score": 0.6165819549560547,
+        "feature_ms": 638.1452000350691,
+        "search_ms": 127.22080003004521,
+        "score_ms": 2.3502999683842063
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__spot.png",
+        "score": 0.802248764038086,
+        "feature_ms": 633.9371000067331,
+        "search_ms": 136.7459000321105,
+        "score_ms": 2.7975999983027577
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__chip.png",
+        "score": 0.7173109436035157,
+        "feature_ms": 622.6474000141025,
+        "search_ms": 111.64450005162507,
+        "score_ms": 2.86840001353994
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28369_7598a9de__pin_discoloration.png",
+        "score": 0.6507120513916016,
+        "feature_ms": 655.1208000164479,
+        "search_ms": 136.83099998161197,
+        "score_ms": 2.9349999967962503
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__scratch.png",
+        "score": 0.6363927841186523,
+        "feature_ms": 603.2924000173807,
+        "search_ms": 134.4118999550119,
+        "score_ms": 2.7452000067569315
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__spot.png",
+        "score": 0.78694580078125,
+        "feature_ms": 624.7342000133358,
+        "search_ms": 135.66249998984858,
+        "score_ms": 3.0179000459611416
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__chip.png",
+        "score": 0.7282701873779297,
+        "feature_ms": 634.0591000043787,
+        "search_ms": 129.58700000308454,
+        "score_ms": 3.1048000091686845
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28373_a9aab16f__pin_discoloration.png",
+        "score": 0.6171350479125977,
+        "feature_ms": 634.6510000294074,
+        "search_ms": 116.5039999759756,
+        "score_ms": 2.8574999887496233
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__scratch.png",
+        "score": 0.5744003295898438,
+        "feature_ms": 644.7820999892429,
+        "search_ms": 135.83679997827858,
+        "score_ms": 2.9580999980680645
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__spot.png",
+        "score": 0.828615493774414,
+        "feature_ms": 655.8489999733865,
+        "search_ms": 139.22719995025545,
+        "score_ms": 2.9702999745495617
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__chip.png",
+        "score": 0.7340843200683593,
+        "feature_ms": 639.4515000283718,
+        "search_ms": 134.42130002658814,
+        "score_ms": 2.229499979875982
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28377_214c066b__pin_discoloration.png",
+        "score": 0.6230395126342774,
+        "feature_ms": 658.8095999904908,
+        "search_ms": 137.40639999741688,
+        "score_ms": 3.3327999990433455
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__scratch.png",
+        "score": 0.4372504425048828,
+        "feature_ms": 645.6194999627769,
+        "search_ms": 138.00069998251274,
+        "score_ms": 2.702999976463616
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__spot.png",
+        "score": 0.7426283264160156,
+        "feature_ms": 629.7464999952354,
+        "search_ms": 127.43190000765026,
+        "score_ms": 2.821700007189065
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__chip.png",
+        "score": 0.6110382843017578,
+        "feature_ms": 660.8261999790557,
+        "search_ms": 143.738399958238,
+        "score_ms": 2.4557000142522156
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28405_a626cb72__pin_discoloration.png",
+        "score": 0.6544913482666016,
+        "feature_ms": 593.9890000154264,
+        "search_ms": 131.4480000291951,
+        "score_ms": 2.8132000006735325
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__scratch.png",
+        "score": 0.7122537231445313,
+        "feature_ms": 636.1606999998912,
+        "search_ms": 140.12140000704676,
+        "score_ms": 2.6868999702855945
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__spot.png",
+        "score": 0.738758316040039,
+        "feature_ms": 588.0347999627702,
+        "search_ms": 123.5029999515973,
+        "score_ms": 2.6103000272996724
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__chip.png",
+        "score": 0.7385919189453125,
+        "feature_ms": 600.1365999691188,
+        "search_ms": 138.83079995866865,
+        "score_ms": 2.350199967622757
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28409_05e7fd60__pin_discoloration.png",
+        "score": 0.7552105712890625,
+        "feature_ms": 684.7605999791995,
+        "search_ms": 130.3571000462398,
+        "score_ms": 2.664299972821027
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__scratch.png",
+        "score": 0.6205920791625976,
+        "feature_ms": 645.6949000130408,
+        "search_ms": 150.08439996745437,
+        "score_ms": 2.876300015486777
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__spot.png",
+        "score": 0.8230101776123047,
+        "feature_ms": 646.2293000076897,
+        "search_ms": 137.38089997787029,
+        "score_ms": 2.835499995853752
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__chip.png",
+        "score": 0.6526343536376953,
+        "feature_ms": 613.6502999579534,
+        "search_ms": 136.91170001402497,
+        "score_ms": 2.630000002682209
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28411_e4618dbb__pin_discoloration.png",
+        "score": 0.6257243728637696,
+        "feature_ms": 595.5495999660343,
+        "search_ms": 141.0465000080876,
+        "score_ms": 2.6680000009946525
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__scratch.png",
+        "score": 0.6534806060791015,
+        "feature_ms": 638.4390000021085,
+        "search_ms": 141.42030000220984,
+        "score_ms": 3.272300004027784
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__spot.png",
+        "score": 0.7697438812255859,
+        "feature_ms": 623.738200054504,
+        "search_ms": 122.37880000611767,
+        "score_ms": 3.314899979159236
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__chip.png",
+        "score": 0.6910604858398437,
+        "feature_ms": 641.4013999747112,
+        "search_ms": 153.02209998480976,
+        "score_ms": 3.2552999909967184
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28416_59beaa3a__pin_discoloration.png",
+        "score": 0.6609195709228516,
+        "feature_ms": 690.9662000252865,
+        "search_ms": 114.14979997789487,
+        "score_ms": 2.833499980624765
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__scratch.png",
+        "score": 0.6211148452758789,
+        "feature_ms": 561.5341999800876,
+        "search_ms": 133.63720005145296,
+        "score_ms": 3.402200003620237
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__spot.png",
+        "score": 0.75608154296875,
+        "feature_ms": 669.8532000300474,
+        "search_ms": 158.30800001276657,
+        "score_ms": 3.0650999979116023
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__chip.png",
+        "score": 0.7536471557617187,
+        "feature_ms": 609.9635999999009,
+        "search_ms": 134.48000000789762,
+        "score_ms": 2.2745999740436673
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28419_3422f0eb__pin_discoloration.png",
+        "score": 0.6660900115966797,
+        "feature_ms": 567.6191000384279,
+        "search_ms": 106.58560000592843,
+        "score_ms": 2.4311000015586615
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__scratch.png",
+        "score": 0.6897850036621094,
+        "feature_ms": 583.7169999722391,
+        "search_ms": 125.63049996970221,
+        "score_ms": 2.739100018516183
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__spot.png",
+        "score": 0.8302162933349609,
+        "feature_ms": 628.9190999814309,
+        "search_ms": 122.85789998713881,
+        "score_ms": 3.3233999856747687
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__chip.png",
+        "score": 0.6675147247314454,
+        "feature_ms": 571.0357000352815,
+        "search_ms": 127.59799999184906,
+        "score_ms": 2.5283999857492745
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28427_dacce418__pin_discoloration.png",
+        "score": 0.674949951171875,
+        "feature_ms": 605.5716999690048,
+        "search_ms": 130.53920003585517,
+        "score_ms": 2.5719000259414315
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__scratch.png",
+        "score": 0.5648427200317383,
+        "feature_ms": 602.9643999645486,
+        "search_ms": 128.59699997352436,
+        "score_ms": 2.555200015194714
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__spot.png",
+        "score": 0.85175537109375,
+        "feature_ms": 609.0206999797374,
+        "search_ms": 111.56669998308644,
+        "score_ms": 2.74979998357594
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__chip.png",
+        "score": 0.722098617553711,
+        "feature_ms": 599.1907000425272,
+        "search_ms": 135.6091999914497,
+        "score_ms": 2.8556999750435352
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28433_77adf7f5__pin_discoloration.png",
+        "score": 0.8689418792724609,
+        "feature_ms": 623.083200014662,
+        "search_ms": 130.43080002535135,
+        "score_ms": 2.5095000164583325
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__scratch.png",
+        "score": 0.6649990844726562,
+        "feature_ms": 595.3535999869928,
+        "search_ms": 107.05910000251606,
+        "score_ms": 2.704199985601008
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__spot.png",
+        "score": 0.7678231048583984,
+        "feature_ms": 571.4313999633305,
+        "search_ms": 133.30039998982102,
+        "score_ms": 2.97949998639524
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__chip.png",
+        "score": 0.5635337448120117,
+        "feature_ms": 572.4773000110872,
+        "search_ms": 119.51589997624978,
+        "score_ms": 2.9745999490842223
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28442_ea4b2a9b__pin_discoloration.png",
+        "score": 0.6685966491699219,
+        "feature_ms": 650.0505000003614,
+        "search_ms": 128.4489000099711,
+        "score_ms": 3.3978999708779156
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__scratch.png",
+        "score": 0.624963264465332,
+        "feature_ms": 596.1313999723643,
+        "search_ms": 124.17560000903904,
+        "score_ms": 3.133099991828203
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__spot.png",
+        "score": 0.7793832397460938,
+        "feature_ms": 603.4745999495499,
+        "search_ms": 136.45639998139814,
+        "score_ms": 2.5693000061437488
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__chip.png",
+        "score": 0.6998448944091797,
+        "feature_ms": 631.5200999961235,
+        "search_ms": 138.26529996003956,
+        "score_ms": 2.8169999714009464
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28443_d2ba1baa__pin_discoloration.png",
+        "score": 0.8165699768066407,
+        "feature_ms": 604.7449000179768,
+        "search_ms": 130.58290001936257,
+        "score_ms": 2.7250999701209366
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__scratch.png",
+        "score": 0.487669792175293,
+        "feature_ms": 580.608399992343,
+        "search_ms": 127.66439997358248,
+        "score_ms": 2.6452000020071864
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__spot.png",
+        "score": 0.7058642578125,
+        "feature_ms": 585.6911999871954,
+        "search_ms": 108.26250002719462,
+        "score_ms": 2.81209999229759
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__chip.png",
+        "score": 0.6700454711914062,
+        "feature_ms": 619.433400046546,
+        "search_ms": 129.35510004172102,
+        "score_ms": 2.326000016182661
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28464_2c40e4ca__pin_discoloration.png",
+        "score": 0.6769724273681641,
+        "feature_ms": 607.5044000172056,
+        "search_ms": 138.0685999756679,
+        "score_ms": 2.9115000506863
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__scratch.png",
+        "score": 0.5393911361694336,
+        "feature_ms": 612.2342000016943,
+        "search_ms": 107.39759996067733,
+        "score_ms": 2.7954999823123217
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__spot.png",
+        "score": 0.785606918334961,
+        "feature_ms": 619.1599000012502,
+        "search_ms": 130.1674999995157,
+        "score_ms": 2.7082000160589814
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__chip.png",
+        "score": 0.7477313232421875,
+        "feature_ms": 602.781799971126,
+        "search_ms": 129.62900003185496,
+        "score_ms": 3.07569996220991
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28483_5808f650__pin_discoloration.png",
+        "score": 0.7325202178955078,
+        "feature_ms": 613.7445999775082,
+        "search_ms": 136.31550001446158,
+        "score_ms": 2.588600036688149
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__scratch.png",
+        "score": 0.5464883804321289,
+        "feature_ms": 627.6967000449076,
+        "search_ms": 120.88679999578744,
+        "score_ms": 2.6099999668076634
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__spot.png",
+        "score": 0.7639784240722656,
+        "feature_ms": 596.4478999958374,
+        "search_ms": 137.69879995379597,
+        "score_ms": 2.7577000437304378
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__chip.png",
+        "score": 0.6856719970703125,
+        "feature_ms": 684.7128000226803,
+        "search_ms": 123.75840003369376,
+        "score_ms": 2.640899969264865
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28492_64cc1e24__pin_discoloration.png",
+        "score": 0.6409369659423828,
+        "feature_ms": 652.6155000319704,
+        "search_ms": 120.04309997428209,
+        "score_ms": 2.8777000261470675
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__scratch.png",
+        "score": 0.5820208740234375,
+        "feature_ms": 619.8765999870375,
+        "search_ms": 123.68790002074093,
+        "score_ms": 2.806900010909885
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__spot.png",
+        "score": 0.862402572631836,
+        "feature_ms": 579.7963999793865,
+        "search_ms": 129.17629996081814,
+        "score_ms": 2.717799972742796
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__chip.png",
+        "score": 0.7384783935546875,
+        "feature_ms": 579.2247999925166,
+        "search_ms": 130.38280000910163,
+        "score_ms": 2.8338999836705625
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28493_e3ed86f0__pin_discoloration.png",
+        "score": 0.6987724304199219,
+        "feature_ms": 590.0339999934658,
+        "search_ms": 116.14190001273528,
+        "score_ms": 2.6858000201173127
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__scratch.png",
+        "score": 0.7131163787841797,
+        "feature_ms": 588.4880000376143,
+        "search_ms": 114.09930000081658,
+        "score_ms": 3.008000028785318
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__spot.png",
+        "score": 0.8713013458251954,
+        "feature_ms": 599.2955000256188,
+        "search_ms": 131.85979996342212,
+        "score_ms": 2.821100002620369
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__chip.png",
+        "score": 0.7244294738769531,
+        "feature_ms": 585.4470999911427,
+        "search_ms": 125.07710000500083,
+        "score_ms": 2.896199992392212
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28498_7444110a__pin_discoloration.png",
+        "score": 0.639824447631836,
+        "feature_ms": 605.3481999551877,
+        "search_ms": 135.0393999600783,
+        "score_ms": 2.299700048752129
+      },
+      {
+        "role": "calibration",
+        "kind": "scratch",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__scratch.png",
+        "score": 0.5387339782714844,
+        "feature_ms": 569.7249000077136,
+        "search_ms": 141.44520001718774,
+        "score_ms": 2.624999964609742
+      },
+      {
+        "role": "calibration",
+        "kind": "spot",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__spot.png",
+        "score": 0.739773941040039,
+        "feature_ms": 604.1563000180759,
+        "search_ms": 127.78169999364763,
+        "score_ms": 2.6713000261224806
+      },
+      {
+        "role": "calibration",
+        "kind": "chip",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__chip.png",
+        "score": 0.6716471099853516,
+        "feature_ms": 571.0725999670103,
+        "search_ms": 127.34750000527129,
+        "score_ms": 2.558100037276745
+      },
+      {
+        "role": "calibration",
+        "kind": "pin_discoloration",
+        "file": "reports\\patchcore_experiment_20260921\\synthetic_calibration\\Image_28501_cd2cf320__pin_discoloration.png",
+        "score": 0.6372505187988281,
+        "feature_ms": 582.4119999888353,
+        "search_ms": 134.4000999815762,
+        "score_ms": 2.6337000308558345
+      }
+    ],
+    "threshold": 0.6189283752441406,
+    "calibration": {
+      "method": "held_out_good_plus_synthetic_v1",
+      "proposed": 0.6189283752441406,
+      "expected_false_alarms": 0,
+      "synthetic_detected": 70,
+      "synthetic_total": 84,
+      "synthetic_detection_rate": 0.8333333333333334,
+      "warning": false,
+      "good_summary": {
+        "min": 0.4074795532226563,
+        "median": 0.44268360137939455,
+        "p95": 0.5672809219360352,
+        "p99": 0.6081196365356446,
+        "max": 0.6183293151855469,
+        "count": 21
+      }
+    }
+  }
+]
