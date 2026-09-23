@@ -27,6 +27,7 @@ from services.latest_frame import LatestFrame
 from services.recipe_service import (
     RecipeService,
     normalize_anomaly_threshold,
+    normalize_pixel_gate,
     stored_threshold_usable,
 )
 from services.state_manager import ProgramState, StateManager
@@ -36,12 +37,15 @@ from services.verdict_service import evaluate_verdict
 from ui.inspection.overlay import OverlayWindow
 from ui.inspection.status_widget import StatusWidget
 from utils.image_utils import crop_yolo_obb, heatmap_overlay, letterbox, letterbox_placement, order_obb_points
+from utils.pixel_gate import qualifying_region_mask
 from utils.pilot_log import start_session_log
 from utils.resource_path import resource_path
 from utils.window_capture import grab_window_content
 
 TARGET_WINDOW_TITLE = os.environ.get("VISIONAI_SOURCE_TITLE", "PowerPoint")
-DETECTION_CONFIDENCE = 0.95
+# Localization confidence is separate from the recipe's anomaly verdict.
+# A 0.95 cutoff discarded valid secondary parts in multi-object scenes.
+DETECTION_CONFIDENCE = 0.90
 DETECTION_IMAGE_SIZE = 640
 DETECTION_MAX_OBJECTS = 32
 KEEP_DETECTION_SECONDS = 1.5
@@ -659,9 +663,9 @@ class InspectionWorker(QThread):
                     i for i, candidate in enumerate(boxes, 1) if candidate is box))
                 box["_normalized_roi"] = self._last_normalized_roi
                 box["_anomaly_map"] = self._last_anomaly_map
-                # A PASS has no anomaly segment to show. Skipping this image
-                # mapping avoids several large resize/morphology operations
-                # on every normal inspection tick.
+                # Draw only regions that satisfy the same raw anomaly-map
+                # threshold and connected-area rule that can fail the part.
+                # This replaces the former per-frame percentile contour.
                 box["segments"] = (
                     self._segment_contours(
                         box["points"],
@@ -669,7 +673,9 @@ class InspectionWorker(QThread):
                         getattr(self, "_last_anomaly_map", None),
                         self.target_width,
                         self.target_height,
-                    ) if result == "FAIL" else []
+                        normalize_anomaly_threshold(self.current_recipe.get("anomaly_threshold")),
+                        self.current_recipe,
+                    )
                 )
 
             for box in sorted(boxes, key=lambda item: item["conf"], reverse=True)[MAX_INSPECTIONS_PER_FRAME:]:
@@ -735,15 +741,30 @@ class InspectionWorker(QThread):
             return None
 
     @staticmethod
-    def _segment_contours(points, crop_shape, anomaly_map, target_width, target_height):
-        """Map filtered PatchCore regions back onto one correctly ordered OBB."""
+    def _segment_contours(
+        points, crop_shape, anomaly_map, target_width, target_height,
+        image_threshold, recipe,
+    ):
+        """Map PASS/FAIL pixel-gate regions back onto one ordered OBB."""
         if crop_shape is None:
             return []
         if anomaly_map is None:
             return []
-        amap = np.asarray(anomaly_map)
-        while amap.ndim > 2:
-            amap = amap[0]
+        gate = normalize_pixel_gate(recipe)
+        if recipe.get("verdict_policy") != "image_and_pixel_v1" or not gate["enabled"]:
+            return []
+        pixel_threshold = gate["threshold_ratio"] * image_threshold * 100.0
+        try:
+            qualified_mask, _ = qualifying_region_mask(
+                anomaly_map,
+                pixel_threshold,
+                gate["min_area_px"],
+                gate["max_area_px"],
+            )
+        except ValueError:
+            return []
+        if qualified_mask is None:
+            return []
         crop_height, crop_width = crop_shape[:2]
         placement = letterbox_placement(
             crop_width, crop_height, target_width, target_height
@@ -755,26 +776,25 @@ class InspectionWorker(QThread):
         if x2 <= x1 or y2 <= y1:
             return []
 
-        # Remove the black letterbox area before thresholding, otherwise its
-        # artificial border can become a false anomaly contour.
-        map_target = cv2.resize(amap, (target_width, target_height), interpolation=cv2.INTER_LINEAR)
-        map_crop = cv2.resize(map_target[y1:y2, x1:x2], (crop_width, crop_height), interpolation=cv2.INTER_LINEAR)
-        finite = map_crop[np.isfinite(map_crop)]
-        if finite.size == 0 or float(finite.max()) <= float(finite.min()):
-            return []
-        threshold = max(float(np.percentile(finite, 98)), float(finite.mean() + 2.0 * finite.std()))
-        mask = (map_crop >= threshold).astype(np.uint8)
-        kernel = np.ones((3, 3), np.uint8)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # Nearest-neighbour keeps the exact boolean decision mask intact.
+        # Crop away the letterbox only after the component size was measured
+        # at native model-map resolution, which is where the verdict runs.
+        mask_target = cv2.resize(
+            qualified_mask.astype(np.uint8),
+            (target_width, target_height),
+            interpolation=cv2.INTER_NEAREST,
+        )
+        mask_crop = cv2.resize(
+            mask_target[y1:y2, x1:x2],
+            (crop_width, crop_height),
+            interpolation=cv2.INTER_NEAREST,
+        )
+        contours, _ = cv2.findContours(mask_crop, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         source = np.array([[0, 0], [crop_width - 1, 0], [crop_width - 1, crop_height - 1], [0, crop_height - 1]], dtype=np.float32)
         target = order_obb_points(points)
         matrix = cv2.getPerspectiveTransform(source, target)
         segments = []
         for contour in contours:
-            if cv2.contourArea(contour) < max(6.0, crop_width * crop_height * 0.0002):
-                continue
             mapped = cv2.perspectiveTransform(contour.astype(np.float32), matrix)
             segments.append(mapped.reshape(-1, 2).tolist())
         return segments
@@ -997,19 +1017,17 @@ class InspectionApp(QObject):
         self.worker.start()
 
     def _poll_live(self):
-        """Render latest geometry; results explicitly describe a sampled frame."""
+        """Render only the capture whose PatchCore result is complete."""
         if self.status_widget.capture_mode or self.overlay.roi_mode:
             return
         version, packet = self.worker.live_frames.read()
         result_version, completed = self.worker.completed_frames.read()
         if packet is None or packet["epoch"] != self.worker.pipeline_epoch:
             return
-        versions = (version, result_version)
-        if self._display_versions == versions:
-            return
-        self._display_versions = versions
         source = (packet["epoch"], packet["source_id"])
         if packet["window"] is None:
+            if self._display_source == source:
+                return
             self._apply_overlay(None, None, [], None)
             self.status_widget.update_status(
                 system_state=ProgramState.WAITING_SOURCE,
@@ -1018,43 +1036,33 @@ class InspectionApp(QObject):
             )
             self._display_source = source
             return
-        boxes = [dict(box, label="Package") for box in packet["boxes"]]
         valid_result = (
             completed is not None
             and (completed["epoch"], completed["source_id"]) == source
             and completed["payload"]["recipe_request_id"] == self.status_widget.recipe_request_id
         )
-        if valid_result:
-            # Only annotate geometrically corresponding boxes. The LAST
-            # prefix distinguishes the completed sample from the live view;
-            # never project old anomaly contours onto a moving frame.
-            available = list(completed["boxes"])
-            for box in boxes:
-                match = next((old for old in available if np.allclose(
-                    old["points"], box["points"], atol=2.0, rtol=0)), None)
-                if match is not None:
-                    available = [old for old in available if old is not match]
-                    box.update(result=match.get("result", "DETECTED"),
-                               score=match.get("score", 0), label=match["label"])
-                    box["display_text"] = f"{match['label']} | LAST {box['result']} | {box['score']:.3f}"
-                    box["segments"] = match.get("segments", [])
-            if result_version != self._status_result_version:
-                payload = dict(completed["payload"])
-                elapsed = time.monotonic() - completed["captured_at"]
-                payload["fail_reason"] = f"Last inspected sample ({elapsed:.2f}s): " + payload.get("fail_reason", "")
-                self._apply_status(payload)
-                self._status_result_version = result_version
-        elif self._display_source != source:
-            self.status_widget.update_status(
-                system_state=ProgramState.READY,
-                inspection_result="READY" if boxes else "NOT FOUND",
-                count=len(boxes), fps=packet["fps"],
-                fail_reason="Waiting for the first inspected sample",
-                recipe_request_id=self.status_widget.recipe_request_id,
-            )
+        if not valid_result:
+            # A model load or a new source invalidates prior geometry. Keep
+            # the status widget's explicit loading state and wait for one
+            # complete capture instead of drawing a YOLO-only box.
+            waiting_version = ("waiting", source, self.status_widget.recipe_request_id)
+            if self._display_versions != waiting_version:
+                self._apply_overlay(None, None, [], None)
+                self._display_source = source
+                self._display_versions = waiting_version
+            return
+
+        display_version = (source, result_version)
+        if self._display_versions == display_version:
+            return
+        self._display_versions = display_version
+        boxes = [dict(box) for box in completed["boxes"]]
+        if result_version != self._status_result_version:
+            self._apply_status(dict(completed["payload"]))
+            self._status_result_version = result_version
         self._display_source = source
-        self._apply_overlay(packet["frame"], packet["rect"], boxes,
-                            getattr(packet["window"], "_hWnd", None))
+        self._apply_overlay(completed["frame"], completed["rect"], boxes,
+                            getattr(completed["window"], "_hWnd", None))
 
     @Slot(object, object, object, object)
     def _apply_overlay(self, frame, rect, boxes, hwnd):

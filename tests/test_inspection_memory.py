@@ -79,6 +79,30 @@ def test_minimized_source_hides_overlay(worker, monkeypatch):
     assert frames[-1][0] is None
 
 
+def test_segment_uses_the_same_qualified_region_as_pixel_verdict():
+    """A localized map failure must produce an overlay segment, not a
+    percentile-selected highlight unrelated to the PASS/FAIL rule."""
+    anomaly_map = np.zeros((32, 32), dtype=np.float32)
+    anomaly_map[10:14, 12:16] = 80.0
+    recipe = {
+        "verdict_policy": "image_and_pixel_v1",
+        "pixel_gate": {
+            "enabled": True,
+            "threshold_ratio": 0.5,
+            "min_area_px": 4,
+            "max_area_px": 100,
+        },
+    }
+    points = np.array([[0, 0], [199, 0], [199, 99], [0, 99]], dtype=np.float32)
+
+    segments = InspectionWorker._segment_contours(
+        points, (100, 200, 3), anomaly_map, 200, 100, 0.6, recipe
+    )
+
+    assert len(segments) == 1
+    assert len(segments[0]) >= 4
+
+
 def test_capture_error_hides_overlay(worker, monkeypatch):
     """A failing capture (e.g. the source window closing) must hide the
     overlay instead of leaving stale boxes on screen."""
@@ -318,3 +342,40 @@ def test_recipe_write_is_atomic(temp_recipes_dir):
     recipe_file = temp_recipes_dir / "Atomic" / "recipe.json"
     assert recipe_file.exists()
     assert not list(temp_recipes_dir.glob("**/*.tmp"))
+
+
+def test_multiple_detections_reach_overlay_with_independent_verdicts(worker, monkeypatch):
+    """Moderately confident parts must survive detection and retain their own result."""
+    import torch
+    from ultralytics.engine.results import Results
+
+    instance, frames, statuses = worker
+    frame = np.zeros((480, 640, 3), dtype=np.uint8)
+
+    class Detector:
+        def predict(self, image, *, conf, max_det, **kwargs):
+            candidates = torch.tensor([
+                [80, 100, 60, 40, 0, 0.970, 0],
+                [240, 100, 60, 40, 0, 0.940, 0],
+                [400, 100, 60, 40, 0, 0.910, 0],
+                [560, 100, 60, 40, 0, 0.890, 0],
+            ])
+            return [Results(image, path="scene", names={0: "part"},
+                            obb=candidates[candidates[:, 5] >= conf][:max_det])]
+
+    instance.detection_model = Detector()
+    instance.current_recipe = {"recipe_name": "R", "anomaly_threshold": 0.5}
+    monkeypatch.setattr(instance, "find_window", lambda: _FakeWindow())
+    monkeypatch.setattr(instance, "grab_frame", lambda window: (frame, (10, 20, 640, 480)))
+
+    def inspect(image, points, object_key=None, render_heatmap=False):
+        failed = 200 < points[:, 0].mean() < 300
+        return ("FAIL" if failed else "PASS", 0.8 if failed else 0.1, "", False, None)
+
+    monkeypatch.setattr(instance, "inspect", inspect)
+    instance.tick()
+
+    assert len(frames) == 1
+    assert [box["result"] for box in frames[0][2]] == ["PASS", "FAIL", "PASS"]
+    assert statuses[-1]["count"] == 3
+    assert statuses[-1]["inspection_result"] == "FAIL"

@@ -1,0 +1,23 @@
+{
+  "model_type": "patchcore",
+  "backbone": "wide_resnet50_2",
+  "layers": [
+    "layer2",
+    "layer3"
+  ],
+  "image_size": [
+    512,
+    512
+  ],
+  "num_neighbors": 1,
+  "memory_bank_shape": [
+    512,
+    1536
+  ],
+  "memory_bank_method": "two_stage_projected_farthest_first_v1",
+  "candidate_source": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\model_versions\\c59dc39a1b6a44b4be0c682003bfb0e8",
+  "candidate_bank_source": "reports\\patchcore_experiment_20260921\\bank_512_512.pt",
+  "saved_at": "2026-09-23T03:21:11+00:00",
+  "memory_bank_sha256": "d666633d82714ea87c742efcb7e32374a7195ddc6eb7ebc161c2fbdd6ac5d412",
+  "patchcore_sha256": "cf74d739a793d80129d75b57a3aba2403e20602cffb7fdcd08c2bf3ab1465044"
+}

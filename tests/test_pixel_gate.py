@@ -6,7 +6,7 @@ import pytest
 
 from services.recipe_service import normalize_pixel_gate
 from services.verdict_service import evaluate_verdict
-from utils.pixel_gate import evaluate_pixel_gate, largest_region
+from utils.pixel_gate import evaluate_pixel_gate, largest_region, qualifying_region_mask
 
 
 def _blob_map(value=80.0):
@@ -56,6 +56,18 @@ def test_gate_ignores_speck_below_min_area():
     amap[5, 5] = 90.0
     triggered, _, _ = evaluate_pixel_gate(amap, 40.0, 5, 600)
     assert not triggered
+
+
+def test_gate_returns_only_regions_that_can_fail_the_part():
+    amap = _blob_map()
+    amap[1, 1] = 90.0  # Above threshold, but too small to qualify.
+
+    triggered, area, verdict_mask = evaluate_pixel_gate(amap, 40.0, 5, 600)
+    contour_mask, contour_area = qualifying_region_mask(amap, 40.0, 5, 600)
+
+    assert triggered and area == contour_area == 9
+    assert np.array_equal(verdict_mask, contour_mask)
+    assert not verdict_mask[1, 1]
 
 
 def test_gate_never_triggers_with_inverted_bounds():

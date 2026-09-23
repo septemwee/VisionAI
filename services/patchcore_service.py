@@ -143,6 +143,8 @@ class PatchCoreService:
         metadata = {
             "model_type": "patchcore",
             "backbone": BACKBONE,
+            "image_size": list(IMAGE_SIZE),
+            "num_neighbors": int(model.model.num_neighbors),
             "memory_bank_shape": list(model.model.memory_bank.shape),
             "saved_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "memory_bank_sha256": _sha256_of(model_dir / "memory_bank.pt"),
@@ -197,7 +199,7 @@ class PatchCoreService:
         )
 
         state_dict = torch.load(
-            model_path / "patchcore.pt", map_location="cpu", weights_only=True
+            model_path / "patchcore.pt", map_location="cpu", weights_only=True, mmap=True
         )
         load_result = model.load_state_dict(state_dict, strict=False)
         if load_result.missing_keys or load_result.unexpected_keys:
@@ -208,7 +210,7 @@ class PatchCoreService:
             )
 
         memory_bank = torch.load(
-            model_path / "memory_bank.pt", map_location="cpu", weights_only=True
+            model_path / "memory_bank.pt", map_location="cpu", weights_only=True, mmap=True
         )
 
         metadata_path = model_path / "metadata.json"
@@ -267,6 +269,24 @@ class PatchCoreService:
                         )
 
         model.model.memory_bank = memory_bank
+
+        requested_neighbors = metadata.get("num_neighbors")
+        if requested_neighbors is not None:
+            try:
+                requested_neighbors = int(requested_neighbors)
+            except (TypeError, ValueError):
+                print(
+                    f"[PATCHCORE] Invalid num_neighbors {requested_neighbors!r}; "
+                    f"using model default {model.model.num_neighbors}"
+                )
+            else:
+                if requested_neighbors < 1:
+                    print(
+                        f"[PATCHCORE] Invalid num_neighbors {requested_neighbors}; "
+                        f"using model default {model.model.num_neighbors}"
+                    )
+                else:
+                    model.model.num_neighbors = min(requested_neighbors, len(memory_bank))
 
         model.eval()
 

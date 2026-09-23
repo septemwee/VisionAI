@@ -60,9 +60,34 @@ def test_detection_updates_do_not_reset_completed_result_colour():
     app._poll_live(controller)
     controller.worker.live_frames.put(dict(packet))
     app._poll_live(controller)
-    assert [entry[2][0]["result"] for entry in overlays] == ["PASS", "PASS"]
-    assert "LAST PASS" in overlays[-1][2][0]["display_text"]
+    assert [entry[2][0]["result"] for entry in overlays] == ["PASS"]
     assert sum(item["inspection_result"] == "PASS" for item in statuses) == 1
+
+
+def test_overlay_uses_completed_frame_geometry_with_its_segment():
+    """The visible box must be from the exact capture PatchCore inspected.
+
+    A newer YOLO frame can be geometrically different while PatchCore is
+    still running. Re-projecting the old verdict onto that newer box makes
+    the segment appear detached from the package.
+    """
+    app, controller, packet, completed, _statuses, overlays = make_controller()
+    completed_frame = np.full((30, 30, 3), 77, np.uint8)
+    completed_points = np.array([[4, 3], [24, 3], [24, 23], [4, 23]], dtype=float)
+    completed = dict(
+        completed,
+        frame=completed_frame,
+        boxes=[dict(completed["boxes"][0], points=completed_points,
+                    segments=[[[6, 6], [12, 6], [12, 12], [6, 12]]])],
+    )
+    controller.worker.completed_frames.put(completed)
+
+    app._poll_live(controller)
+
+    displayed_frame, _rect, displayed_boxes, _hwnd = overlays[-1]
+    assert displayed_frame is completed_frame
+    assert np.array_equal(displayed_boxes[0]["points"], completed_points)
+    assert displayed_boxes[0]["segments"] == completed["boxes"][0]["segments"]
 
 
 def test_old_source_result_cannot_follow_reappearing_source():
@@ -70,7 +95,7 @@ def test_old_source_result_cannot_follow_reappearing_source():
     controller.worker.live_frames.put(dict(packet, source_id=6))
     app._poll_live(controller)
     assert all(item["inspection_result"] != "PASS" for item in statuses)
-    assert "result" not in overlays[-1][2][0]
+    assert overlays[-1][0] is None
 
 
 def test_old_recipe_result_is_rejected():
@@ -78,7 +103,19 @@ def test_old_recipe_result_is_rejected():
     controller.worker.completed_frames.put(dict(completed, epoch=2))
     app._poll_live(controller)
     assert all(item["inspection_result"] != "PASS" for item in statuses)
-    assert "result" not in overlays[-1][2][0]
+    assert overlays[-1][0] is None
+
+
+def test_recipe_change_hides_old_completed_overlay_while_loading():
+    app, controller, packet, _completed, _statuses, overlays = make_controller()
+    app._poll_live(controller)
+    assert overlays[-1][0] is packet["frame"]
+
+    controller.status_widget.recipe_request_id = 8
+    controller.worker.live_frames.put(dict(packet))
+    app._poll_live(controller)
+
+    assert overlays[-1][0] is None
 
 
 def test_live_detection_continues_while_inspection_is_blocked(monkeypatch):

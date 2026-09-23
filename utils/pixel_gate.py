@@ -9,9 +9,8 @@ anomalous and compact.
 
 Regions larger than ``max_area_px`` are deliberately ignored: a map-wide
 elevation is the image-level gate's job, and treating it here would reject
-uniformly noisy good parts. The map this operates on is the sigma=4
-smoothed 256x256 anomaly map PatchCoreService already produces, so one
-pixel here is one pixel of the model input, not of the camera frame.
+uniformly noisy good parts. The map operates at the model output resolution,
+so one pixel here is one pixel of the model map, not of the camera frame.
 """
 
 import cv2
@@ -54,27 +53,41 @@ def evaluate_pixel_gate(anomaly_map, pixel_threshold, min_area_px, max_area_px):
     ``ValueError`` instead of returning "not triggered": the verdict caller
     treats a gate that cannot be computed as a failure, never as a pass.
     """
+    mask, matched_area = qualifying_region_mask(
+        anomaly_map, pixel_threshold, min_area_px, max_area_px
+    )
+    return mask is not None, matched_area, mask
+
+
+def qualifying_region_mask(anomaly_map, pixel_threshold, min_area_px, max_area_px):
+    """Return exactly the map regions that satisfy the pixel-gate rule.
+
+    The returned boolean mask is deliberately the same one used to make the
+    PASS/FAIL decision. Consumers that draw a contour must use this mask,
+    rather than deriving a second per-image percentile threshold, otherwise
+    the visible anomaly and the verdict can disagree.
+
+    Returns ``(mask, largest_area)``. ``mask`` is ``None`` when no connected
+    component qualifies. Invalid non-finite maps raise ``ValueError`` so the
+    verdict caller remains fail-closed.
+    """
     amap = unwrap_anomaly_map(anomaly_map)
-    if amap is None:
-        return False, 0, None
-
-    if amap.size == 0:
-        return False, 0, None
-
+    if amap is None or amap.size == 0:
+        return None, 0
     if not np.isfinite(amap).all():
         raise ValueError("anomaly map contains non-finite values")
 
-    mask = (amap > pixel_threshold).astype(np.uint8)
-    if not mask.any():
-        return False, 0, None
+    threshold_mask = (amap > pixel_threshold).astype(np.uint8)
+    if not threshold_mask.any():
+        return None, 0
 
-    count, _, stats, _ = cv2.connectedComponentsWithStats(mask)
-    triggered = False
-    matched_area = 0
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(threshold_mask)
+    qualified = np.zeros_like(threshold_mask, dtype=np.uint8)
+    largest_area = 0
     for label in range(1, count):
         area = int(stats[label, cv2.CC_STAT_AREA])
-        if min_area_px <= area <= max_area_px and area > matched_area:
-            triggered = True
-            matched_area = area
+        if min_area_px <= area <= max_area_px:
+            qualified[labels == label] = 1
+            largest_area = max(largest_area, area)
 
-    return triggered, matched_area, mask.astype(bool)
+    return (qualified.astype(bool), largest_area) if largest_area else (None, 0)

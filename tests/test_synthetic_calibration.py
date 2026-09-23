@@ -39,3 +39,25 @@ def test_threshold_reports_synthetic_detection_failure_not_score_ceiling():
     )
     assert trace["warning"] is True
     assert "synthetic" in trace["warning_reason"].lower()
+
+
+def test_optional_alpha_masks_preserve_images_and_describe_modified_pixels(tmp_path):
+    source = tmp_path / 'source'
+    source.mkdir()
+    image = np.full((80, 120, 3), 110, np.uint8)
+    cv2.imwrite(str(source / 'sample.png'), image)
+    baseline, output, masks = tmp_path / 'baseline', tmp_path / 'images', tmp_path / 'masks'
+    original = generate_synthetic_validation(source, baseline)
+    manifest = generate_synthetic_validation(source, output, mask_dir=masks)
+    assert manifest == original
+    assert len(list(output.glob('*.png'))) == 4
+    for item in manifest:
+        name = item['file']
+        assert (baseline / name).read_bytes() == (output / name).read_bytes()
+        # Ultralytics' imread wrapper retains a singleton grayscale channel.
+        alpha = np.squeeze(cv2.imread(str(masks / name), cv2.IMREAD_GRAYSCALE))
+        changed = np.any(cv2.imread(str(output / name)) != image, axis=2)
+        assert alpha.shape == image.shape[:2]
+        assert np.any(alpha > 25)
+        assert np.all(changed[alpha > 25])
+        assert not changed[alpha == 0].any()

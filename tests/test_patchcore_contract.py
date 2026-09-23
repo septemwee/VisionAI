@@ -2,6 +2,7 @@
 
 import cv2
 import pytest
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -65,3 +66,44 @@ def test_anomaly_map_smoothing_dampens_and_resets():
 
     other_shape = np.zeros((4, 4))
     assert np.allclose(service._smooth_anomaly_map(other_shape), other_shape)
+
+
+def test_load_model_uses_num_neighbors_recorded_with_artifact(tmp_path, monkeypatch):
+    """A compact bank must not silently reopen with PatchCore's k=9 default."""
+    model_dir = tmp_path / "candidate"
+    model_dir.mkdir()
+    for name in ("patchcore.pt", "memory_bank.pt"):
+        (model_dir / name).write_bytes(b"stub")
+    (model_dir / "metadata.json").write_text(
+        '{"memory_bank_shape": [12, 3], "num_neighbors": 1}', encoding="utf-8"
+    )
+
+    raw = SimpleNamespace(memory_bank=None, num_neighbors=9)
+    fake_model = SimpleNamespace(
+        model=raw,
+        load_state_dict=lambda *_args, **_kwargs: SimpleNamespace(missing_keys=[], unexpected_keys=[]),
+        eval=lambda: None,
+    )
+    class _FakePatchcore:
+        @staticmethod
+        def configure_pre_processor(**_kwargs):
+            return object()
+
+        def __new__(cls, **_kwargs):
+            return fake_model
+
+    monkeypatch.setattr(pcs, "_import_anomalib", lambda: None)
+    monkeypatch.setattr(pcs, "Patchcore", _FakePatchcore)
+    load_calls = []
+
+    def load(path, **kwargs):
+        load_calls.append((path.name, kwargs))
+        return {"state": "stub"} if path.name == "patchcore.pt" else np.zeros((12, 3))
+
+    monkeypatch.setattr(pcs.torch, "load", load)
+
+    service = pcs.PatchCoreService()
+    service.load_model(model_dir)
+
+    assert service.model.model.num_neighbors == 1
+    assert all(kwargs.get("mmap") is True for _name, kwargs in load_calls)

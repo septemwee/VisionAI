@@ -1,0 +1,66 @@
+{
+  "activated": true,
+  "candidate_dir": "C:\\Users\\septe\\Downloads\\VisionAI_1 (3)\\VisionAI_1\\recipes\\TJA1041_SO14\\model_versions\\f356ef620e0f4fe887b01f0783f8c4b4",
+  "threshold": 0.6373954391479493,
+  "pixel_gate": {
+    "enabled": true,
+    "threshold_ratio": 1.0,
+    "min_area_px": 1,
+    "max_area_px": 65536,
+    "synthetic_detected": 64,
+    "synthetic_total": 84,
+    "synthetic_detection_rate": 0.7619047619047619,
+    "expected_false_alarms": 0
+  },
+  "acceptance": {
+    "model_identity": "9bcaa5de4d8cfcf2aac64e2037bddc1cea1acb4e0902cf660446f27ee22d9311",
+    "dataset_audit": {
+      "counts": {
+        "train": 100,
+        "calibration": 21,
+        "test": 21
+      },
+      "sha256": "f620c3a45d693b1eb2bcc5485e77d554185fa9ec86a35282607bf61e416a6db5"
+    },
+    "threshold": 0.6373954391479493,
+    "good": {
+      "count": 21,
+      "above_threshold": 0,
+      "rate": 0.0
+    },
+    "synthetic": {
+      "count": 84,
+      "above_threshold": 76,
+      "rate": 0.9047619047619048
+    },
+    "pixel_gate": {
+      "config": {
+        "enabled": true,
+        "threshold_ratio": 1.0,
+        "min_area_px": 1,
+        "max_area_px": 65536
+      },
+      "calibration": {
+        "enabled": true,
+        "threshold_ratio": 1.0,
+        "min_area_px": 1,
+        "max_area_px": 65536,
+        "synthetic_detected": 64,
+        "synthetic_total": 84,
+        "synthetic_detection_rate": 0.7619047619047619,
+        "expected_false_alarms": 0
+      },
+      "good": {
+        "count": 21,
+        "triggered": 0,
+        "rate": 0.0
+      },
+      "synthetic": {
+        "count": 84,
+        "triggered": 74,
+        "rate": 0.8809523809523809
+      }
+    },
+    "evidence": "synthetic_only"
+  }
+}

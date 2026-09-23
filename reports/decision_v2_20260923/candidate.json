@@ -1,0 +1,26 @@
+{
+  "settings": {
+    "pixel_low_threshold": 57.91242727279665,
+    "pixel_high_threshold": 62.90890884399414,
+    "min_region_area": 1,
+    "spatial_sigma": 0.8
+  },
+  "calibration": {
+    "good_false_alarms": 0,
+    "good_total": 21,
+    "synthetic_detected": 65,
+    "synthetic_total": 84,
+    "candidates_evaluated": 68
+  },
+  "model_identity": "9bcaa5de4d8cfcf2aac64e2037bddc1cea1acb4e0902cf660446f27ee22d9311",
+  "dataset_audit": {
+    "counts": {
+      "train": 100,
+      "calibration": 21,
+      "test": 21
+    },
+    "sha256": "f620c3a45d693b1eb2bcc5485e77d554185fa9ec86a35282607bf61e416a6db5"
+  },
+  "image_threshold": 0.6373954391479493,
+  "activated": false
+}

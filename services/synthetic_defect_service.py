@@ -8,9 +8,12 @@ import cv2
 import numpy as np
 
 
-def generate_synthetic_validation(source_dir, output_dir):
+def generate_synthetic_validation(source_dir, output_dir, *, mask_dir=None):
     source_dir, output_dir = Path(source_dir), Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    if mask_dir is not None:
+        mask_dir = Path(mask_dir)
+        mask_dir.mkdir(parents=True, exist_ok=True)
     manifest = []
     paths = sorted(p for p in source_dir.rglob("*") if p.suffix.lower() in
                    {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"})
@@ -65,6 +68,11 @@ def generate_synthetic_validation(source_dir, output_dir):
             target = output_dir / f"{source.stem}_{seed:08x}__{kind}.png"
             if not cv2.imwrite(str(target), defect):
                 raise OSError(f'Cannot write synthetic image: {target}')
+            if mask_dir is not None:
+                # Keep masks outside image folders so scoring never treats
+                # a ground-truth mask as an inspection sample.
+                if not cv2.imwrite(str(mask_dir / target.name), np.rint(alpha * 255).astype(np.uint8)):
+                    raise OSError(f'Cannot write synthetic alpha mask: {target.name}')
             manifest.append({"source": str(source.relative_to(source_dir)), "file": target.name,
                              "type": kind, "placement": placement, "seed": seed})
     (output_dir / "synthetic_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
