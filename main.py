@@ -33,7 +33,7 @@ from services.recipe_service import (
 from services.state_manager import ProgramState, StateManager
 from services.top_mark_service import TopMarkService
 from services.marking_service import MarkingService
-from services.verdict_service import evaluate_verdict
+from services.verdict_service import evaluate_verdict, InspectionError
 from ui.inspection.overlay import OverlayWindow
 from ui.inspection.status_widget import StatusWidget
 from utils.image_utils import crop_yolo_obb, heatmap_overlay, letterbox, letterbox_placement, order_obb_points
@@ -187,6 +187,14 @@ class InspectionWorker(QThread):
                 except Exception as error:
                     print(f"Pipeline tick error: {error}")
                     self.state_manager.set_state(ProgramState.ERROR, str(error))
+                    self.reset_scene_memory()
+                    self.status_update.emit({
+                        "system_state": self.state_manager.get_state(),
+                        "inspection_result": "ERROR", "count": 0, "fps": 0,
+                        "fail_reason": f"PIPELINE_ERROR: {error}",
+                        "recipe_request_id": self.active_recipe_request_id,
+                    })
+                    self.overlay_update.emit(None, None, [], None)
         finally:
             self.requestInterruption()
             producer.join()
@@ -290,11 +298,11 @@ class InspectionWorker(QThread):
             self.patchcore_service.model = None
             self.status_update.emit({
                 "system_state": self.state_manager.get_state(),
-                "inspection_result": "SELECT PACKAGE",
+                "inspection_result": "ERROR",
                 "count": 0,
                 "fps": 0,
                 "model_loading": False,
-                "fail_reason": "Recipe model is not configured",
+                "fail_reason": "MODEL_ERROR: Recipe model is not configured",
                 "recipe_request_id": request_id,
             })
             return
@@ -320,12 +328,12 @@ class InspectionWorker(QThread):
             # Fail closed: never keep scoring with the PREVIOUS recipe's
             # model under the new recipe's name.
             self.patchcore_service.model = None
-            self.current_recipe = None
+            self.current_recipe = recipe_data
             self.state_manager.set_state(ProgramState.ERROR, str(error))
             print(f"Model load error: {error}")
             self.status_update.emit({
                 "system_state": self.state_manager.get_state(),
-                "inspection_result": "NO SOURCE",
+                "inspection_result": "ERROR",
                 "count": 0,
                 "fps": 0,
                 "model_loading": False,
@@ -588,6 +596,13 @@ class InspectionWorker(QThread):
             for box in boxes:
                 box["result"] = "SELECT PACKAGE"
 
+        elif self.patchcore_service.model is None:
+            inspection_result = "ERROR"
+            fail_reason = "MODEL_ERROR: PatchCore model is unavailable"
+            for box in boxes:
+                box["result"] = "ERROR"
+                box["fail_reason"] = fail_reason
+
         elif count == 0:
             inspection_result = "NOT FOUND"
             # The part is gone; a new part placed later must be checked fresh.
@@ -603,17 +618,11 @@ class InspectionWorker(QThread):
             # everything, including the cached orientation, because the part
             # may have been swapped while the box was stale.
             self.orientation_dirty = True
-            verdict_box = max(boxes, key=lambda box: (
-                {"FAIL": 3, "UNKNOWN": 2, "NOT INSPECTED": 2, "PASS": 1}.get(box.get("result"), 0),
-                box.get("score", 0.0)))
-            inspection_result = verdict_box.get("result", "NOT FOUND")
-            if inspection_result in ("UNKNOWN", "NOT INSPECTED"):
-                inspection_result = "FAIL"
-            score = verdict_box.get("score", 0.0)
-            fail_reason = verdict_box.get("fail_reason", "")
-            is_upside_down = verdict_box.get("is_upside_down", False)
-            heatmap = verdict_box.get("heatmap")
-            marking = verdict_box.get("marking")
+            inspection_result = "ERROR"
+            fail_reason = "DETECTION_UNAVAILABLE: previous result is stale"
+            for box in boxes:
+                box["result"] = "ERROR"
+                box["fail_reason"] = fail_reason
 
         else:
             if self.orientation_dirty:
@@ -652,7 +661,7 @@ class InspectionWorker(QThread):
                     self.state_manager.set_state(ProgramState.ERROR, str(error))
                     print(f"Inspection error: {error}")
                     result, item_score, item_reason, upside_down, item_heatmap = (
-                        "FAIL", 0.0, f"Inspection error: {error}", False, None
+                        "ERROR", 0.0, f"INFERENCE_ERROR: {error}", False, None
                     )
 
                 box["score"] = item_score
@@ -666,8 +675,8 @@ class InspectionWorker(QThread):
                 # Draw only regions that satisfy the same raw anomaly-map
                 # threshold and connected-area rule that can fail the part.
                 # This replaces the former per-frame percentile contour.
-                box["segments"] = (
-                    self._segment_contours(
+                try:
+                    box["segments"] = self._segment_contours(
                         box["points"],
                         getattr(self, "_last_roi_shape", None),
                         getattr(self, "_last_anomaly_map", None),
@@ -676,24 +685,27 @@ class InspectionWorker(QThread):
                         normalize_anomaly_threshold(self.current_recipe.get("anomaly_threshold")),
                         self.current_recipe,
                     )
-                )
+                except Exception as error:
+                    box["segments"] = []
+                    box["result"] = "ERROR"
+                    box["fail_reason"] = f"SEGMENT_ERROR: {error}"
 
             for box in sorted(boxes, key=lambda item: item["conf"], reverse=True)[MAX_INSPECTIONS_PER_FRAME:]:
-                box["result"] = "NOT INSPECTED"
+                box["result"] = "ERROR"
                 box["score"] = 0.0
                 box["fail_reason"] = "Inspection capacity exceeded"
 
             inspected = [box for box in boxes if "score" in box]
             worst = max(inspected, key=lambda box: box["score"], default=None)
+            error_box = next((box for box in inspected if box["result"] not in ("PASS", "FAIL")), None)
             failed = next((box for box in inspected if box["result"] == "FAIL"), None)
-            unknown = next((box for box in inspected if box["result"] in ("UNKNOWN", "NOT INSPECTED")), None)
-            summary = failed or unknown or worst
-            if failed:
-                inspection_result = "FAIL"
-            elif unknown:
+            summary = error_box or failed or worst
+            if error_box:
+                inspection_result = "ERROR"
+            elif failed:
                 inspection_result = "FAIL"
             else:
-                inspection_result = "PASS" if inspected else "NOT FOUND"
+                inspection_result = "PASS" if inspected and len(inspected) == count else "ERROR"
             if summary is not None:
                 score = summary["score"]
                 fail_reason = summary.get("fail_reason", "")
@@ -862,13 +874,32 @@ class InspectionWorker(QThread):
         }
 
     def inspect(self, frame, points, object_key=None, render_heatmap=True):
+        try:
+            return self._inspect_checked(frame, points, object_key, render_heatmap)
+        except InspectionError as error:
+            return "ERROR", 0.0, str(error), False, None
+        except Exception as error:
+            return "ERROR", 0.0, f"INFERENCE_ERROR: {error}", False, None
+
+    def _inspect_checked(self, frame, points, object_key=None, render_heatmap=True):
         """Inspect one detected package.
 
         Returns ``(inspection_result, score, fail_reason, is_upside_down,
         heatmap)`` with the PatchCore anomaly heatmap as a BGR image or
         ``None`` when no heatmap was produced.
         """
-        points = points.copy()
+        points = np.asarray(points, dtype=np.float32)
+        if points.shape != (4, 2) or not np.isfinite(points).all():
+            raise InspectionError("INVALID_ROI", "Invalid OBB points")
+        if (np.linalg.norm(points[1] - points[0]) < 2
+                or np.linalg.norm(points[2] - points[1]) < 2):
+            raise InspectionError("INVALID_ROI", "Degenerate OBB")
+        if self.patchcore_service.model is None:
+            raise InspectionError("MODEL_ERROR", "PatchCore model is unavailable")
+        if not stored_threshold_usable(self.current_recipe.get("anomaly_threshold")):
+            raise InspectionError("INVALID_RECIPE", "Anomaly threshold is missing or invalid")
+        if self.target_width < 2 or self.target_height < 2:
+            raise InspectionError("INVALID_RECIPE", "Invalid preprocessing size")
 
         raw_threshold = self.current_recipe.get("anomaly_threshold")
         if self.current_recipe.get("calibration") and not stored_threshold_usable(
@@ -877,13 +908,7 @@ class InspectionWorker(QThread):
             # A calibrated recipe with a corrupted threshold must never fall
             # back to the default gate: that silently loosens a measured
             # limit. Fail closed and tell the operator to recalibrate.
-            return (
-                "FAIL",
-                0.0,
-                f"Invalid anomaly threshold {raw_threshold!r} — recalibrate",
-                False,
-                None,
-            )
+            raise InspectionError("INVALID_RECIPE", "Recalibration required")
 
         roi = crop_yolo_obb(
             frame,
@@ -892,24 +917,28 @@ class InspectionWorker(QThread):
 
         self._last_roi_shape = roi.shape
 
-        if roi.size == 0:
-            return "NOT FOUND", 0.0, "", False, None
+        if roi.size == 0 or min(roi.shape[:2]) < 2:
+            raise InspectionError("INVALID_ROI", "Empty or degenerate crop")
 
         is_upside_down, angle, orientation_error = self.cached_orientation(
             roi, points, object_key
         )
 
         if orientation_error:
-            return "FAIL", 0.0, orientation_error, False, None
+            raise InspectionError("ORIENTATION_ERROR", orientation_error)
 
         if is_upside_down:
             return "FAIL", 0.0, f"Orientation error ({angle}°)", True, None
 
         laser_status, laser_reason = self.check_laser_mark(roi)
+        if laser_status == "ERROR":
+            raise InspectionError("MARKING_ERROR", laser_reason)
         if laser_status == "FAIL":
             return "FAIL", 0.0, laser_reason, False, None
         if laser_status == "UNKNOWN":
-            return "FAIL", 0.0, laser_reason, False, None
+            raise InspectionError("MARKING_ERROR", laser_reason)
+        if laser_status != "MATCH":
+            raise InspectionError("MARKING_ERROR", f"Unexpected marking result: {laser_status}")
 
         normalized_roi = letterbox(roi, int(self.target_width), int(self.target_height))
         self._last_normalized_roi = normalized_roi
@@ -942,7 +971,8 @@ class InspectionWorker(QThread):
     def check_laser_mark(self, roi):
         self._last_marking = self.marking_service.check(roi, self.current_recipe)
         status = self._last_marking["status"]
-        verdict = "MATCH" if status in ("MATCH", "DISABLED") else "FAIL"
+        verdict = ("MATCH" if status in ("MATCH", "DISABLED") else
+                   "FAIL" if status in ("MISMATCH", "POSITION ERROR") else "ERROR")
         return verdict, self._last_marking.get("reason", "")
 
     def check_orientation(self, roi):
@@ -967,6 +997,11 @@ class InspectionWorker(QThread):
             self.state_manager.set_state(ProgramState.ERROR, str(error))
             print(f"Orientation check error: {error}")
             return False, 0, f"Orientation check failed: {error}"
+
+        if (angle not in (0, 90, 180, 270)
+                or not np.isfinite(match_score) or match_score <= -999
+                or not np.isfinite(score_gap)):
+            return False, 0, "Orientation match unavailable"
 
         if INSPECTION_TRACE:
             print(

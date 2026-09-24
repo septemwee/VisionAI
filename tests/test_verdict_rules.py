@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from services.verdict_service import evaluate_verdict
+from services.verdict_service import evaluate_verdict, InspectionError
 
 
 def test_enabled_pixel_gate_can_fail_a_small_region():
@@ -35,9 +35,8 @@ def test_disabled_pixel_gate_does_not_change_image_score():
 
 @pytest.mark.parametrize("amap", [None, np.empty((0, 0)), np.full((4, 4), np.nan), np.zeros((4,))])
 def test_invalid_output_never_passes_even_with_gate_disabled(amap):
-    defect, reason, _ = evaluate_verdict(0.1, amap, 0.6, {"pixel_gate": {"enabled": False}})
-    assert defect
-    assert "unavailable" in reason
+    with pytest.raises(InspectionError, match="INVALID_ANOMALY_MAP"):
+        evaluate_verdict(0.1, amap, 0.6, {"pixel_gate": {"enabled": False}})
 
 
 def test_legacy_recipe_keeps_image_only_verdict():
@@ -47,6 +46,5 @@ def test_legacy_recipe_keeps_image_only_verdict():
                              "min_area_px": 4, "max_area_px": 100}}
     assert not evaluate_verdict(0.1, amap, 0.6, recipe)[0]
     recipe["verdict_policy"] = "image_and_pixel_v1"
-    defect, reason, _ = evaluate_verdict(0.1, amap, 0.6, recipe)
-    assert defect
-    assert "requires calibration" in reason
+    with pytest.raises(InspectionError, match="requires matching calibration"):
+        evaluate_verdict(0.1, amap, 0.6, recipe)

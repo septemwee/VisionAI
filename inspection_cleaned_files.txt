@@ -53,3 +53,11 @@ reports/decision_v2_20260923/preview_09.png
 reports/decision_v2_20260923/preview_10.png
 reports/decision_v2_20260923/preview_11.png
 reports/decision_v2_20260923/preview_12.png
+services/verdict_service.py
+services/inference_service.py
+tests/test_verdict_rules.py
+tests/test_inspection_fail_safe.py
+ui/trainer/pages/review_page.py
+tests/test_recipe_status_flow.py
+services/top_mark_service.py
+tests/test_top_mark_scale.py

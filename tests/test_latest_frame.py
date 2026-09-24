@@ -149,6 +149,7 @@ def test_live_detection_continues_while_inspection_is_blocked(monkeypatch):
     monkeypatch.setattr(main.InspectionWorker, "inspect", inspect)
     worker = main.InspectionWorker(object())
     worker.current_recipe = dict(recipe_name="R")
+    worker.patchcore_service.model = object()
     worker.start()
     try:
         assert started.wait(3)

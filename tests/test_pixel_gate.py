@@ -101,17 +101,17 @@ def test_verdict_fails_on_high_score():
 
 
 def test_verdict_nan_score_fails_closed():
-    is_defect, reason, _ = evaluate_verdict(float("nan"), None, 0.5, {})
-    assert is_defect
-    assert "Invalid PatchCore score" in reason
+    from services.verdict_service import InspectionError
+    with pytest.raises(InspectionError, match="INVALID_SCORE"):
+        evaluate_verdict(float("nan"), None, 0.5, {})
 
 
 def test_verdict_nonfinite_map_fails_closed():
     amap = _blob_map()
     amap[20, 20] = np.inf
-    is_defect, reason, _ = evaluate_verdict(0.10, amap, 0.5, {})
-    assert is_defect
-    assert "invalid anomaly map" in reason
+    from services.verdict_service import InspectionError
+    with pytest.raises(InspectionError, match="INVALID_ANOMALY_MAP"):
+        evaluate_verdict(0.10, amap, 0.5, {})
 
 
 def test_verdict_pixel_gate_triggers():
@@ -121,6 +121,7 @@ def test_verdict_pixel_gate_triggers():
     amap[10:14, 14:18] = 80.0
     recipe = {"verdict_policy": "image_and_pixel_v1"}
     gate = normalize_pixel_gate(recipe)
+    recipe["pixel_gate"] = gate
     recipe["calibration"] = {"proposed": 0.6, "pixel_gate": gate}
     is_defect, reason, region = evaluate_verdict(0.10, amap, 0.6, recipe)
     assert is_defect

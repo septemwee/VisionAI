@@ -456,7 +456,7 @@ class OverlayWindow(QWidget):
     def _result_color(result):
         if result == "PASS":
             return QColor(0, 255, 0)
-        if result == "FAIL":
+        if result in ("FAIL", "ERROR"):
             return QColor(255, 0, 0)
         if result == "SELECT PACKAGE":
             return QColor(0, 0, 255)

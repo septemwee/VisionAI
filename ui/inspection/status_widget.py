@@ -167,6 +167,7 @@ VERDICT_COLORS = {
     "LOADING MODEL": ("#D97706", "#FFFBEB"),
     "NO SOURCE": ("#6B7280", "#F3F4F6"),
     "PASS": ("#10B981", "#ECFDF5"),
+    "ERROR": ("#EF4444", "#FEF2F2"),
     "UNKNOWN": ("#D97706", "#FFFBEB"),
     "NOT FOUND": ("#F59E0B", "#FFF7ED"),
     "SELECT PACKAGE": ("#2563EB", "#EFF6FF"),
@@ -1132,6 +1133,9 @@ class StatusWidget(QWidget):
         if inspection_result == "UNKNOWN":
             return fail_reason or "Inspection could not be determined", "#D97706"
 
+        if inspection_result == "ERROR":
+            return fail_reason or error_message or "Inspection could not be completed", "#EF4444"
+
         if inspection_result == "PASS":
             if fail_reason.startswith("Last inspected sample"):
                 return fail_reason, "#10B981"
@@ -1195,6 +1199,12 @@ class StatusWidget(QWidget):
             self.orientation.setText("N/A")
             color = "#2563EB"
 
+        elif inspection_result == "ERROR":
+            self.orientation.setText("NOT CHECKED")
+            self._apply_style(
+                "orientation", self.orientation,
+                "color: #EF4444; font-size: 16px; font-weight: 700; background:transparent;",
+            )
         elif inspection_result == "UNKNOWN":
             self.orientation.setText("UNKNOWN")
             self._apply_style(

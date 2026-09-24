@@ -148,13 +148,14 @@ class ReviewPage(QWidget):
 
         self.current_image_path = image_path
 
-        self.inference_service.load_model(recipe)
-
-        threshold = normalize_anomaly_threshold(recipe.get("anomaly_threshold"))
-
-        self.current_result = self.inference_service.predict(
-            image_path, anomaly_threshold=threshold, recipe=recipe
-        )
+        try:
+            self.inference_service.load_model(recipe)
+            threshold = normalize_anomaly_threshold(recipe.get("anomaly_threshold"))
+            self.current_result = self.inference_service.predict(
+                image_path, anomaly_threshold=threshold, recipe=recipe
+            )
+        except Exception as error:
+            self.current_result = {"result": "ERROR", "reason": f"MODEL_ERROR: {error}"}
 
         self.refresh_visualization()
 
@@ -164,6 +165,13 @@ class ReviewPage(QWidget):
 
     def refresh_visualization(self):
         if not self.current_image_path or not self.current_result:
+            return
+
+        if self.current_result["result"] == "ERROR":
+            self.lbl_score.setText("Score : unavailable")
+            self.lbl_result.setText(f"Result : ERROR — {self.current_result['reason']}")
+            for label in (self.lbl_original, self.lbl_heatmap, self.lbl_segment):
+                label.clear()
             return
 
         image = cv2.imread(self.current_image_path)

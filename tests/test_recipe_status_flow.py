@@ -23,8 +23,15 @@ def test_first_selection_ready_and_current_verdict(qapp, monkeypatch):
             count=1, fps=3, recipe_request_id=widget.recipe_request_id))
         assert widget.result.text() == verdict
         assert "Loading" not in widget.message.text()
+    worker.status_update.emit(dict(
+        system_state=ProgramState.ERROR, inspection_result="ERROR",
+        count=1, fps=0, fail_reason="INVALID_ANOMALY_MAP: missing map",
+        recipe_request_id=widget.recipe_request_id))
+    assert widget.result.text() == "ERROR"
+    assert "INVALID_ANOMALY_MAP" in widget.message.text()
+    assert widget.orientation.text() == "NOT CHECKED"
     widget.update_status(ProgramState.READY, "SELECT PACKAGE", 0, 0,
                          model_loading=True, recipe_request_id=widget.recipe_request_id - 1)
-    assert widget.result.text() == "FAIL"
+    assert widget.result.text() == "ERROR"
     widget.close()
     overlay.close()

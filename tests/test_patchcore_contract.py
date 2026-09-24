@@ -107,3 +107,33 @@ def test_load_model_uses_num_neighbors_recorded_with_artifact(tmp_path, monkeypa
 
     assert service.model.model.num_neighbors == 1
     assert all(kwargs.get("mmap") is True for _name, kwargs in load_calls)
+
+
+@pytest.mark.parametrize('content', [
+    '{bad json', '[]',
+    '{"image_size": [256, 256]}',
+    '{"num_neighbors": 0}',
+    '{"num_neighbors": "bad"}',
+    '{"memory_bank_shape": "bad"}',
+])
+def test_invalid_model_metadata_is_rejected_before_inference(tmp_path, content):
+    from services.patchcore_service import read_model_metadata
+    (tmp_path / 'metadata.json').write_text(content, encoding='utf-8')
+    with pytest.raises(ValueError):
+        read_model_metadata(tmp_path)
+
+
+def test_legacy_model_metadata_without_image_size_is_accepted(tmp_path):
+    from services.patchcore_service import read_model_metadata
+    (tmp_path / 'metadata.json').write_text(
+        '{"memory_bank_shape": [512, 1536]}', encoding='utf-8')
+    assert read_model_metadata(tmp_path)['memory_bank_shape'] == [512, 1536]
+
+
+def test_cached_model_cannot_hide_missing_artifact(tmp_path, monkeypatch):
+    (tmp_path / 'metadata.json').write_text('{}', encoding='utf-8')
+    monkeypatch.setattr(pcs, '_import_anomalib', lambda: None)
+    service = pcs.PatchCoreService()
+    service._model_cache[str(tmp_path.resolve())] = object()
+    with pytest.raises(FileNotFoundError):
+        service.load_model(tmp_path)

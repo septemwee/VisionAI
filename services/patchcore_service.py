@@ -60,6 +60,32 @@ def _sha256_of(path):
     return digest.hexdigest()
 
 
+def read_model_metadata(model_path):
+    """Reject corrupt or incompatible descriptors before a model is used."""
+    path = Path(model_path) / "metadata.json"
+    with path.open("r", encoding="utf-8") as handle:
+        metadata = json.load(handle)
+    if not isinstance(metadata, dict):
+        raise ValueError("Model metadata must be an object")
+    if metadata.get("model_type", "patchcore") != "patchcore":
+        raise ValueError("Incompatible model type")
+    if metadata.get("backbone", BACKBONE) != BACKBONE:
+        raise ValueError("Incompatible PatchCore backbone")
+    if metadata.get("layers", ["layer2", "layer3"]) != ["layer2", "layer3"]:
+        raise ValueError("Incompatible PatchCore feature layers")
+    image_size = metadata.get("image_size")
+    if image_size is not None and image_size != list(IMAGE_SIZE):
+        raise ValueError(f"Incompatible PatchCore image_size: {image_size!r}")
+    shape = metadata.get("memory_bank_shape")
+    if shape is not None and (not isinstance(shape, list) or len(shape) != 2
+                              or any(type(v) is not int or v < 1 for v in shape)):
+        raise ValueError("Invalid memory_bank_shape in metadata")
+    neighbors = metadata.get("num_neighbors")
+    if neighbors is not None and (type(neighbors) is not int or neighbors < 1):
+        raise ValueError("Invalid num_neighbors in metadata")
+    return metadata
+
+
 class PatchCoreService:
     """Trains, saves, loads and runs PatchCore anomaly-detection models.
 
@@ -182,6 +208,10 @@ class PatchCoreService:
             raise FileNotFoundError("No PatchCore model path was provided.")
 
         cache_key = str(model_path.resolve())
+        metadata = read_model_metadata(model_path)
+        for filename in ("patchcore.pt", "memory_bank.pt"):
+            if not (model_path / filename).is_file():
+                raise FileNotFoundError(f"Missing PatchCore artifact: {filename}")
         cached = self._model_cache.get(cache_key)
         if cached is not None:
             self.model = cached
@@ -213,80 +243,33 @@ class PatchCoreService:
             model_path / "memory_bank.pt", map_location="cpu", weights_only=True, mmap=True
         )
 
-        metadata_path = model_path / "metadata.json"
-        if metadata_path.exists():
-            try:
-                with open(metadata_path, "r", encoding="utf-8") as handle:
-                    metadata = json.load(handle)
-            except (OSError, ValueError):
-                metadata = {}
-
-            expected_shape = metadata.get("memory_bank_shape")
-            if expected_shape and list(memory_bank.shape) != list(expected_shape):
-                raise ValueError(
-                    f"Memory bank shape {list(memory_bank.shape)} does not match "
-                    f"the recorded shape {list(expected_shape)} in metadata.json."
-                )
-
-        model.model.memory_bank = memory_bank
-
-        metadata_path = model_path / "metadata.json"
-        if metadata_path.exists():
-            try:
-                with open(metadata_path, "r", encoding="utf-8") as handle:
-                    metadata = json.load(handle)
-            except (OSError, ValueError):
-                metadata = {}
-
-            expected_shape = metadata.get("memory_bank_shape")
-            if expected_shape and list(memory_bank.shape) != list(expected_shape):
-                raise ValueError(
-                    f"Memory bank shape {list(memory_bank.shape)} does not match "
-                    f"the recorded shape {list(expected_shape)} in metadata.json."
-                )
+        expected_shape = metadata.get("memory_bank_shape")
+        if expected_shape and list(memory_bank.shape) != expected_shape:
+            raise ValueError(f"Memory bank shape {list(memory_bank.shape)} does not match metadata")
 
             # Integrity: verify the recorded hashes when present so a stale
             # or tampered artifact cannot load silently. Metadata written by
             # an older save_model has no hashes; that only warns, while a
             # MISMATCH always fails the load.
-            for field, filename in (
-                ("memory_bank_sha256", "memory_bank.pt"),
-                    ("patchcore_sha256", "patchcore.pt"),
-                ):
-                expected_hash = metadata.get(field)
-                if expected_hash is None:
-                    print(
-                        f"[PATCHCORE] metadata.json has no {field} — "
-                        f"skipping integrity check for {filename}"
-                    )
-                    continue
-                if os.environ.get("VISIONAI_VERIFY_MODEL", "0") == "1":
-                    actual = _sha256_of(model_path / filename)
-                    if actual != expected_hash:
-                        raise ValueError(
-                            f"{filename} integrity check failed: metadata records "
-                            f"{expected_hash} but the file hashes to {actual}."
-                        )
+        for field, filename in (
+            ("memory_bank_sha256", "memory_bank.pt"),
+            ("patchcore_sha256", "patchcore.pt"),
+        ):
+            expected_hash = metadata.get(field)
+            if expected_hash is None:
+                continue
+            if os.environ.get("VISIONAI_VERIFY_MODEL", "0") == "1":
+                actual = _sha256_of(model_path / filename)
+                if actual != expected_hash:
+                    raise ValueError(f"{filename} integrity check failed")
 
         model.model.memory_bank = memory_bank
 
         requested_neighbors = metadata.get("num_neighbors")
         if requested_neighbors is not None:
-            try:
-                requested_neighbors = int(requested_neighbors)
-            except (TypeError, ValueError):
-                print(
-                    f"[PATCHCORE] Invalid num_neighbors {requested_neighbors!r}; "
-                    f"using model default {model.model.num_neighbors}"
-                )
-            else:
-                if requested_neighbors < 1:
-                    print(
-                        f"[PATCHCORE] Invalid num_neighbors {requested_neighbors}; "
-                        f"using model default {model.model.num_neighbors}"
-                    )
-                else:
-                    model.model.num_neighbors = min(requested_neighbors, len(memory_bank))
+            if requested_neighbors > len(memory_bank):
+                raise ValueError("num_neighbors exceeds memory bank size")
+            model.model.num_neighbors = requested_neighbors
 
         model.eval()
 

@@ -5,8 +5,7 @@ Both the live inspection worker (main.py) and the trainer review page
 prediction: a single implementation here prevents the two paths from
 drifting — e.g. one path gaining a safety rule the other lacks.
 
-The verdict is fail-closed: a non-finite score, a missing anomaly map or a
-gate that cannot be evaluated always yields FAIL, never PASS.
+Invalid inspection data raises InspectionError and never receives a quality verdict.
 """
 
 import math
@@ -17,6 +16,14 @@ from services.recipe_service import normalize_pixel_gate
 from utils.pixel_gate import evaluate_pixel_gate, unwrap_anomaly_map
 
 
+class InspectionError(ValueError):
+    """Inspection failed before a quality verdict was available."""
+
+    def __init__(self, code, detail):
+        self.code = code
+        super().__init__(f"{code}: {detail}")
+
+
 def evaluate_verdict(score, anomaly_map, threshold, recipe):
     """Return ``(is_defect, reason, gate_region_px)`` for one prediction.
 
@@ -25,16 +32,37 @@ def evaluate_verdict(score, anomaly_map, threshold, recipe):
     0-1 recipe threshold and ``recipe`` the full recipe dict supplying the
     pixel-gate configuration.
     """
-    if not math.isfinite(score):
-        # A NaN score compares False against any threshold, which would
-        # silently pass the part; an unevaluable prediction must fail.
-        return True, f"Invalid PatchCore score {score!r}", 0
+    try:
+        valid_score = math.isfinite(score)
+    except (TypeError, ValueError):
+        valid_score = False
+    if not valid_score:
+        raise InspectionError("INVALID_SCORE", f"Invalid PatchCore score {score!r}")
 
-    if not math.isfinite(threshold) or threshold <= 0:
-        return True, "Invalid anomaly threshold", 0
+    try:
+        valid_threshold = math.isfinite(threshold) and threshold > 0
+    except (TypeError, ValueError):
+        valid_threshold = False
+    if not valid_threshold:
+        raise InspectionError("INVALID_RECIPE", "Invalid anomaly threshold")
     amap = unwrap_anomaly_map(anomaly_map)
     if amap is None or amap.ndim != 2 or not amap.size or not np.isfinite(amap).all():
-        return True, "Inspection unavailable: invalid anomaly map", 0
+        raise InspectionError("INVALID_ANOMALY_MAP", "Missing, empty, or non-finite anomaly map")
+
+    local_policy = recipe.get("verdict_policy") == "image_and_pixel_v1"
+    if local_policy:
+        block = recipe.get("pixel_gate")
+        if (not isinstance(block, dict)
+                or not isinstance(block.get("enabled"), bool)
+                or not all(key in block for key in ("threshold_ratio", "min_area_px", "max_area_px"))):
+            raise InspectionError("INVALID_RECIPE", "Pixel gate configuration is missing")
+        gate = normalize_pixel_gate(recipe)
+        if gate != block:
+            raise InspectionError("INVALID_RECIPE", "Pixel gate configuration is invalid")
+        calibration = recipe.get("calibration") or {}
+        if (calibration.get("pixel_gate") != gate
+                or calibration.get("proposed") != threshold):
+            raise InspectionError("INVALID_RECIPE", "Pixel gate requires matching calibration")
 
     is_defect = score > threshold
     reason = f"Score: {score:.4f} (threshold: {threshold:.4f})"
@@ -45,23 +73,8 @@ def evaluate_verdict(score, anomaly_map, threshold, recipe):
         # raises it only slightly and can stay below the limit. The pixel
         # gate adds a second rule on the anomaly map so a compact anomalous
         # region still fails the part.
-        gate = normalize_pixel_gate(recipe)
-
-        # Legacy recipes were calibrated for image scores only. A local rule
-        # needs an explicit version and a matching calibration record.
-        local_policy = recipe.get("verdict_policy") == "image_and_pixel_v1"
-        if local_policy:
-            calibration = recipe.get("calibration") or {}
-            if (calibration.get("pixel_gate") != gate
-                    or calibration.get("proposed") != threshold):
-                return True, "Inspection unavailable: pixel gate requires calibration", 0
         if local_policy and gate["enabled"]:
             pixel_threshold = gate["threshold_ratio"] * threshold * SCORE_SCALE
-
-            if anomaly_map is None:
-                # PatchCore always returns a map; reaching here means the
-                # prediction pipeline is degraded, so fail closed.
-                return True, "Pixel gate unavailable (no anomaly map)", 0
 
             try:
                 triggered, area, _ = evaluate_pixel_gate(
@@ -71,7 +84,7 @@ def evaluate_verdict(score, anomaly_map, threshold, recipe):
                     gate["max_area_px"],
                 )
             except ValueError as error:
-                return True, f"Pixel gate error: {error}", 0
+                raise InspectionError("DECISION_ERROR", f"Pixel gate error: {error}") from error
 
             if triggered:
                 return (

@@ -148,6 +148,7 @@ def test_fresh_detection_is_reinspected_not_carried(worker, monkeypatch):
         "anomaly_threshold": 0.5,
         "top_mark_template": "template.jpg",
     }
+    instance.patchcore_service.model = object()
 
     instance.tick()
 
@@ -167,6 +168,7 @@ def test_lost_part_resets_orientation_cache(worker, monkeypatch):
         "recipe_name": "R",
         "anomaly_threshold": 0.5,
     }
+    instance.patchcore_service.model = object()
     instance.orientation_state = (None, True, 180, "template.jpg")
     instance.orientation_tick = 1
 
@@ -265,6 +267,7 @@ def test_calibrated_recipe_rejects_invalid_threshold(worker, monkeypatch):
     }
     instance.target_width = 64
     instance.target_height = 64
+    instance.patchcore_service.model = object()
     monkeypatch.setattr(
         instance.top_mark_service, "detect_orientation", lambda roi, path: (0, 0.90, 0.50)
     )
@@ -278,8 +281,8 @@ def test_calibrated_recipe_rejects_invalid_threshold(worker, monkeypatch):
         _inspection_frame(), _inspection_points()
     )
 
-    assert result == "FAIL"
-    assert "Invalid anomaly threshold" in reason
+    assert result == "ERROR"
+    assert "INVALID_RECIPE" in reason
 
 
 def test_package_roi_matches_crop_rotated_convention(worker):
@@ -365,6 +368,7 @@ def test_multiple_detections_reach_overlay_with_independent_verdicts(worker, mon
 
     instance.detection_model = Detector()
     instance.current_recipe = {"recipe_name": "R", "anomaly_threshold": 0.5}
+    instance.patchcore_service.model = object()
     monkeypatch.setattr(instance, "find_window", lambda: _FakeWindow())
     monkeypatch.setattr(instance, "grab_frame", lambda window: (frame, (10, 20, 640, 480)))
 

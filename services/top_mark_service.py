@@ -64,6 +64,20 @@ class TopMarkService:
         for angle in ORIENTATION_ANGLES:
             rotated = rotate_image(crop, angle)
             scores[angle] = self._score_angle(rotated, scaled_templates)
+            if scores[angle] == -999.0:
+                # The detected package may be displayed smaller than the
+                # saved ROI. Only resize further when no normal scale fits.
+                height, width = rotated.shape[:2]
+                template_height, template_width = template.shape[:2]
+                fit_scale = 0.95 * min(
+                    height / template_height, width / template_width
+                )
+                if 0 < fit_scale < TEMPLATE_SCALES[0]:
+                    fitted = cv2.resize(
+                        template, None, fx=fit_scale, fy=fit_scale,
+                        interpolation=cv2.INTER_LINEAR,
+                    )
+                    scores[angle] = self._score_angle(rotated, [fitted])
 
         ranked = sorted(scores.items(), key=lambda item: item[1], reverse=True)
         best_angle, best_score = ranked[0]
